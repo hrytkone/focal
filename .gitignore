@@ -1,3 +1,5 @@
 *.root
 *.cmnd
-focalPionCorrelation
+pythia/focalPionCorrelation
+pythia/Makefile.inc
+pythia/run_*/

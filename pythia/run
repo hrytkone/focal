@@ -1,0 +1,13 @@
+#!/bin/bash
+
+echo "Run Pythia8 for pion0-pion0 correlations"
+time=$(date)
+echo "Start time : $time"
+
+seed=1000
+jobid=$SLURM_JOB_ID
+seed=$((seed+jobid))
+
+./focalPionCorrelation ${2} "${3}/output_${1}_n${2}.root" $seed
+time=$(date)
+echo "End time : $time"

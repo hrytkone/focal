@@ -8,6 +8,6 @@ seed=1000
 jobid=$SLURM_JOB_ID
 seed=$((seed+jobid))
 
-./focalPionCorrelation ${2} "${3}/output_${1}_n${2}.root" $seed
+./focalPionCorrelation ${2} ${4} "${3}/output_${1}_n${2}.root" $seed
 time=$(date)
 echo "End time : $time"

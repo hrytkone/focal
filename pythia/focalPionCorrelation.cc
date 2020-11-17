@@ -18,8 +18,8 @@ using namespace Pythia8;
 const int nTriggBins = 8;
 double  triggPt[nTriggBins+1] = {3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 12.0, 15.0, 20.0};
 
-const int nAssocBins = 6;
-double  assocPt[nAssocBins+1] = {2.0, 3.0, 4.0, 6.0, 8.0, 10.0, 15.0};
+const int nAssocBins = 7;
+double  assocPt[nAssocBins+1] = {1.0, 2.0, 3.0, 4.0, 6.0, 8.0, 10.0, 15.0};
 
 //-------------------------
 //        Functions       |
@@ -32,13 +32,14 @@ double GetDeltaPhi(double phiTrigg, double phiAssoc);
 int main(int argc, char *argv[]) {
 
     if (argc==1) {
-        cout << "Usage : ./focalPionCorrelation nEvents output.root seed" << endl;
+        cout << "Usage : ./focalPionCorrelation nEvents[=1000] pTHatMin[=1.0] output.root seed" << endl;
         return 0;
     }
 
-    int nEvents = argc > 1 ? atol(argv[1]) : 100;
-    TString outFileName = argc > 2 ? argv[2] : "output.root";
-    int seed = argc > 3 ? atol(argv[3]) : 0;
+    int nEvents = argc > 1 ? atol(argv[1]) : 1000;
+    double pTHatMin = argc > 2 ? atof(argv[2]) : 1.0;
+    TString outFileName = argc > 3 ? argv[3] : "output.root";
+    int seed = argc > 4 ? atol(argv[4]) : 0;
 
     TFile *fOut = new TFile(outFileName, "RECREATE");
 
@@ -52,7 +53,8 @@ int main(int argc, char *argv[]) {
     pythia.readString("Beams:idB = 2212");
     pythia.readString("Beams:eCM = 14000.");
     pythia.readString("HardQCD:all = on");
-    pythia.readString("PhaseSpace:pTHatMin = 3.0");
+    pythia.readString("PromptPhoton:all = on");
+    pythia.readString(Form("PhaseSpace:pTHatMin = %f"), pTHatMin);
     pythia.readString("PartonLevel:MPI = on");
     pythia.readString("PartonLevel:ISR = on");
     pythia.readString("PartonLevel:FSR = on");

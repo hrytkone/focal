@@ -1,5 +1,4 @@
 *.root
-*.cmnd
 pythia/focalPionCorrelation
 pythia/Makefile.inc
-pythia/run_*/
+pythia/output/*

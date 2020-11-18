@@ -29,37 +29,31 @@ int GetBin(double arr[], int nArr, double val);
 void GetTriggAssocLists(TClonesArray *arrPions, std::vector<int>& listTrigg, std::vector<int>& listAssoc);
 double GetDeltaPhi(double phiTrigg, double phiAssoc);
 
+double GetPionMass(TLorentzVector lv1, TLorentzVector lv2);
+double PhotonEnergySmearing(TRandom3 *rand, double px, double py, double pz);
+
 int main(int argc, char *argv[]) {
 
     if (argc==1) {
-        cout << "Usage : ./focalPionCorrelation nEvents[=1000] pTHatMin[=1.0] output.root seed" << endl;
+        cout << "Usage : ./focalPionCorrelation output.root pythiaSettings.cmnd seed" << endl;
         return 0;
     }
 
-    int nEvents = argc > 1 ? atol(argv[1]) : 1000;
-    double pTHatMin = argc > 2 ? atof(argv[2]) : 1.0;
-    TString outFileName = argc > 3 ? argv[3] : "output.root";
-    int seed = argc > 4 ? atol(argv[4]) : 0;
+    TString outFileName = argc > 1 ? argv[1] : "output.root";
+    TString pythiaSettings = argc > 2 ? argv[2] : "PythiaHard.cmnd";
+    int seed = argc > 3 ? atol(argv[3]) : 0;
 
     TFile *fOut = new TFile(outFileName, "RECREATE");
 
     Pythia pythia;
 
     // Initialise pythia
-    pythia.readString("Next:numberCount = 10000");
+    pythia.readFile(pythiaSettings.Data());
     pythia.readString("Random:setSeed = on");
     pythia.readString(Form("Random:seed = %d", seed));
-    pythia.readString("Beams:idA = 2212");
-    pythia.readString("Beams:idB = 2212");
-    pythia.readString("Beams:eCM = 14000.");
-    pythia.readString("HardQCD:all = on");
-    pythia.readString("PromptPhoton:all = on");
-    pythia.readString(Form("PhaseSpace:pTHatMin = %f"), pTHatMin);
-    pythia.readString("PartonLevel:MPI = on");
-    pythia.readString("PartonLevel:ISR = on");
-    pythia.readString("PartonLevel:FSR = on");
-    pythia.readString("HadronLevel:Hadronize = on");
     pythia.init();
+
+    int nEvents = pythia.mode("Main:numberOfEvents");
 
     // Basic histograms
     TH1D *hCounter = new TH1D("hCounter", "hCounter", 10, 0, 10);
@@ -260,4 +254,17 @@ double GetDeltaPhi(double phiTrigg, double phiAssoc)
     if (dphi>3.0*TMath::Pi()/2.0) return dphi - 2.0*TMath::Pi();
     if (dphi<-TMath::Pi()/2.0) return dphi + 2.0*TMath::Pi();
     return dphi;
+}
+
+double GetPionMass(TLorentzVector lv1, TLorentzVector lv2)
+{
+    return ((*lv1) + (*lv2)).M();
+}
+
+// For FoCal:
+//      sigma/E = a/sqrt(E) + b = 0.25/sqrt(E) + 0.01
+double PhotonEnergySmearing(TRandom3 *rand, double px, double py, double pz)
+{
+    double a = 0.25;
+    double b = 0.01;
 }

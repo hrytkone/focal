@@ -2,7 +2,7 @@
 
 if [ -z "$1" ]
 then
-    echo "Usage: ./`basename $0` comment njobs[=1] nevents[=1000] pTHatMin[=1 Gev/c]"
+    echo "Usage: ./`basename $0` comment njobs[=1]"
     exit 0
 fi
 
@@ -13,25 +13,12 @@ else
     njobs=$2
 fi
 
-if [ -z "$3" ]
-then
-    nevents=1000
-else
-    nevents=$3
-fi
-
-if [ -z "$4" ]
-then
-    pTHatMin=1
-else
-    pTHatMin=$4
-fi
+outputdir=output/pythiaOut_${1}
+mkdir $outputdir
 
 for (( i=1; i<=$njobs; i++ ))
 do
-    outputdir=run_${1}_job$i
-    mkdir $outputdir
-    mkdir ${outputdir}/logs
-    sbatch -o ${outputdir}/logs/log -e ${outputdir}/logs/errout -J pionPion -n 1 run $i $nevents $outputdir $pTHatMin
+    mkdir ${outputdir}/logs_job${i}
+    sbatch --exclusive=user -o ${outputdir}/logs_job${i}/log -e ${outputdir}/logs_job${i}/errout -J pythiaf -n 1 run $i $outputdir
     sleep 1
 done

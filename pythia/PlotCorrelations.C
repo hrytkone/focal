@@ -1,8 +1,12 @@
-const int nTriggBins = 8;
-double  triggPt[nTriggBins+1] = {3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 12.0, 15.0, 20.0};
+//const int nTriggBins = 8;
+//double  triggPt[nTriggBins+1] = {3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 12.0, 15.0, 20.0};
+const int nTriggBins = 4;
+double  triggPt[nTriggBins+1] = {3.0, 4.0, 5.0, 15.0, 20.0};
 
+//const int nAssocBins = 7;
+//double  assocPt[nAssocBins+1] = {1.0, 2.0, 3.0, 4.0, 6.0, 8.0, 10.0, 15.0};
 const int nAssocBins = 6;
-double  assocPt[nAssocBins+1] = {2.0, 3.0, 4.0, 6.0, 8.0, 10.0, 15.0};
+double  assocPt[nAssocBins+1] = {1.0, 2.0, 5.0, 6.0, 8.0, 10.0, 15.0};
 
 void PlotCorrelations(TString sInputName = "output.root", int triggbin = 0, int assocbin = 0)
 {

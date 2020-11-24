@@ -2,3 +2,4 @@
 pythia/focalPionCorrelation
 pythia/Makefile.inc
 pythia/output/*
+pythia/outputfiles/

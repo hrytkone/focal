@@ -111,6 +111,13 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    TH1D *hPi0MassMid[nPi0PtBins];
+    TH1D *hPi0MassFor[nPi0PtBins];
+    for (int i = 0; i < nPi0PtBins; i++) {
+	hPi0MassMid[i] = new TH1D(Form("hPi0MassMid%d", i), Form("hPi0MassMid%d", i), 201, 0.0, 600.0);
+	hPi0MassFor[i] = new TH1D(Form("hPi0MassFor%d", i), Form("hPi0MassFor%d", i), 201, 0.0, 600.0);
+    }
+
     // Particle lists
     TClonesArray *arrPion0Mid = new TClonesArray("TLorentzVector", 1500);
     TClonesArray *arrPion0For = new TClonesArray("TLorentzVector", 1500);
@@ -209,6 +216,9 @@ int main(int argc, char *argv[]) {
                 }
             }
         }
+
+	FillPionMasses(arrPhotonMid, hPi0MassMid);
+	FillPionMasses(arrPhotonFor, hPi0MassFor);
 
         ReconstructPions(arrPhotonMid, arrPion0RecMid, arrPion0SideMid);
         ReconstructPions(arrPhotonFor, arrPion0RecFor, arrPion0SideFor);

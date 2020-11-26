@@ -49,7 +49,7 @@ $(PYTHIA):
 focalPionCorrelation: $(PYTHIA) $$@.cc
 ifeq ($(ROOT_USE),true)
 	$(CXX) $@.cc -o $@ -w $(CXX_COMMON) $(ROOT_LIB)\
-	 `${ROOT_CONFIG} --cflags --glibs`
+	 `${ROOT_CONFIG} --cflags --glibs --libs`
 else
 	@echo "Error: $@ requires ROOT"
 endif

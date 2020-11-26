@@ -114,8 +114,8 @@ int main(int argc, char *argv[]) {
     TH1D *hPi0MassMid[nPi0PtBins];
     TH1D *hPi0MassFor[nPi0PtBins];
     for (int i = 0; i < nPi0PtBins; i++) {
-	hPi0MassMid[i] = new TH1D(Form("hPi0MassMid%d", i), Form("hPi0MassMid%d", i), 201, 0.0, 600.0);
-	hPi0MassFor[i] = new TH1D(Form("hPi0MassFor%d", i), Form("hPi0MassFor%d", i), 201, 0.0, 600.0);
+        hPi0MassMid[i] = new TH1D(Form("hPi0MassMid%d", i), Form("hPi0MassMid%d", i), 301, 0.0, 300.0);
+        hPi0MassFor[i] = new TH1D(Form("hPi0MassFor%d", i), Form("hPi0MassFor%d", i), 301, 0.0, 300.0);
     }
 
     // Particle lists

@@ -93,15 +93,15 @@ void PlotCorrelations(TString sInputName = "output.root")
         hCorrRecForProj->SetMarkerColor(4);
         hCorrRecForProj->SetMarkerSize(mSize);
 
-        //hCorrMidProj->Draw("P");
-        hCorrRecForProj->Draw("P");
-        //hCorrRecMidProj->Draw("P SAME");
         hCorrForProj->Draw("P SAME");
+        hCorrMidProj->Draw("P");
+        //hCorrRecForProj->Draw("P");
+        //hCorrRecMidProj->Draw("P SAME");
         if (bPlotLeg) {
-            //leg->AddEntry(hCorrMidProj, "PYTHIA #pi^{0}, -1.0 < #eta < 1.0", "p");
+            leg->AddEntry(hCorrMidProj, "PYTHIA #pi^{0}, -1.0 < #eta < 1.0", "p");
             leg->AddEntry(hCorrForProj, "PYTHIA #pi^{0}, 3.2 < #eta < 5.8", "p");
             //leg->AddEntry(hCorrRecMidProj, "rec. #pi^{0}, -1.0 < #eta < 1.0", "p");
-            leg->AddEntry(hCorrRecForProj, "rec. #pi^{0}, 3.2 < #eta < 5.8", "p");
+            //leg->AddEntry(hCorrRecForProj, "rec. #pi^{0}, 3.2 < #eta < 5.8", "p");
             leg->Draw("SAME");
             bPlotLeg = false;
         }

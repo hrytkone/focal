@@ -10,6 +10,7 @@
 #include "TH1D.h"
 #include "TH2D.h"
 #include "TRandom3.h"
+#include "TStopwatch.h"
 
 using namespace Pythia8;
 
@@ -48,7 +49,7 @@ const double logBW = (log(limMax) - log(limMin))/nIncPtBin;
 const int nIncEtaBin = 150;
 const double incEtaRange = 20.0;
 
-int iCount = 0;
+const int nPool = 5;
 
 //-------------------------
 //        Functions       |
@@ -62,7 +63,7 @@ double GetDeltaPhi(double phiTrigg, double phiAssoc);
 
 double PhotonEnergySmearing(TRandom3 *rand, double px, double py, double pz);TLorentzVector GetPhotonSumVector(TClonesArray *arrayPhoton, int iPhoton1, int iPhoton2);
 TLorentzVector GetPhotonSumVector(TClonesArray *arrayPhoton, int iPhoton1, int iPhoton2);
-void ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0MassTrigg[nTriggBins], TClonesArray *arrPi0SideTrigg[nTriggBins], TClonesArray *arrPi0MassAssoc[nAssocBins], TClonesArray *arrPi0SideAssoc[nAssocBins]);
+void ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0MassTrigg, TClonesArray *arrPi0SideTrigg, TClonesArray *arrPi0MassAssoc, TClonesArray *arrPi0SideAssoc);
 void FillPionMasses(TClonesArray *arrayPhoton, TH1D *hMassesTrigg[nTriggBins], TH1D *hMassesAssoc[nAssocBins]);
 
 int main(int argc, char *argv[]) {
@@ -71,6 +72,9 @@ int main(int argc, char *argv[]) {
         cout << "Usage : ./focalPionCorrelation output.root pythiaSettings.cmnd seed" << endl;
         return 0;
     }
+
+    TStopwatch timer;
+    timer.Start();
 
     TString outFileName = argc > 1 ? argv[1] : "output.root";
     TString pythiaSettings = argc > 2 ? argv[2] : "PythiaHard.cmnd";
@@ -99,38 +103,43 @@ int main(int argc, char *argv[]) {
     TH1D *hPionPtFor = new TH1D("hPionPtFor", "hPionPtFor", nIncPtBin, logBinsX); hPionPtFor->Sumw2();
     TH1D *hPionPtMid = new TH1D("hPionPtMid", "hPionPtMid", nIncPtBin, logBinsX); hPionPtMid->Sumw2();
     
-    TH1D *hChargedHadronPt = new TH1D("hChargedHadronPt", "hChargedHadronPt", nIncPtBin, logBinsX); hChargedHadronPt->Sumw2();
-    TH1D *hChargedHadronPtFor = new TH1D("hChargedHadronPtFor", "hChargedHadronPtFor", nIncPtBin, logBinsX); hChargedHadronPtFor->Sumw2();
-    TH1D *hChargedHadronPtMid = new TH1D("hChargedHadronPtMid", "hChargedHadronPtMid", nIncPtBin, logBinsX); hChargedHadronPtMid->Sumw2();
+    //TH1D *hChargedHadronPt = new TH1D("hChargedHadronPt", "hChargedHadronPt", nIncPtBin, logBinsX); hChargedHadronPt->Sumw2();
+    //TH1D *hChargedHadronPtFor = new TH1D("hChargedHadronPtFor", "hChargedHadronPtFor", nIncPtBin, logBinsX); hChargedHadronPtFor->Sumw2();
+    //TH1D *hChargedHadronPtMid = new TH1D("hChargedHadronPtMid", "hChargedHadronPtMid", nIncPtBin, logBinsX); hChargedHadronPtMid->Sumw2();
 
     TH1D *hPhotonPt = new TH1D("hPhotonPt", "hPhotonPt", nIncPtBin, logBinsX); hPhotonPt->Sumw2();
     TH1D *hPhotonPtFor = new TH1D("hPhotonPtFor", "hPhotonPtFor", nIncPtBin, logBinsX); hPhotonPtFor->Sumw2();
     TH1D *hPhotonPtMid = new TH1D("hPhotonPtMid", "hPhotonPtMid", nIncPtBin, logBinsX); hPhotonPtMid->Sumw2();
 
     TH1D *hPionEta = new TH1D("hPionEta", "hPionEta", nIncEtaBin, -incEtaRange/2., incEtaRange/2.); hPionEta->Sumw2();
-    TH1D *hChargedHadronEta = new TH1D("hChargedHadronEta", "hChargedHadronEta", nIncEtaBin, -incEtaRange/2., incEtaRange/2.); hChargedHadronEta->Sumw2();
+    //TH1D *hChargedHadronEta = new TH1D("hChargedHadronEta", "hChargedHadronEta", nIncEtaBin, -incEtaRange/2., incEtaRange/2.); hChargedHadronEta->Sumw2();
 
     // Correlation histograms
     TH2D *hCorrMid[nTriggBins][nAssocBins];
     TH2D *hCorrFor[nTriggBins][nAssocBins];
-    TH2D *hCorrChargedMid[nTriggBins][nAssocBins];
-    TH2D *hCorrChargedFor[nTriggBins][nAssocBins];
+    //TH2D *hCorrChargedMid[nTriggBins][nAssocBins];
+    //TH2D *hCorrChargedFor[nTriggBins][nAssocBins];
     
     TH2D *hCorrMassMass[nTriggBins][nAssocBins];
     TH2D *hCorrMassSide[nTriggBins][nAssocBins];
     TH2D *hCorrSideMass[nTriggBins][nAssocBins];
     TH2D *hCorrSideSide[nTriggBins][nAssocBins];
     
+    /**TH2D *hCorrMassMassMixed[nTriggBins][nAssocBins];
+    TH2D *hCorrMassSideMixed[nTriggBins][nAssocBins];
+    TH2D *hCorrSideMassMixed[nTriggBins][nAssocBins];
+    TH2D *hCorrSideSideMixed[nTriggBins][nAssocBins];**/
+
     for (int i = 0; i < nTriggBins; i++) {
         for (int j = 0; j < nAssocBins; j++) {
             hCorrMid[i][j] = new TH2D(Form("hCorrMid%d:%d", i, j), Form("hCorrMid%d:%d", i, j), nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinTracker, -etaTrackerRange/2., etaTrackerRange/2.);
             hCorrMid[i][j]->Sumw2();
             hCorrFor[i][j] = new TH2D(Form("hCorrFor%d:%d", i, j), Form("hCorrFor%d:%d", i, j), nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange/2., etaFocalRange/2.);
             hCorrFor[i][j]->Sumw2();
-            hCorrChargedMid[i][j] = new TH2D(Form("hCorrChargedMid%d:%d", i, j), Form("hCorrChargedMid%d:%d", i, j), nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinTracker, -etaTrackerRange/2., etaTrackerRange/2.);
+            /**hCorrChargedMid[i][j] = new TH2D(Form("hCorrChargedMid%d:%d", i, j), Form("hCorrChargedMid%d:%d", i, j), nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinTracker, -etaTrackerRange/2., etaTrackerRange/2.);
             hCorrChargedMid[i][j]->Sumw2();
             hCorrChargedFor[i][j] = new TH2D(Form("hCorrChargedFor%d:%d", i, j), Form("hCorrChargedFor%d:%d", i, j), nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange/2., etaFocalRange/2.);
-            hCorrChargedFor[i][j]->Sumw2();
+            hCorrChargedFor[i][j]->Sumw2();**/
             
             hCorrMassMass[i][j] = new TH2D(Form("hCorrMassMass%d:%d", i, j), Form("hCorrMassMass%d:%d", i, j), nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange/2., etaFocalRange/2.);
             hCorrMassMass[i][j]->Sumw2();
@@ -140,7 +149,15 @@ int main(int argc, char *argv[]) {
             hCorrSideMass[i][j]->Sumw2();
             hCorrSideSide[i][j] = new TH2D(Form("hCorrSideSide%d:%d", i, j), Form("hCorrSideSide%d:%d", i, j), nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange/2., etaFocalRange/2.);
             hCorrSideSide[i][j]->Sumw2();
-
+           
+            /**hCorrMassMassMixed[i][j] = new TH2D(Form("hCorrMassMassMixed%d:%d", i, j), Form("hCorrMassMassMixed%d:%d", i, j), nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange/2., etaFocalRange/2.);
+            hCorrMassMassMixed[i][j]->Sumw2();
+            hCorrMassSideMixed[i][j] = new TH2D(Form("hCorrMassSideMixed%d:%d", i, j), Form("hCorrMassSideMixed%d:%d", i, j), nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange/2., etaFocalRange/2.);
+            hCorrMassSideMixed[i][j]->Sumw2();
+            hCorrSideMassMixed[i][j] = new TH2D(Form("hCorrSideMassMixed%d:%d", i, j), Form("hCorrSideMassMixed%d:%d", i, j), nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange/2., etaFocalRange/2.);
+            hCorrSideMassMixed[i][j]->Sumw2();
+            hCorrSideSideMixed[i][j] = new TH2D(Form("hCorrSideSideMixed%d:%d", i, j), Form("hCorrSideSideMixed%d:%d", i, j), nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange/2., etaFocalRange/2.);
+            hCorrSideSideMixed[i][j]->Sumw2();**/
         }
     }
 
@@ -153,24 +170,20 @@ int main(int argc, char *argv[]) {
     // Particle lists
     TClonesArray *arrPion0Mid = new TClonesArray("TLorentzVector", 1500);
     TClonesArray *arrPion0For = new TClonesArray("TLorentzVector", 1500);
-    TClonesArray *arrChargedMid = new TClonesArray("TLorentzVector", 1500);
-    TClonesArray *arrChargedFor = new TClonesArray("TLorentzVector", 1500);
+    //TClonesArray *arrChargedMid = new TClonesArray("TLorentzVector", 1500);
+    //TClonesArray *arrChargedFor = new TClonesArray("TLorentzVector", 1500);
     TClonesArray *arrPhotonMid = new TClonesArray("TLorentzVector", 1500);
     TClonesArray *arrPhotonFor = new TClonesArray("TLorentzVector", 1500);
+
+    TClonesArray *arrPion0MassTrigg = new TClonesArray("TLorentzVector", 1500);
+    TClonesArray *arrPion0SideTrigg = new TClonesArray("TLorentzVector", 1500);
+    TClonesArray *arrPion0MassAssoc = new TClonesArray("TLorentzVector", 1500);
+    TClonesArray *arrPion0SideAssoc = new TClonesArray("TLorentzVector", 1500);
     
-    TClonesArray *arrPion0MassTrigg[nTriggBins];
-    TClonesArray *arrPion0SideTrigg[nTriggBins];
-    TClonesArray *arrPion0MassAssoc[nAssocBins];
-    TClonesArray *arrPion0SideAssoc[nAssocBins];
-    for (int i = 0; i < nTriggBins; i++) {
-        arrPion0MassTrigg[i] = new TClonesArray("TLorentzVector", 1500);
-        arrPion0SideTrigg[i] = new TClonesArray("TLorentzVector", 1500);
-    }
-    for (int i = 0; i < nAssocBins; i++) {
-        arrPion0MassAssoc[i] = new TClonesArray("TLorentzVector", 1500);
-        arrPion0SideAssoc[i] = new TClonesArray("TLorentzVector", 1500);
-    }
-    
+    // Vectors to store events for event mixing
+    //std::vector<vector<int>> assocMassPool, assocSidePool;
+    //std::vector<TClonesArray> arrMassPool, arrSidePool;
+
     //
     // Loop over events
     //
@@ -178,39 +191,29 @@ int main(int argc, char *argv[]) {
 
         hCounter->Fill(0.5); // Number of events
 
-        iCount = iEvent;
-        //std::cout << "event " << iEvent << std::endl; // 147190
+        //std::cout << "event " << iEvent << std::endl;
 
         if ( !pythia.next() ) continue;
 
         int nPion0Mid = 0;
         int nPion0For = 0;
-        int nChargedMid = 0;
-        int nChargedFor = 0;
+        //int nChargedMid = 0;
+        //int nChargedFor = 0;
         int nPhotonMid = 0;
         int nPhotonFor = 0;
 
         arrPion0Mid->Clear();
         arrPion0For->Clear();
-        arrChargedMid->Clear();
-        arrChargedFor->Clear();
+        //arrChargedMid->Clear();
+        //arrChargedFor->Clear();
         arrPhotonMid->Clear();
         arrPhotonFor->Clear();
-
-        for (int i = 0; i < nTriggBins; i++) {
-            arrPion0MassTrigg[i]->Clear(); 
-            arrPion0SideTrigg[i]->Clear();
-        }
-
-        for (int i = 0; i < nAssocBins; i++) {
-            arrPion0MassAssoc[i]->Clear(); 
-            arrPion0SideAssoc[i]->Clear();
-        }
     
-        // Trigg & associated lists, store indices
-        std::vector<int> listTriggMid, listTriggFor, listTriggChargedMid, listTriggChargedFor;
-        std::vector<int> listAssocMid, listAssocFor, listAssocChargedMid, listAssocChargedFor;
- 
+        arrPion0MassTrigg->Clear(); 
+        arrPion0SideTrigg->Clear();
+        arrPion0MassAssoc->Clear(); 
+        arrPion0SideAssoc->Clear();
+
         // Collect particles of interest
         for (int iPart = 0; iPart < pythia.event.size(); iPart++) {
 
@@ -252,7 +255,7 @@ int main(int argc, char *argv[]) {
                 }
             }
 
-            if (pythia.event[iPart].isFinal() && pythia.event[iPart].isHadron() && pythia.event[iPart].isCharged()) { // charged hadrons
+            /**if (pythia.event[iPart].isFinal() && pythia.event[iPart].isHadron() && pythia.event[iPart].isCharged()) { // charged hadrons
                 double pt = pythia.event[iPart].pT();
                 double eta = pythia.event[iPart].eta();
 
@@ -261,54 +264,75 @@ int main(int argc, char *argv[]) {
                 if (IsTrackerAcceptance(eta)) {
                     hChargedHadronPtMid->Fill(pt);
                     new((*arrChargedMid)[nChargedMid++]) TLorentzVector(lv);
-                }
+               }
                 if (IsFocalAcceptance(eta)) {
                     hChargedHadronPtFor->Fill(pt);
                     new((*arrChargedFor)[nChargedFor++]) TLorentzVector(lv);
                 }
-            }
+            }**/
         }
-
-    	FillPionMasses(arrPhotonFor, hPi0MassTrigg, hPi0MassAssoc);
-        ReconstructPions(arrPhotonFor, arrPion0MassTrigg, arrPion0SideTrigg, arrPion0MassAssoc, arrPion0SideAssoc);
-
+        
         if (nPion0Mid>0) hCounter->Fill(1.5); // number of events with pion0 in mid rapidity
         if (nPion0For>0) hCounter->Fill(2.5); // number of events with pion0 in forward rapidity 
-        if (nChargedMid>0) hCounter->Fill(3.5); // number of events with charged hadron in mid rapidity
-        if (nChargedFor>0) hCounter->Fill(4.5); // number of events with charged hadron in forward rapidity
+        //if (nChargedMid>0) hCounter->Fill(3.5); // number of events with charged hadron in mid rapidity
+        //if (nChargedFor>0) hCounter->Fill(4.5); // number of events with charged hadron in forward rapidity
 
         // Real pions
+        std::vector<int> listTriggMid, listTriggFor, listTriggChargedMid, listTriggChargedFor;
+        std::vector<int> listAssocMid, listAssocFor, listAssocChargedMid, listAssocChargedFor;
+        
         GetTriggAssocLists(arrPion0Mid, arrPion0Mid, listTriggMid, listAssocMid);
         GetTriggAssocLists(arrPion0For, arrPion0For, listTriggFor, listAssocFor);
-        GetTriggAssocLists(arrChargedFor, arrChargedFor, listTriggChargedFor, listAssocChargedFor);
-        GetTriggAssocLists(arrChargedMid, arrChargedMid, listTriggChargedMid, listAssocChargedMid);
+        //GetTriggAssocLists(arrChargedFor, arrChargedFor, listTriggChargedFor, listAssocChargedFor);
+        //GetTriggAssocLists(arrChargedMid, arrChargedMid, listTriggChargedMid, listAssocChargedMid);
         
         DoCorrelations(arrPion0Mid, arrPion0Mid, listTriggMid, listAssocMid, hCorrMid);
         DoCorrelations(arrPion0For, arrPion0For, listTriggFor, listAssocFor, hCorrFor);
-        DoCorrelations(arrChargedFor, arrChargedFor, listTriggChargedFor, listAssocChargedFor, hCorrChargedFor);
-        DoCorrelations(arrChargedMid, arrChargedMid, listTriggChargedMid, listAssocChargedMid, hCorrChargedMid);
+        //DoCorrelations(arrChargedFor, arrChargedFor, listTriggChargedFor, listAssocChargedFor, hCorrChargedFor);
+        //DoCorrelations(arrChargedMid, arrChargedMid, listTriggChargedMid, listAssocChargedMid, hCorrChargedMid);
+        
+        // Reconstructed pions       
+        std::vector<int> listTriggMass, listTriggSide, listAssocMass, listAssocSide;
 
-        // Reconstructed pions
-        for (int itrigg = 0; itrigg < nTriggBins; itrigg++) {
-            for (int iassoc = 0; iassoc < nAssocBins; iassoc++) {
+        FillPionMasses(arrPhotonFor, hPi0MassTrigg, hPi0MassAssoc);
+        ReconstructPions(arrPhotonFor, arrPion0MassTrigg, arrPion0SideTrigg, arrPion0MassAssoc, arrPion0SideAssoc);
+ 
+        GetTriggAssocLists(arrPion0MassTrigg, arrPion0MassAssoc, listTriggMass, listAssocMass);
+        GetTriggAssocLists(arrPion0SideTrigg, arrPion0SideAssoc, listTriggSide, listAssocSide);
                
-                std::vector<int> listTriggMass, listTriggSide, listAssocMass, listAssocSide;
+        DoCorrelations(arrPion0MassTrigg, arrPion0MassAssoc, listTriggMass, listAssocMass, hCorrMassMass);
+        DoCorrelations(arrPion0MassTrigg, arrPion0SideAssoc, listTriggMass, listAssocSide, hCorrMassSide);
+        DoCorrelations(arrPion0SideTrigg, arrPion0MassAssoc, listTriggSide, listAssocMass, hCorrSideMass);
+        DoCorrelations(arrPion0SideTrigg, arrPion0SideAssoc, listTriggSide, listAssocSide, hCorrSideSide);
 
-                GetTriggAssocLists(arrPion0MassTrigg[itrigg], arrPion0MassAssoc[iassoc], listTriggMass, listAssocMass);
-                GetTriggAssocLists(arrPion0SideTrigg[itrigg], arrPion0SideAssoc[iassoc], listTriggSide, listAssocSide);
-                
-                DoCorrelations(arrPion0MassTrigg[itrigg], arrPion0MassAssoc[iassoc], listTriggMass, listAssocMass, hCorrMassMass);
-                DoCorrelations(arrPion0MassTrigg[itrigg], arrPion0SideAssoc[iassoc], listTriggMass, listAssocSide, hCorrMassSide);
-                DoCorrelations(arrPion0SideTrigg[itrigg], arrPion0MassAssoc[iassoc], listTriggSide, listAssocMass, hCorrSideMass);
-                DoCorrelations(arrPion0SideTrigg[itrigg], arrPion0SideAssoc[iassoc], listTriggSide, listAssocSide, hCorrSideSide);
-            }
+        // Event mixing
+        /**if (iEvent >= nPool) {
+           for (int ipool = 0; ipool < nPool; ipool++) {
+               DoCorrelations(arrPion0MassTrigg, &arrMassPool[ipool], listTriggMass, assocMassPool[ipool], hCorrMassMassMixed);
+               DoCorrelations(arrPion0MassTrigg, &arrSidePool[ipool], listTriggMass, assocSidePool[ipool], hCorrMassSideMixed);
+               DoCorrelations(arrPion0SideTrigg, &arrMassPool[ipool], listTriggSide, assocMassPool[ipool], hCorrSideMassMixed);
+               DoCorrelations(arrPion0SideTrigg, &arrSidePool[ipool], listTriggSide, assocSidePool[ipool], hCorrSideSideMixed);
+           }
+
+           assocMassPool.erase(assocMassPool.begin());
+           assocSidePool.erase(assocSidePool.begin());
+           arrMassPool.erase(arrMassPool.begin());
+           arrSidePool.erase(arrSidePool.begin());
         }
+                
+        assocMassPool.push_back(listAssocMass);
+        assocSidePool.push_back(listAssocSide);
+        arrMassPool.push_back(*arrPion0MassAssoc);
+        arrSidePool.push_back(*arrPion0SideAssoc);**/
+
     }
 
     fOut->Write("", TObject::kOverwrite);
     fOut->Close();
 
     pythia.stat();
+
+    timer.Print();
 
     return 0;
 }
@@ -329,7 +353,6 @@ bool IsFocalAcceptance(double eta, double etaMin, double etaMax)
 
 void DoCorrelations(TClonesArray *arrPionsTrigg, TClonesArray *arrPionsAssoc, std::vector<int> listTrigg, std::vector<int> listAssoc, TH2D *hCorr[nTriggBins][nAssocBins])
 {
-
     int nTrigg = listTrigg.size();
     if (nTrigg < 1) return;
 
@@ -428,7 +451,7 @@ TLorentzVector GetPhotonSumVector(TClonesArray *arrayPhoton, int iPhoton1, int i
     return lvSum;
 }
 
-void ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0MassTrigg[nTriggBins], TClonesArray *arrPi0SideTrigg[nTriggBins], TClonesArray *arrPi0MassAssoc[nAssocBins], TClonesArray *arrPi0SideAssoc[nAssocBins])
+void ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0MassTrigg, TClonesArray *arrPi0SideTrigg, TClonesArray *arrPi0MassAssoc, TClonesArray *arrPi0SideAssoc)
 {
     int nMassTrigg = 0, nSideTrigg = 0, nMassAssoc = 0, nSideAssoc = 0;
     int nPhoton = arrPhoton->GetEntriesFast();
@@ -440,16 +463,16 @@ void ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0MassTrigg[nTr
             int iTriggBin = GetBin(triggPt, nTriggBins, pT);
             int iAssocBin = GetBin(assocPt, nAssocBins, pT);
             if (iTriggBin >= 0) { 
-                if (mass > 110. && mass < 170.) 
-                    new ((*arrPi0MassTrigg[iTriggBin])[nMassTrigg++]) TLorentzVector(lvSum);
-                if ((mass > 55. && mass < 75.) || (mass > 210. && mass < 280.)) 
-                    new ((*arrPi0SideTrigg[iTriggBin])[nSideTrigg++]) TLorentzVector(lvSum);
+                if (mass > 120. && mass < 150.) 
+                    new ((*arrPi0MassTrigg)[nMassTrigg++]) TLorentzVector(lvSum);
+                if ((mass > 40. && mass < 80.) || (mass > 210. && mass < 280.)) 
+                    new ((*arrPi0SideTrigg)[nSideTrigg++]) TLorentzVector(lvSum);
             }
             if (iAssocBin >= 0) {
-                if (mass > 110. && mass < 170.) 
-                    new ((*arrPi0MassAssoc[iAssocBin])[nMassAssoc++]) TLorentzVector(lvSum);
-                if ((mass > 55. && mass < 75.) || (mass > 210. && mass < 280.)) 
-                    new ((*arrPi0SideAssoc[iAssocBin])[nSideAssoc++]) TLorentzVector(lvSum);
+                if (mass > 120. && mass < 150.) 
+                    new ((*arrPi0MassAssoc)[nMassAssoc++]) TLorentzVector(lvSum);
+                if ((mass > 40. && mass < 80.) || (mass > 210. && mass < 280.)) 
+                    new ((*arrPi0SideAssoc)[nSideAssoc++]) TLorentzVector(lvSum);
             }
         }
     }

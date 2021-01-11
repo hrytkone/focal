@@ -1,6 +1,6 @@
 ! 1) Settings used in the main program
-Main:numberOfEvents = 200000
-Next:numberCount = 100000
+Main:numberOfEvents = 5000000
+Next:numberCount = 500000
 
 ! C) Beam parameter settings
 Beams:idA = 2212
@@ -11,7 +11,7 @@ Beams:eCM = 14000.
 HardQCD:all = on
 PromptPhoton:all = on
 
-PhaseSpace:pTHatMin = 3.0
+PhaseSpace:pTHatMin = 1.0
 
 ! 4) Setting for the event generation process in the Pythia8 library
 PartonLevel:MPI = on

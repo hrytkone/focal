@@ -162,10 +162,18 @@ int main(int argc, char *argv[]) {
     }
 
     TH1D *hPi0MassTrigg[nTriggBins];
-    for (int i = 0; i < nTriggBins; i++) hPi0MassTrigg[i] = new TH1D(Form("hPi0MassTrigg%d", i), Form("hPi0MassTrigg%d", i), 301, 0.0, 300.0);
-    
+    TH1D *hPi0SideTrigg[nTriggBins];
+    for (int i = 0; i < nTriggBins; i++) {
+        hPi0MassTrigg[i] = new TH1D(Form("hPi0MassTrigg%d", i), Form("hPi0MassTrigg%d", i), 301, 0.0, 300.0);
+        hPi0SideTrigg[i] = new TH1D(Form("hPi0SideTrigg%d", i), Form("hPi0SideTrigg%d", i), 301, 0.0, 300.0);
+    }
+
     TH1D *hPi0MassAssoc[nAssocBins];
-    for (int i = 0; i < nAssocBins; i++) hPi0MassAssoc[i] = new TH1D(Form("hPi0MassAssoc%d", i), Form("hPi0MassAssoc%d", i), 301, 0.0, 300.0);
+    TH1D *hPi0SideAssoc[nAssocBins];
+    for (int i = 0; i < nAssocBins; i++) {
+        hPi0MassAssoc[i] = new TH1D(Form("hPi0MassAssoc%d", i), Form("hPi0MassAssoc%d", i), 301, 0.0, 300.0);
+        hPi0SideAssoc[i] = new TH1D(Form("hPi0SideAssoc%d", i), Form("hPi0SideAssoc%d", i), 301, 0.0, 300.0);
+    }
 
     // Particle lists
     TClonesArray *arrPion0Mid = new TClonesArray("TLorentzVector", 1500);
@@ -296,9 +304,14 @@ int main(int argc, char *argv[]) {
         // Reconstructed pions       
         std::vector<int> listTriggMass, listTriggSide, listAssocMass, listAssocSide;
 
-        FillPionMasses(arrPhotonFor, hPi0MassTrigg, hPi0MassAssoc);
         ReconstructPions(arrPhotonFor, arrPion0MassTrigg, arrPion0SideTrigg, arrPion0MassAssoc, arrPion0SideAssoc);
- 
+
+        int nTriggMass = arrPion0MassTrigg->GetEntriesFast();
+        int nTriggSide = arrPion0SideTrigg->GetEntriesFast();
+
+        if (nTriggMass>0) FillPionMasses(arrPhotonFor, hPi0MassTrigg, hPi0MassAssoc);
+        if (nTriggSide>0) FillPionMasses(arrPhotonFor, hPi0SideTrigg, hPi0SideAssoc);
+
         GetTriggAssocLists(arrPion0MassTrigg, arrPion0MassAssoc, listTriggMass, listAssocMass);
         GetTriggAssocLists(arrPion0SideTrigg, arrPion0SideAssoc, listTriggSide, listAssocSide);
                
@@ -313,7 +326,7 @@ int main(int argc, char *argv[]) {
                DoCorrelations(arrPion0MassTrigg, &arrMassPool[ipool], listTriggMass, assocMassPool[ipool], hCorrMassMassMixed);
                DoCorrelations(arrPion0MassTrigg, &arrSidePool[ipool], listTriggMass, assocSidePool[ipool], hCorrMassSideMixed);
                DoCorrelations(arrPion0SideTrigg, &arrMassPool[ipool], listTriggSide, assocMassPool[ipool], hCorrSideMassMixed);
-               DoCorrelations(arrPion0SideTrigg, &arrSidePool[ipool], listTriggSide, assocSidePool[ipool], hCorrSideSideMixed);
+               DoCorrelations(arrPion0SideTrigg, &arrSidePool[ipool], listTriggSid, assocSidePool[ipool], hCorrSideSideMixed);
            }
 
            assocMassPool.erase(assocMassPool.begin());
@@ -432,7 +445,6 @@ double GetDeltaPhi(double phiTrigg, double phiAssoc)
 //      sigma/E = a/sqrt(E) + b = 0.27/sqrt(E) + 0.01
 double PhotonEnergySmearing(TRandom3 *rand, double px, double py, double pz)
 {
-
     const double eCut = 0.01;
     double e = sqrt(px*px + py*py + pz*pz);
     if (e < eCut) return e;

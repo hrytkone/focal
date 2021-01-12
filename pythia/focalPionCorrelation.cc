@@ -401,8 +401,8 @@ void GetTriggAssocLists(TClonesArray *arrPi0Trigg, TClonesArray *arrPi0Assoc, st
     int nPi0Trigg = arrPi0Trigg->GetEntriesFast();
     int nPi0Assoc = arrPi0Assoc->GetEntriesFast();
     
-    //if (!nPi0Trigg) return;
-    //if (!nPi0Assoc) return;
+    if (!nPi0Trigg) return;
+    if (!nPi0Assoc) return;
 
     for (int i=0; i<nPi0Trigg; i++) {
         TLorentzVector *lvPion = (TLorentzVector*)arrPi0Trigg->At(i);
@@ -491,7 +491,7 @@ void FillPionMasses(TClonesArray *arrayPhoton, TH1D *hMassesTrigg[nTriggBins], T
             int iTriggBin = GetBin(triggPt, nTriggBins, pT);
             int iAssocBin = GetBin(assocPt, nAssocBins, pT);
             if (iTriggBin >= 0) hMassesTrigg[iTriggBin]->Fill(mass);
-            if (iTriggBin >= 0 && iAssocBin >= 0) hMassesAssoc[iAssocBin]->Fill(mass);
+            if (iAssocBin >= 0) hMassesAssoc[iAssocBin]->Fill(mass);
         }
     }   
 }

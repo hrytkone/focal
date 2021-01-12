@@ -274,8 +274,6 @@ int main(int argc, char *argv[]) {
         
         if (nPion0Mid>0) hCounter->Fill(1.5); // number of events with pion0 in mid rapidity
         if (nPion0For>0) hCounter->Fill(2.5); // number of events with pion0 in forward rapidity 
-        //if (nChargedMid>0) hCounter->Fill(3.5); // number of events with charged hadron in mid rapidity
-        //if (nChargedFor>0) hCounter->Fill(4.5); // number of events with charged hadron in forward rapidity
 
         // Real pions
         std::vector<int> listTriggMid, listTriggFor, listTriggChargedMid, listTriggChargedFor;
@@ -285,6 +283,10 @@ int main(int argc, char *argv[]) {
         GetTriggAssocLists(arrPion0For, arrPion0For, listTriggFor, listAssocFor);
         //GetTriggAssocLists(arrChargedFor, arrChargedFor, listTriggChargedFor, listAssocChargedFor);
         //GetTriggAssocLists(arrChargedMid, arrChargedMid, listTriggChargedMid, listAssocChargedMid);
+        
+        if (listTriggFor.size()>0) hCounter->Fill(3.5); // number of events with trigger pion0 in forward rapidity 
+        if (listTriggFor.size()>0) hCounter->Fill(4.5, (int)listTriggFor.size()); // number of real trigger pion0 in forward rapidity 
+        if (listTriggFor.size() && listAssocFor.size()>0) hCounter->Fill(5.5, (int)listAssocFor.size()); // number of real assoc pion0 in forward rapidity 
         
         DoCorrelations(arrPion0Mid, arrPion0Mid, listTriggMid, listAssocMid, hCorrMid);
         DoCorrelations(arrPion0For, arrPion0For, listTriggFor, listAssocFor, hCorrFor);
@@ -489,7 +491,7 @@ void FillPionMasses(TClonesArray *arrayPhoton, TH1D *hMassesTrigg[nTriggBins], T
             int iTriggBin = GetBin(triggPt, nTriggBins, pT);
             int iAssocBin = GetBin(assocPt, nAssocBins, pT);
             if (iTriggBin >= 0) hMassesTrigg[iTriggBin]->Fill(mass);
-            if (iAssocBin >= 0) hMassesAssoc[iAssocBin]->Fill(mass);
+            if (iTriggBin >= 0 && iAssocBin >= 0) hMassesAssoc[iAssocBin]->Fill(mass);
         }
     }   
 }

@@ -30,11 +30,11 @@ void AnalyseCorrelations(TString sInputName = "output.root")
     TH2D *hCorrSideSide[nTriggBins][nAssocBins];
     for (int it = 0; it < nTriggBins; it++) {
         for (int ia = 0; ia < nAssocBins; ia++) {
-            hCorrReal[it][ia] = (TH2D*)fIn->Get(Form("hCorrFor%d:%d", it, ia));
-            hCorrMassMass[it][ia] = (TH2D*)fIn->Get(Form("hCorrMassMass%d:%d", it, ia));
-            hCorrMassSide[it][ia] = (TH2D*)fIn->Get(Form("hCorrMassSide%d:%d", it, ia));
-            hCorrSideMass[it][ia] = (TH2D*)fIn->Get(Form("hCorrSideMass%d:%d", it, ia));
-            hCorrSideSide[it][ia] = (TH2D*)fIn->Get(Form("hCorrSideSide%d:%d", it, ia));
+            hCorrReal[it][ia] = (TH2D*)fIn->Get(Form("hCorrFor%d:%d", it, ia)); hCorrReal[it][ia]->Rebin();
+            hCorrMassMass[it][ia] = (TH2D*)fIn->Get(Form("hCorrMassMass%d:%d", it, ia)); hCorrMassMass[it][ia]->Rebin();
+            hCorrMassSide[it][ia] = (TH2D*)fIn->Get(Form("hCorrMassSide%d:%d", it, ia)); hCorrMassSide[it][ia]->Rebin();
+            hCorrSideMass[it][ia] = (TH2D*)fIn->Get(Form("hCorrSideMass%d:%d", it, ia)); hCorrSideMass[it][ia]->Rebin();
+            hCorrSideSide[it][ia] = (TH2D*)fIn->Get(Form("hCorrSideSide%d:%d", it, ia)); hCorrSideSide[it][ia]->Rebin();
         }
     }
 
@@ -42,12 +42,14 @@ void AnalyseCorrelations(TString sInputName = "output.root")
     TH1D *hMassAssoc[nAssocBins];
     for (int it = 0; it < nTriggBins; it++) {
         hMassTrigg[it] = (TH1D*)fIn->Get(Form("hPi0MassTrigg%d", it));
-        //hMassTrigg[it]->Scale(1./nEvent);
+        hMassTrigg[it]->Scale(1./nEvent);
+        hMassTrigg[it]->Rebin();
     }
 
     for (int ia = 0; ia < nAssocBins; ia++) {
         hMassAssoc[ia] = (TH1D*)fIn->Get(Form("hPi0MassAssoc%d", ia));
-        //hMassAssoc[ia]->Scale(1./nEvent);
+        hMassAssoc[ia]->Scale(1./nEvent);
+        hMassAssoc[ia]->Rebin();
     }
 
     // ---------------
@@ -56,17 +58,26 @@ void AnalyseCorrelations(TString sInputName = "output.root")
     TLegend *leg1 = new TLegend(0.58, 0.6, 0.78, 0.85);
     leg1->SetFillStyle(0); leg1->SetBorderSize(0); leg1->SetTextSize(0.05); 
 
-    TLegend *leg2 = new TLegend(0.38, 0.68, 0.58, 0.85);
+    TLegend *leg2 = new TLegend(0.58, 0.66, 0.78, 0.85);
     leg2->SetFillStyle(0); leg2->SetBorderSize(0); leg2->SetTextSize(0.05); 
 
     // ----------------
     // |   Analysis   |
     // ----------------
+    // Data from Pythia pi0s
+    std::cout << "\nReal pi0 statistics: " << std::endl;
+    std::cout << "\tNumber of events with triggers: " << hCounter->GetBinContent(4) << std::endl;
+    std::cout << "\tNumber of triggers: " << hCounter->GetBinContent(5) << std::endl;
+    std::cout << "\tTriggers per event (all): " << hCounter->GetBinContent(5)/nEvent << std::endl;
+    std::cout << "\tTriggers per event (with trigger): " << hCounter->GetBinContent(5)/hCounter->GetBinContent(4) << std::endl;
+    std::cout << "\tAssociated per trigger: " << hCounter->GetBinContent(6)/hCounter->GetBinContent(5) << "\n" << std::endl;
+
     // 1. Fit mass distributions (to get parameters for normalisations)
     TF1 *fFitTrigg = new TF1("fFitTrigg", FitFunction, 20, 300, 9);
     fFitTrigg->SetParameters(0., 0., 0., 0., 0., 135., 135., 30., 60.);
-    fFitTrigg->SetParLimits(1, 0., 1000.);
+    //fFitTrigg->SetParLimits(1, 0., 1000.);
     fFitTrigg->SetParLimits(6, 130., 140.);
+    fFitTrigg->SetParLimits(8, -10., 10.);
     fFitTrigg->SetNpx(1000);
     
     TF1 *fPeakTrigg = new TF1("fPeakTrigg", FitPeak, 20, 300, 6);
@@ -171,32 +182,32 @@ void AnalyseCorrelations(TString sInputName = "output.root")
             double nPairSideSide = hCorrSideSide[it][ia]->GetEntries();
             
             TH1D *hCorrRealProj = hCorrReal[it][ia]->ProjectionX();
-            //hCorrRealProj->Scale(1.0/nPairMassMass);
+            hCorrRealProj->Scale(1.0/nPairMassMass);
             hCorrRealProj->SetLineColor(kRed);
 
             TH1D *hCorrMassMassProj = hCorrMassMass[it][ia]->ProjectionX();
-            //hCorrMassMassProj->Scale(1.0/nPairMassMass);
-            //hCorrMassMassProj->Scale(1/(alphat*alphaa));
+            hCorrMassMassProj->Scale(1.0/nPairMassMass);
+            hCorrMassMassProj->Scale(1/(alphat*alphaa));
             //hCorrMassMassProj->Scale(1/st*sa);
             hCorrMassMassProj->SetLineColor(kBlue);
             hCorrMassMassProj->SetTitle(Form("%.1f < p_{T,t} < %.1f GeV/c, %.1f < p_{T,a} < %.1f GeV/c; #Delta#phi; 1/N_{pair}dN/d#Delta#phi", triggPt[it], triggPt[it+1], assocPt[ia], assocPt[ia+1]));
             
             TH1D *hCorrMassSideProj = hCorrMassSide[it][ia]->ProjectionX();
-            //hCorrMassSideProj->Scale(1.0/nPairMassSide);
-            //hCorrMassSideProj->Scale(betaa/(alphat*alphaa));
-            hCorrMassSideProj->Scale(ba/baside);
+            hCorrMassSideProj->Scale(1.0/nPairMassSide);
+            hCorrMassSideProj->Scale(betaa/(alphat*alphaa));
+            //hCorrMassSideProj->Scale(ba/baside);
             hCorrMassSideProj->SetLineColor(kRed);
             
             TH1D *hCorrSideMassProj = hCorrSideMass[it][ia]->ProjectionX();
-            //hCorrSideMassProj->Scale(1.0/nPairSideMass);
-            //hCorrSideMassProj->Scale(betat/(alphat*alphaa));
-            hCorrSideMassProj->Scale(bt/btside);
+            hCorrSideMassProj->Scale(1.0/nPairSideMass);
+            hCorrSideMassProj->Scale(betat/(alphat*alphaa));
+            //hCorrSideMassProj->Scale(bt/btside);
             hCorrSideMassProj->SetLineColor(kBlack);
             
             TH1D *hCorrSideSideProj = hCorrSideSide[it][ia]->ProjectionX();
-            //hCorrSideSideProj->Scale(1.0/nPairSideSide);
-            //hCorrSideSideProj->Scale((betat*betaa)/(alphat*alphaa));
-            hCorrSideSideProj->Scale((bt*ba)/(btside*baside));
+            hCorrSideSideProj->Scale(1.0/nPairSideSide);
+            hCorrSideSideProj->Scale((betat*betaa)/(alphat*alphaa));
+            //hCorrSideSideProj->Scale((bt*ba)/(btside*baside));
             hCorrSideSideProj->SetLineColor(kGray);
 
             leg1->AddEntry(hCorrMassMassProj, "f_{mass,mass}", "l");

@@ -161,18 +161,26 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    TH1D *hPi0MassTrigg[nTriggBins];
-    TH1D *hPi0SideTrigg[nTriggBins];
+    TH1D *hPi0MassMassTrigg[nTriggBins];
+    TH1D *hPi0MassSideTrigg[nTriggBins];
+    TH1D *hPi0SideMassTrigg[nTriggBins];
+    TH1D *hPi0SideSideTrigg[nTriggBins];
     for (int i = 0; i < nTriggBins; i++) {
-        hPi0MassTrigg[i] = new TH1D(Form("hPi0MassTrigg%d", i), Form("hPi0MassTrigg%d", i), 301, 0.0, 300.0);
-        hPi0SideTrigg[i] = new TH1D(Form("hPi0SideTrigg%d", i), Form("hPi0SideTrigg%d", i), 301, 0.0, 300.0);
+        hPi0MassMassTrigg[i] = new TH1D(Form("hPi0MassMassTrigg%d", i), Form("hPi0MassMassTrigg%d", i), 301, 0.0, 300.0);
+        hPi0MassSideTrigg[i] = new TH1D(Form("hPi0MassSideTrigg%d", i), Form("hPi0MassSideTrigg%d", i), 301, 0.0, 300.0);
+        hPi0SideMassTrigg[i] = new TH1D(Form("hPi0SideMassTrigg%d", i), Form("hPi0SideMassTrigg%d", i), 301, 0.0, 300.0);
+        hPi0SideSideTrigg[i] = new TH1D(Form("hPi0SideSideTrigg%d", i), Form("hPi0SideSideTrigg%d", i), 301, 0.0, 300.0);
     }
 
-    TH1D *hPi0MassAssoc[nAssocBins];
-    TH1D *hPi0SideAssoc[nAssocBins];
+    TH1D *hPi0MassMassAssoc[nAssocBins];
+    TH1D *hPi0MassSideAssoc[nAssocBins];
+    TH1D *hPi0SideMassAssoc[nAssocBins];
+    TH1D *hPi0SideSideAssoc[nAssocBins];
     for (int i = 0; i < nAssocBins; i++) {
-        hPi0MassAssoc[i] = new TH1D(Form("hPi0MassAssoc%d", i), Form("hPi0MassAssoc%d", i), 301, 0.0, 300.0);
-        hPi0SideAssoc[i] = new TH1D(Form("hPi0SideAssoc%d", i), Form("hPi0SideAssoc%d", i), 301, 0.0, 300.0);
+        hPi0MassMassAssoc[i] = new TH1D(Form("hPi0MassMassAssoc%d", i), Form("hPi0MassMassAssoc%d", i), 301, 0.0, 300.0);
+        hPi0MassSideAssoc[i] = new TH1D(Form("hPi0MassSideAssoc%d", i), Form("hPi0MassSideAssoc%d", i), 301, 0.0, 300.0);
+        hPi0SideMassAssoc[i] = new TH1D(Form("hPi0SideMassAssoc%d", i), Form("hPi0SideMassAssoc%d", i), 301, 0.0, 300.0);
+        hPi0SideSideAssoc[i] = new TH1D(Form("hPi0SideSideAssoc%d", i), Form("hPi0SideSideAssoc%d", i), 301, 0.0, 300.0);
     }
 
     // Particle lists
@@ -308,9 +316,13 @@ int main(int argc, char *argv[]) {
 
         int nTriggMass = arrPion0MassTrigg->GetEntriesFast();
         int nTriggSide = arrPion0SideTrigg->GetEntriesFast();
+        int nAssocMass = arrPion0MassAssoc->GetEntriesFast();
+        int nAssocSide = arrPion0SideAssoc->GetEntriesFast();
 
-        if (nTriggMass>0) FillPionMasses(arrPhotonFor, hPi0MassTrigg, hPi0MassAssoc);
-        if (nTriggSide>0) FillPionMasses(arrPhotonFor, hPi0SideTrigg, hPi0SideAssoc);
+        if (nTriggMass>0 && nAssocMass>0) FillPionMasses(arrPhotonFor, hPi0MassMassTrigg, hPi0MassMassAssoc);
+        if (nTriggMass>0 && nAssocSide>0) FillPionMasses(arrPhotonFor, hPi0MassSideTrigg, hPi0MassSideAssoc);
+        if (nTriggSide>0 && nAssocMass>0) FillPionMasses(arrPhotonFor, hPi0SideMassTrigg, hPi0SideMassAssoc);
+        if (nTriggSide>0 && nAssocSide>0) FillPionMasses(arrPhotonFor, hPi0SideSideTrigg, hPi0SideSideAssoc);
 
         GetTriggAssocLists(arrPion0MassTrigg, arrPion0MassAssoc, listTriggMass, listAssocMass);
         GetTriggAssocLists(arrPion0SideTrigg, arrPion0SideAssoc, listTriggSide, listAssocSide);

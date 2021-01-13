@@ -30,25 +30,25 @@ void AnalyseCorrelations(TString sInputName = "output.root")
     TH2D *hCorrSideSide[nTriggBins][nAssocBins];
     for (int it = 0; it < nTriggBins; it++) {
         for (int ia = 0; ia < nAssocBins; ia++) {
-            hCorrReal[it][ia] = (TH2D*)fIn->Get(Form("hCorrFor%d:%d", it, ia)); hCorrReal[it][ia]->Rebin();
-            hCorrMassMass[it][ia] = (TH2D*)fIn->Get(Form("hCorrMassMass%d:%d", it, ia)); hCorrMassMass[it][ia]->Rebin();
-            hCorrMassSide[it][ia] = (TH2D*)fIn->Get(Form("hCorrMassSide%d:%d", it, ia)); hCorrMassSide[it][ia]->Rebin();
-            hCorrSideMass[it][ia] = (TH2D*)fIn->Get(Form("hCorrSideMass%d:%d", it, ia)); hCorrSideMass[it][ia]->Rebin();
-            hCorrSideSide[it][ia] = (TH2D*)fIn->Get(Form("hCorrSideSide%d:%d", it, ia)); hCorrSideSide[it][ia]->Rebin();
+            hCorrReal[it][ia] = (TH2D*)fIn->Get(Form("hCorrFor%d:%d", it, ia)); hCorrReal[it][ia]->Rebin(4);
+            hCorrMassMass[it][ia] = (TH2D*)fIn->Get(Form("hCorrMassMass%d:%d", it, ia)); hCorrMassMass[it][ia]->Rebin(4);
+            hCorrMassSide[it][ia] = (TH2D*)fIn->Get(Form("hCorrMassSide%d:%d", it, ia)); hCorrMassSide[it][ia]->Rebin(4);
+            hCorrSideMass[it][ia] = (TH2D*)fIn->Get(Form("hCorrSideMass%d:%d", it, ia)); hCorrSideMass[it][ia]->Rebin(4);
+            hCorrSideSide[it][ia] = (TH2D*)fIn->Get(Form("hCorrSideSide%d:%d", it, ia)); hCorrSideSide[it][ia]->Rebin(4);
         }
     }
 
     TH1D *hMassTrigg[nTriggBins];
     TH1D *hMassAssoc[nAssocBins];
     for (int it = 0; it < nTriggBins; it++) {
-        hMassTrigg[it] = (TH1D*)fIn->Get(Form("hPi0MassTrigg%d", it));
-        hMassTrigg[it]->Scale(1./nEvent);
+        hMassTrigg[it] = (TH1D*)fIn->Get(Form("hPiMass0MassTrigg%d", it));
+        //hMassTrigg[it]->Scale(1./nEvent);
         hMassTrigg[it]->Rebin();
     }
 
     for (int ia = 0; ia < nAssocBins; ia++) {
-        hMassAssoc[ia] = (TH1D*)fIn->Get(Form("hPi0MassAssoc%d", ia));
-        hMassAssoc[ia]->Scale(1./nEvent);
+        hMassAssoc[ia] = (TH1D*)fIn->Get(Form("hPi0MassMassAssoc%d", ia));
+        //hMassAssoc[ia]->Scale(1./nEvent);
         hMassAssoc[ia]->Rebin();
     }
 
@@ -135,29 +135,29 @@ void AnalyseCorrelations(TString sInputName = "output.root")
     }
 
     // Integrate to get the normalisations
-    double st, bt, sumt, sa, ba, suma;
+    double sumt = fFitTrigg->Integral(120, 150);
+    double sumthist = hMassTrigg[0]->Integral(120, 150);
+    double st = fPeakTrigg->Integral(120, 150);
+    double bt = fBgTrigg->Integral(120, 150);
+    double btside = fBgTrigg->Integral(40, 80) + fBgTrigg->Integral(210, 280);
 
-    sumt = fFitTrigg->Integral(110, 170);
-    st = fPeakTrigg->Integral(110, 170);
-    bt = fBgTrigg->Integral(110, 170);
-    double btside = fBgTrigg->Integral(55, 75) + fBgTrigg->Integral(210, 280);
+    double suma = fFitAssoc->Integral(120, 150);
+    double sumahist = hMassAssoc[0]->Integral(120, 150);
+    double sa = fPeakAssoc->Integral(120, 150);
+    double ba = fBgAssoc->Integral(120, 150);
+    double baside = fBgAssoc->Integral(40, 80) + fBgAssoc->Integral(210, 280);
 
-    suma = fFitAssoc->Integral(110, 170);
-    sa = fPeakAssoc->Integral(110, 170);
-    ba = fBgAssoc->Integral(110, 170);
-    double baside = fBgAssoc->Integral(55, 75) + fBgAssoc->Integral(210, 280);
-
-    double alphat, alphaa, betat, betaa;
-    alphat = st/sumt;
-    alphaa = sa/suma;
-    betat = bt/sumt;
-    betaa = ba/suma;
+    double alphat = st/sumt;
+    double alphaa = sa/suma;
+    double betat = bt/sumt;
+    double betaa = ba/suma;
 
     std::cout << "\nTrigger : " << std::endl;
     std::cout << "\tSignal : " << st << std::endl;
     std::cout << "\tBg (peak) : " << bt << std::endl;
     std::cout << "\tBg (side) : " << btside << std::endl;
     std::cout << "\tTotal : " << sumt << std::endl;
+    std::cout << "\tTotal (hist) : " << sumthist << std::endl;
     std::cout << "\n\talpha : " << alphat << std::endl;
     std::cout << "\tbeta : " << betat << std::endl;
     std::cout << "\nAssoc : " << std::endl;
@@ -165,9 +165,18 @@ void AnalyseCorrelations(TString sInputName = "output.root")
     std::cout << "\tBg (peak) : " << ba << std::endl;
     std::cout << "\tBg (side) : " << baside << std::endl;
     std::cout << "\tTotal : " << suma << std::endl;
+    std::cout << "\tTotal (hist) : " << sumahist << std::endl;
     std::cout << "\n\talpha : " << alphaa << std::endl;
     std::cout << "\tbeta : " << betaa << std::endl;
  
+    // Checks :
+    std::cout << "\nf_p,p = " << hCorrMassMass[0][0]->GetEntries() << std::endl;
+    std::cout << "StSa = " << alphat*sumthist*alphaa*sumahist << std::endl;
+    std::cout << "StBa = " << alphat*sumthist*betaa*sumahist << std::endl;
+    std::cout << "BtSa = " << betat*sumthist*alphaa*sumahist  << std::endl;
+    std::cout << "BtBa = " << betat*sumthist*betaa*sumahist  << std::endl;
+    std::cout << "sum = " << (alphat*alphaa + alphat*betaa + betat*alphaa + betat*betaa)*sumthist*sumahist << std::endl;
+
 
     // 2. Normalise correlation functions   
     for (int it = 0; it < nTriggBins; it++) {

@@ -315,8 +315,8 @@ int main(int argc, char *argv[]) {
         ReconstructPions(arrPhotonFor, arrPion0MassTrigg, arrPion0SideTrigg, arrPion0MassAssoc, arrPion0SideAssoc);
 
         int nTriggMass = arrPion0MassTrigg->GetEntriesFast();
-        int nTriggSide = arrPion0SideTrigg->GetEntriesFast();
         int nAssocMass = arrPion0MassAssoc->GetEntriesFast();
+        int nTriggSide = arrPion0SideTrigg->GetEntriesFast();
         int nAssocSide = arrPion0SideAssoc->GetEntriesFast();
 
         if (nTriggMass>0 && nAssocMass>0) FillPionMasses(arrPhotonFor, hPi0MassMassTrigg, hPi0MassMassAssoc);
@@ -489,13 +489,13 @@ void ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0MassTrigg, TC
             int iTriggBin = GetBin(triggPt, nTriggBins, pT);
             int iAssocBin = GetBin(assocPt, nAssocBins, pT);
             if (iTriggBin >= 0) { 
-                if (mass > 120. && mass < 150.) 
+                if (mass > 110. && mass < 160.) 
                     new ((*arrPi0MassTrigg)[nMassTrigg++]) TLorentzVector(lvSum);
                 if ((mass > 40. && mass < 80.) || (mass > 210. && mass < 280.)) 
                     new ((*arrPi0SideTrigg)[nSideTrigg++]) TLorentzVector(lvSum);
             }
             if (iAssocBin >= 0) {
-                if (mass > 120. && mass < 150.) 
+                if (mass > 110. && mass < 160.) 
                     new ((*arrPi0MassAssoc)[nMassAssoc++]) TLorentzVector(lvSum);
                 if ((mass > 40. && mass < 80.) || (mass > 210. && mass < 280.)) 
                     new ((*arrPi0SideAssoc)[nSideAssoc++]) TLorentzVector(lvSum);

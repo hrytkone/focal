@@ -8,7 +8,7 @@ double FitPeak(double *x, double *p);
 double FitBackground(double *x, double *p);
 double FitFunction(double *x, double *p);
 
-void AnalyseCorrelations(TString sInputName = "output.root")
+void AnalyseCorrelations2(TString sInputName = "output.root")
 {
 
     gStyle->SetOptStat(0);
@@ -38,22 +38,35 @@ void AnalyseCorrelations(TString sInputName = "output.root")
         }
     }
 
-    TH1D *hMassTrigg[nTriggBins];
-    TH1D *hSideTrigg[nTriggBins];
-    TH1D *hMassAssoc[nAssocBins];
-    TH1D *hSideAssoc[nAssocBins];
+    double nTriggEvent = hCounter->GetBinContent(4);
+    TH1D *hMassMassTrigg[nTriggBins];
+    TH1D *hMassSideTrigg[nTriggBins];
+    TH1D *hSideMassTrigg[nTriggBins];
+    TH1D *hSideSideTrigg[nTriggBins];
+    TH1D *hMassMassAssoc[nAssocBins];
+    TH1D *hMassSideAssoc[nAssocBins];
+    TH1D *hSideMassAssoc[nAssocBins];
+    TH1D *hSideSideAssoc[nAssocBins];
     for (int it = 0; it < nTriggBins; it++) {
-        hMassTrigg[it] = (TH1D*)fIn->Get(Form("hPi0MassTrigg%d", it));
-        //hSideTrigg[it] = (TH1D*)fIn->Get(Form("hPi0SideTrigg%d", it));
-        //hMassTrigg[it]->Scale(1./nEvent);
-        hMassTrigg[it]->Rebin();
+        hMassMassTrigg[it] = (TH1D*)fIn->Get(Form("hPi0MassMassTrigg%d", it)); //hMassMassTrigg[it]->Rebin();
+        hMassMassTrigg[it]->Scale(1./nTriggEvent);
+        hMassSideTrigg[it] = (TH1D*)fIn->Get(Form("hPi0MassSideTrigg%d", it)); //hMassSideTrigg[it]->Rebin();
+        hMassSideTrigg[it]->Scale(1./nTriggEvent);
+        hSideMassTrigg[it] = (TH1D*)fIn->Get(Form("hPi0SideMassTrigg%d", it)); //hSideMassTrigg[it]->Rebin();
+        hSideMassTrigg[it]->Scale(1./nTriggEvent);
+        hSideSideTrigg[it] = (TH1D*)fIn->Get(Form("hPi0SideSideTrigg%d", it)); //hSideSideTrigg[it]->Rebin();
+        hSideSideTrigg[it]->Scale(1./nTriggEvent);
     }
 
     for (int ia = 0; ia < nAssocBins; ia++) {
-        hMassAssoc[ia] = (TH1D*)fIn->Get(Form("hPi0MassAssoc%d", ia));
-        //hSideAssoc[ia] = (TH1D*)fIn->Get(Form("hPi0SideAssoc%d", ia));
-        //hMassAssoc[ia]->Scale(1./nEvent);
-        hMassAssoc[ia]->Rebin();
+        hMassMassAssoc[ia] = (TH1D*)fIn->Get(Form("hPi0MassMassAssoc%d", ia)); //hMassMassAssoc[ia]->Rebin();
+        hMassMassAssoc[ia]->Scale(1./nTriggEvent);
+        hMassSideAssoc[ia] = (TH1D*)fIn->Get(Form("hPi0MassSideAssoc%d", ia)); //hMassSideAssoc[ia]->Rebin();
+        hMassSideAssoc[ia]->Scale(1./nTriggEvent);
+        hSideMassAssoc[ia] = (TH1D*)fIn->Get(Form("hPi0SideMassAssoc%d", ia)); //hSideMassAssoc[ia]->Rebin();
+        hSideMassAssoc[ia]->Scale(1./nTriggEvent);
+        hSideSideAssoc[ia] = (TH1D*)fIn->Get(Form("hPi0SideSideAssoc%d", ia)); //hSideSideAssoc[ia]->Rebin();
+        hSideSideAssoc[ia]->Scale(1./nTriggEvent);
     }
 
     // ---------------
@@ -75,13 +88,14 @@ void AnalyseCorrelations(TString sInputName = "output.root")
     std::cout << "\tTriggers per event (all): " << hCounter->GetBinContent(5)/nEvent << std::endl;
     std::cout << "\tTriggers per event (with trigger): " << hCounter->GetBinContent(5)/hCounter->GetBinContent(4) << std::endl;
     std::cout << "\tAssociated per trigger: " << hCounter->GetBinContent(6)/hCounter->GetBinContent(5) << "\n" << std::endl;
+    
 
     // 1. Fit mass distributions (to get parameters for normalisations)
-    TF1 *fFitTrigg = new TF1("fFitTrigg", FitFunction, 20, 300, 9);
-    fFitTrigg->SetParameters(0., 0., 0., 0., 0., 135., 135., 30., 60.);
-    fFitTrigg->SetParLimits(5, 130., 140.);
-    fFitTrigg->SetParLimits(6, 130., 140.);
-    fFitTrigg->SetParLimits(7, 0., 30.);
+    TF1 *fFitTrigg = new TF1("fFitTrigg", FitFunction, 20, 300, 6);
+    //fFitTrigg->SetParameters(0., 0., 0., 0., 0., 135., 30., 60.);
+    //fFitTrigg->SetParameters(0., 0., 0.1, 1.0, 135.0);
+    fFitTrigg->SetParLimits(4, 5., 20.);
+    fFitTrigg->SetParLimits(5, 130, 140);
     fFitTrigg->SetNpx(1000);
     
     TF1 *fPeakTrigg = new TF1("fPeakTrigg", FitPeak, 20, 300, 6);
@@ -96,28 +110,23 @@ void AnalyseCorrelations(TString sInputName = "output.root")
     double parTrigg[9];
     TCanvas *cMassTrigg = new TCanvas("cMassTrigg", "cMassTrigg");
     for (int it = 0; it < nTriggBins; it++) {
-        hMassTrigg[it]->Fit("fFitTrigg", "R");
+        hMassMassTrigg[it]->Fit("fFitTrigg", "R");
         fFitTrigg->GetParameters(parTrigg);
         fBgTrigg->SetParameters(parTrigg);
         fPeakTrigg->SetParameters(&parTrigg[3]);
 
-        hMassTrigg[it]->SetTitle(Form("Trigger invariant mass, %.1f < p_{T,t} < %.1f GeV/c", triggPt[it], triggPt[it+1]));
+        hMassMassTrigg[it]->SetTitle(Form("Trigger invariant mass, %.1f < p_{T,t} < %.1f GeV/c", triggPt[it], triggPt[it+1]));
 
-        hMassTrigg[it]->Draw("HIST");
+        hMassMassTrigg[it]->Draw("HIST");
         fFitTrigg->Draw("SAME");
         fBgTrigg->Draw("SAME");
         fPeakTrigg->Draw("SAME");
-        
-        /**TCanvas *cSideTrigg = new TCanvas("cSideTrigg", "cSideTrigg");
-        hSideTrigg[it]->SetTitle(Form("Trigger invariant mass (side), %.1f < p_{T,t} < %.1f GeV/c", triggPt[it], triggPt[it+1]));
-        hSideTrigg[it]->Draw("HIST");**/
     }
 
-    TF1 *fFitAssoc = new TF1("fFitAssoc", FitFunction, 10, 300, 9);
-    fFitAssoc->SetParameters(-0.1, 0.1, 0., 0., 0., 135., 135., 30., 60.);
-    fFitAssoc->SetParLimits(5, 130., 140.);
-    fFitAssoc->SetParLimits(6, 130., 140.);
-    //fFitAssoc->SetParLimits(8, 0., 60.);
+    TF1 *fFitAssoc = new TF1("fFitAssoc", FitFunction, 10, 300, 6);
+    //fFitAssoc->SetParameters(-0.1, 0.1, 0.1, 1., 1., 135., 10., 15.);
+    fFitAssoc->SetParLimits(4, 5., 30.);
+    fFitAssoc->SetParLimits(5, 130, 140);
     fFitAssoc->SetNpx(1000);
 
     TF1 *fPeakAssoc = new TF1("fPeakAssoc", FitPeak, 10, 300, 6);
@@ -132,58 +141,125 @@ void AnalyseCorrelations(TString sInputName = "output.root")
     double parAssoc[9];
     TCanvas *cMassAssoc = new TCanvas("cMassAssoc", "cMassAssoc");
     for (int ia = 0; ia < nAssocBins; ia++) {
-        hMassAssoc[ia]->Fit("fFitAssoc", "R");
+        hMassMassAssoc[ia]->Fit("fFitAssoc", "R");
         fFitAssoc->GetParameters(parAssoc);
         fBgAssoc->SetParameters(parAssoc);
         fPeakAssoc->SetParameters(&parAssoc[3]);
         
-        hMassAssoc[ia]->SetTitle(Form("Associated invariant mass, %.1f < p_{T,a} < %.1f GeV/c", assocPt[ia], assocPt[ia+1]));
+        hMassMassAssoc[ia]->SetTitle(Form("Associated invariant mass, %.1f < p_{T,a} < %.1f GeV/c", assocPt[ia], assocPt[ia+1]));
         
-        hMassAssoc[ia]->Draw("HIST");
+        hMassMassAssoc[ia]->Draw("HIST");
         fFitAssoc->Draw("SAME");
         fBgAssoc->Draw("SAME");
         fPeakAssoc->Draw("SAME");
-        
-        /**TCanvas *cSideAssoc = new TCanvas("cSideAssoc", "cSideAssoc");
-        hSideAssoc[ia]->SetTitle(Form("Associated invariant mass (side), %.1f < p_{T,a} < %.1f GeV/c", assocPt[ia], assocPt[ia+1]));
-        hSideAssoc[ia]->Draw("HIST");**/
     }
+    
+    //TF1 *fFitTriggMassSide = new TF1("fFitTriggMassSide", FitFunction, 20, 300, 8);
+    TF1 *fFitTriggMassSide = new TF1("fFitTriggMassSide", FitFunction, 20, 300, 6);
+    //fFitTriggMassSide->SetParameters(0., 0., 0., 0., 0., 135., 1., 1.);
+    fFitTriggMassSide->SetParLimits(4, 5., 20.);
+    fFitTriggMassSide->SetParLimits(5, 130, 140);
+    fFitTriggMassSide->SetNpx(1000);
+    
+    TF1 *fPeakTriggMassSide = new TF1("fPeakTriggMassSide", FitPeak, 20, 300, 6);
+    fPeakTriggMassSide->SetLineColor(kBlue);
+    fPeakTriggMassSide->SetNpx(1000);
+
+    TF1 *fBgTriggMassSide = new TF1("fBgTriggMassSide", FitBackground, 20, 300, 3);
+    fBgTriggMassSide->SetLineColor(kBlack);
+    fBgTriggMassSide->SetLineStyle(kDashed);
+    fBgTriggMassSide->SetNpx(1000);
+
+    double parTriggMassSide[9];
+    TCanvas *cMassTriggMassSide = new TCanvas("cMassTriggMassSide", "cMassTriggMassSide");
+    for (int it = 0; it < nTriggBins; it++) {
+        hMassSideTrigg[it]->Fit("fFitTriggMassSide", "R");
+        fFitTriggMassSide->GetParameters(parTriggMassSide);
+        fBgTriggMassSide->SetParameters(parTriggMassSide);
+        fPeakTriggMassSide->SetParameters(&parTriggMassSide[3]);
+
+        hMassSideTrigg[it]->SetTitle(Form("Trigger invariant mass (mass-side), %.1f < p_{T,t} < %.1f GeV/c", triggPt[it], triggPt[it+1]));
+
+        hMassSideTrigg[it]->Draw("HIST");
+        fFitTriggMassSide->Draw("SAME");
+        fBgTriggMassSide->Draw("SAME");
+        fPeakTriggMassSide->Draw("SAME");
+    }
+   
+    //TF1 *fFitAssocSideMass = new TF1("fFitAssocSideMass", FitFunction, 10, 300, 8);
+    TF1 *fFitAssocSideMass = new TF1("fFitAssocSideMass", FitFunction, 10, 300, 6);
+    fFitAssocSideMass->SetParLimits(4, 5, 20);
+    fFitAssocSideMass->SetParLimits(5, 130, 140);
+    //fFitAssocSideMass->SetParameters(-0.1, 0.1, 0., 0., 0., 135., 30., 60.);
+    fFitAssocSideMass->SetNpx(1000);
+
+    TF1 *fPeakAssocSideMass = new TF1("fPeakAssocSideMass", FitPeak, 10, 300, 6);
+    fPeakAssocSideMass->SetLineColor(kBlue);
+    fPeakAssocSideMass->SetNpx(1000);
+
+    TF1 *fBgAssocSideMass = new TF1("fBgAssocSideMass", FitBackground, 10, 300, 3);
+    fBgAssocSideMass->SetLineColor(kBlack);
+    fBgAssocSideMass->SetLineStyle(kDashed);
+    fBgAssocSideMass->SetNpx(1000);
+
+    double parAssocSideMass[9];
+    TCanvas *cMassAssocSideMass = new TCanvas("cMassAssocSideMass", "cMassAssocSideMass");
+    for (int ia = 0; ia < nAssocBins; ia++) {
+        hSideMassAssoc[ia]->Fit("fFitAssocSideMass", "R");
+        fFitAssocSideMass->GetParameters(parAssocSideMass);
+        fBgAssocSideMass->SetParameters(parAssocSideMass);
+        fPeakAssocSideMass->SetParameters(&parAssocSideMass[3]);
         
-    // Integrate to get the normalisations
-    double sumt = fFitTrigg->Integral(120, 150);
-    double sumthist = hMassTrigg[0]->Integral(120, 150);
-    double st = fPeakTrigg->Integral(120, 150);
-    double bt = fBgTrigg->Integral(120, 150);
-    //double btside = hSideTrigg[0]->Integral(40, 80) + hSideTrigg[0]->Integral(210, 280);
+        hSideMassAssoc[ia]->SetTitle(Form("Associated invariant mass (side-mass), %.1f < p_{T,a} < %.1f GeV/c", assocPt[ia], assocPt[ia+1]));
+        
+        hSideMassAssoc[ia]->Draw("HIST");
+        fFitAssocSideMass->Draw("SAME");
+        fBgAssocSideMass->Draw("SAME");
+        fPeakAssocSideMass->Draw("SAME");
+    }
 
-    double suma = fFitAssoc->Integral(120, 150);
-    double sumahist = hMassAssoc[0]->Integral(120, 150);
-    double sa = fPeakAssoc->Integral(120, 150);
-    double ba = fBgAssoc->Integral(120, 150);
-    //double baside = hSideAssoc[0]->Integral(40, 80) + hSideAssoc[0]->Integral(210, 280);
+    // Integrate to get the normalisation
+    double a1 = fPeakTrigg->Integral(120, 150);
+    double b1 = fBgTrigg->Integral(120, 150);
+    double c1 = fPeakAssoc->Integral(120, 150);
+    double d1 = fBgAssoc->Integral(120, 150);
 
-    double alphat = st/sumt;
-    double alphaa = sa/suma;
-    double betat = bt/sumt;
-    double betaa = ba/suma;
+    double a2 = fPeakTriggMassSide->Integral(120, 150);
+    double b2 = fBgTriggMassSide->Integral(120, 150);
+    double f2 = hMassSideAssoc[0]->Integral(40, 80) + hMassSideAssoc[0]->Integral(210, 280);
 
-    std::cout << "\nTrigger : " << std::endl;
-    std::cout << "\tSignal : " << st << std::endl;
-    std::cout << "\tBg (peak) : " << bt << std::endl;
-    //std::cout << "\tBg (side) : " << btside << std::endl;
-    std::cout << "\tTotal : " << sumt << std::endl;
-    std::cout << "\tTotal (hist) : " << sumthist << std::endl;
-    std::cout << "\n\talpha : " << alphat << std::endl;
-    std::cout << "\tbeta : " << betat << std::endl;
-    std::cout << "\nAssoc : " << std::endl;
-    std::cout << "\tSignal : " << sa << std::endl;
-    std::cout << "\tBg (peak) : " << ba << std::endl;
-    //std::cout << "\tBg (side) : " << baside << std::endl;
-    std::cout << "\tTotal : " << suma << std::endl;
-    std::cout << "\tTotal (hist) : " << sumahist << std::endl;
-    std::cout << "\n\talpha : " << alphaa << std::endl;
-    std::cout << "\tbeta : " << betaa << std::endl;
+    double e3 = hSideMassTrigg[0]->Integral(40, 80) + hSideMassTrigg[0]->Integral(210, 280);
+    double c3 = fPeakAssocSideMass->Integral(120, 150);
+    double d3 = fBgAssocSideMass->Integral(120, 150);
+   
+    double e4 = hSideSideTrigg[0]->Integral(40, 80) + hSideSideTrigg[0]->Integral(210, 280);
+    double f4 = hSideSideAssoc[0]->Integral(40, 80) + hSideSideAssoc[0]->Integral(210, 280);
 
+    double n1 = (a1*d1)/(a2*f2);
+    double n2 = (b1*c1)/(e3*c3);
+    double n3 = (b1*d1)/(e4*f4)*((c1*d3)/(d1*c3) + (a1*b2)*(a2*b1) - 1);
+
+    std::cout << "\nMass-mass : " << std::endl;
+    std::cout << "\ta1 : " << a1 << std::endl;
+    std::cout << "\tb1 : " << b1 << std::endl;
+    std::cout << "\tc1 : " << c1 << std::endl;
+    std::cout << "\td1 : " << d1 << std::endl;
+    std::cout << "\nMass-side : " << std::endl;
+    std::cout << "\ta2 : " << a2 << std::endl;
+    std::cout << "\tb2 : " << b2 << std::endl;
+    std::cout << "\tf2 : " << f2 << std::endl;
+    std::cout << "\nSide-mass : " << std::endl;
+    std::cout << "\te3 : " << e3 << std::endl;
+    std::cout << "\tc3 : " << c3 << std::endl;
+    std::cout << "\td3 : " << d3 << std::endl;
+    std::cout << "\nSide-side : " << std::endl;
+    std::cout << "\te4 : " << e4 << std::endl;
+    std::cout << "\tf4 : " << f4 << std::endl;
+    std::cout << "\nNormalisations : " << std::endl;
+    std::cout << "\tn1 : " << n1 << std::endl;
+    std::cout << "\tn2 : " << n2 << std::endl;
+    std::cout << "\tn3 : " << n3 << std::endl;
+    
     // 2. Normalise correlation functions   
     for (int it = 0; it < nTriggBins; it++) {
         for (int ia = 0; ia < nAssocBins; ia++) {        
@@ -202,26 +278,22 @@ void AnalyseCorrelations(TString sInputName = "output.root")
 
             TH1D *hCorrMassMassProj = hCorrMassMass[it][ia]->ProjectionX();
             //hCorrMassMassProj->Scale(1.0/nPairMassMass);
-            hCorrMassMassProj->Scale(1/(alphat*alphaa));
             hCorrMassMassProj->SetLineColor(kBlue);
             hCorrMassMassProj->SetTitle(Form("%.1f < p_{T,t} < %.1f GeV/c, %.1f < p_{T,a} < %.1f GeV/c; #Delta#phi; 1/N_{pair}dN/d#Delta#phi", triggPt[it], triggPt[it+1], assocPt[ia], assocPt[ia+1]));
             
             TH1D *hCorrMassSideProj = hCorrMassSide[it][ia]->ProjectionX();
             //hCorrMassSideProj->Scale(1.0/nPairMassSide);
-            hCorrMassSideProj->Scale(betaa/(alphat*alphaa));
-            //hCorrMassSideProj->Scale(ba/baside);
+            hCorrMassSideProj->Scale(n1);
             hCorrMassSideProj->SetLineColor(kRed);
             
             TH1D *hCorrSideMassProj = hCorrSideMass[it][ia]->ProjectionX();
             //hCorrSideMassProj->Scale(1.0/nPairSideMass);
-            hCorrSideMassProj->Scale(betat/(alphat*alphaa));
-            //hCorrSideMassProj->Scale(bt/btside);
+            hCorrSideMassProj->Scale(n2);
             hCorrSideMassProj->SetLineColor(kBlack);
             
             TH1D *hCorrSideSideProj = hCorrSideSide[it][ia]->ProjectionX();
             //hCorrSideSideProj->Scale(1.0/nPairSideSide);
-            hCorrSideSideProj->Scale((betat*betaa)/(alphat*alphaa));
-            //hCorrSideSideProj->Scale((bt*ba)/(btside*baside));
+            hCorrSideSideProj->Scale(n3);
             hCorrSideSideProj->SetLineColor(kGray);
 
             leg1->AddEntry(hCorrMassMassProj, "f_{mass,mass}", "l");
@@ -280,17 +352,32 @@ void AnalyseCorrelations(TString sInputName = "output.root")
 // |   Functions   |
 // -----------------
 
-double FitPeak(double *x, double *p)
+/**double FitPeak(double *x, double *p)
 {   
     double c1 = p[0];
     double c2 = p[1];
-    double mu1 = p[2];
-    double mu2 = p[3];
-    double sigma1 = p[4];
-    double sigma2 = p[5];
+    double mu = p[2];
+    double sigma1 = p[3];
+    double sigma2 = p[4];
 
-    return c1*TMath::Exp(-(x[0]-mu1)*(x[0]-mu1)/(2*sigma1*sigma1)) + c2*TMath::Exp(-(x[0]-mu2)*(x[0]-mu2)/(2*sigma2*sigma2));
+    return c1*TMath::Exp(-(x[0]-mu)*(x[0]-mu)/(2*sigma1*sigma1)) + c2*TMath::Exp(-(x[0]-mu)*(x[0]-mu)/(2*sigma2*sigma2));
+}**/
+
+double FitPeak(double *x, double *p) 
+{
+    double b = p[0];
+    double c = p[1];
+    double m = p[2];
+    return (0.5*b*c/TMath::Pi()) / TMath::Max(1.e-10, (x[0]-m)*(x[0]-m)+ .25*c*c);
 }
+
+/**double FitPeak(double *x, double *p)
+{
+    double b = p[0];
+    double mu = p[1];
+
+    return TMath::Exp(-TMath::Abs((x[0]-mu)/b))/(2*b);
+}**/
 
 double FitBackground(double *x, double *p)
 {
@@ -305,3 +392,4 @@ double FitFunction(double *x, double *p)
 {
     return FitBackground(x, p) + FitPeak(x, &p[3]);
 }
+

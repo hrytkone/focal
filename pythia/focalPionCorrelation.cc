@@ -162,6 +162,15 @@ int main(int argc, char *argv[]) {
 
     TH1D *hMassRealPions = new TH1D("hMassRealPions", "hMassRealPions", 301, 0.0, 300.0);
     TH1D *hMassFakePions = new TH1D("hMassFakePions", "hMassFakePions", 301, 0.0, 300.0);
+    
+    TH2D *hCorrSS = new TH2D("hCorrSS", "hCorrSS", nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange/2., etaFocalRange/2.);
+    hCorrSS->Sumw2();
+    TH2D *hCorrSB = new TH2D("hCorrSB", "hCorrSB", nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange/2., etaFocalRange/2.);
+    hCorrSB->Sumw2();
+    TH2D *hCorrBS = new TH2D("hCorrBS", "hCorrBS", nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange/2., etaFocalRange/2.);
+    hCorrBS->Sumw2();
+    TH2D *hCorrBB = new TH2D("hCorrBB", "hCorrBB", nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange/2., etaFocalRange/2.);
+    hCorrBB->Sumw2();
 
     TH1D *hPi0MassTrigg[nTriggBins];
     for (int i = 0; i < nTriggBins; i++) {
@@ -215,6 +224,9 @@ int main(int argc, char *argv[]) {
         arrPion0SideAssoc->Clear();
 
         std::vector<std::vector<TLorentzVector>> gammapairs;
+        std::vector<TLorentzVector> gammas;
+        std::vector<int> gammaMotherPid;
+        std::vector<int> gammaMotherId;
         // Collect particles of interest
         for (int iPart = 0; iPart < pythia.event.size(); iPart++) {
 
@@ -236,7 +248,13 @@ int main(int argc, char *argv[]) {
                 }
                 if (IsFocalAcceptance(eta)) {
                     new((*arrPhotonFor)[nPhotonFor++]) TLorentzVector(lvSmeared);
-                    hPhotonPtFor->Fill(TMath::Sqrt(px*px + py*py)); 
+                    hPhotonPtFor->Fill(TMath::Sqrt(px*px + py*py));
+
+                    int motherId = pythia.event[iPart].mother1();
+                    int motherPid = pythia.event[motherId].id();
+                    gammas.push_back(lvSmeared);
+                    gammaMotherPid.push_back(motherPid);
+                    gammaMotherId.push_back(motherId);
                 }
             }
 
@@ -286,7 +304,55 @@ int main(int argc, char *argv[]) {
                 }
             }
         }
-      
+     
+        std::vector<TLorentzVector> candidate;
+        std::vector<bool> isPion;
+        int itrigg = 0;
+        double triggpt = 0;
+        for (int i = 1; i < gammas.size(); i++) {
+            TLorentzVector lvGamma1 = gammas[i];
+            for (int j = 0; j < i; j++) {
+                TLorentzVector lvGamma2 = gammas[j];
+                TLorentzVector lvSum = lvGamma1 + lvGamma2;
+                double mass = 1000.*lvSum.M();
+                double pt = lvSum.Pt();
+                if (pt < 3.0) continue;
+                if (mass > 110. && mass < 160.) {
+                    if (pt>triggpt) itrigg = candidate.size();
+                    candidate.push_back(lvSum);
+                    if (gammaMotherPid[i]==111 && (gammaMotherId[i]==gammaMotherId[j])) {
+                        isPion.push_back(true);       
+                    } else {
+                        isPion.push_back(false);       
+                    }
+                }
+            }
+        }
+
+        if (!candidate.size()) continue;
+
+        TLorentzVector lvTrigg = candidate[itrigg];
+        double phitrigg = lvTrigg.Phi();
+        double etatrigg = lvTrigg.Eta();
+        bool isTriggPion = isPion[itrigg];
+        for (int i = 0; i < candidate.size(); i++) {
+            if (i==itrigg) continue;
+            TLorentzVector lvAssoc = candidate[i];
+            double phiassoc = lvAssoc.Phi();
+            double etaassoc = lvAssoc.Eta();
+            bool isAssocPion = isPion[i];
+            if (isTriggPion && isAssocPion) {
+                hCorrSS->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
+            } else if (isTriggPion && !isAssocPion) {
+                hCorrSB->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
+            } else if (!isTriggPion && isAssocPion) {
+                hCorrBS->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
+            } else {
+                hCorrBB->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
+            }
+
+        } 
+
         // Fill fake mass histogram 
         for (int i = 0; i < gammapairs.size(); i++) {
             TLorentzVector lvGamma1 = gammapairs[i][0];
@@ -334,9 +400,9 @@ int main(int argc, char *argv[]) {
 
         if (!realPions.size()) continue;
 
-        TLorentzVector lvTrigg = realPions[itriggreal];
-        double phitrigg = lvTrigg.Phi();
-        double etatrigg = lvTrigg.Eta();
+        lvTrigg = realPions[itriggreal];
+        phitrigg = lvTrigg.Phi();
+        etatrigg = lvTrigg.Eta();
         for (int i = 0; i < realPions.size(); i++) {
             if (i==itriggreal) continue;
             TLorentzVector lvAssoc = realPions[i];

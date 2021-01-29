@@ -163,6 +163,8 @@ int main(int argc, char *argv[]) {
     TH1D *hMassRealPions = new TH1D("hMassRealPions", "hMassRealPions", 301, 0.0, 300.0);
     TH1D *hMassFakePions = new TH1D("hMassFakePions", "hMassFakePions", 301, 0.0, 300.0);
     
+    TH2D *hCorrMeasured = new TH2D("hCorrMeasured", "hCorrMeasured", nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange/2., etaFocalRange/2.);
+    hCorrMeasured->Sumw2();
     TH2D *hCorrSS = new TH2D("hCorrSS", "hCorrSS", nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange/2., etaFocalRange/2.);
     hCorrSS->Sumw2();
     TH2D *hCorrSB = new TH2D("hCorrSB", "hCorrSB", nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange/2., etaFocalRange/2.);
@@ -341,6 +343,7 @@ int main(int argc, char *argv[]) {
             double phiassoc = lvAssoc.Phi();
             double etaassoc = lvAssoc.Eta();
             bool isAssocPion = isPion[i];
+            hCorrMeasured->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
             if (isTriggPion && isAssocPion) {
                 hCorrSS->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
             } else if (isTriggPion && !isAssocPion) {

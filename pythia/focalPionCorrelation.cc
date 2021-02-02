@@ -399,7 +399,7 @@ bool IsFocalAcceptance(double eta, double etaMin, double etaMax)
 
 bool IsMassWindow(double mass)
 {
-    return (mass > 120. && mass < 150.) ? true : false;
+    return (mass > 110. && mass < 160.) ? true : false;
 }
 
 bool IsSideband(double mass)

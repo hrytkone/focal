@@ -42,7 +42,7 @@ void PlotCorrelations(TString sInputName = "output.root")
 
     gStyle->SetOptStat(0);
     
-    TLegend *leg = new TLegend(0.38, 0.68, 0.58, 0.85);
+    TLegend *leg = new TLegend(0.38, 0.78, 0.58, 0.85);
     leg->SetFillStyle(0); leg->SetBorderSize(0); leg->SetTextSize(0.05);
     
     TCanvas *c1 = new TCanvas("c1", "c1", 1200, 600);

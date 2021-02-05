@@ -96,7 +96,6 @@ int main(int argc, char *argv[]) {
 
     // Basic histograms
     TH1D *hCounter = new TH1D("hCounter", "hCounter", 10, 0, 10);
-    TH1D *hCounterReal = new TH1D("hNtrigg", "hNtrigg", 6, 0, 6);
     
     for (int i = 0; i <= nIncPtBin; i++) logBinsX[i] = limMin*exp(i*logBW);
     
@@ -345,23 +344,40 @@ int main(int argc, char *argv[]) {
             double etaassoc = lvAssoc.Eta();
             bool isAssocPion = isPion[i];
             hCorrMeasured->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
-            if (isTriggPion) hCounterReal->Fill(0.5);
-            if (!isTriggPion) hCounterReal->Fill(1.5);
             if (isTriggPion && isAssocPion) {
-                hCounterReal->Fill(2.5);
                 hCorrSS->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
             } else if (isTriggPion && !isAssocPion) {
-                hCounterReal->Fill(3.5);
                 hCorrSB->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
             } else if (!isTriggPion && isAssocPion) {
-                hCounterReal->Fill(4.5);
                 hCorrBS->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
             } else {
-                hCounterReal->Fill(5.5);
                 hCorrBB->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
+        if (candidate.size()) {
+            TLorentzVector lvTrigg = candidate[itrigg];
+            double phitrigg = lvTrigg.Phi();
+            double etatrigg = lvTrigg.Eta();
+            bool isTriggPion = isPion[itrigg];
+	    if (isPion[itrigg]) hCounter->Fill(3.5); //Rec real pi0 triggers
+	    if (!isPion[itrigg]) hCounter->Fill(4.5); //Rec fake pi0 triggers
+            for (int i = 0; i < candidate.size(); i++) {
+                if (i==itrigg) continue;
+                TLorentzVector lvAssoc = candidate[i];
+                double phiassoc = lvAssoc.Phi();
+                double etaassoc = lvAssoc.Eta();
+                bool isAssocPion = isPion[i];
+                hCorrMeasured->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
+                if (isTriggPion && isAssocPion) {
+                    hCorrSS->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
+                } else if (isTriggPion && !isAssocPion) {
+                    hCorrSB->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
+                } else if (!isTriggPion && isAssocPion) {
+                    hCorrBS->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
+                } else {
+                    hCorrBB->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
+                }
+>>>>>>> 167da341db2d4a8e9fe19f55bf574ce168cc706e
             }
-
-        } 
+	}
 
         // Fill fake mass histogram 
         for (int i = 0; i < gammapairs.size(); i++) {
@@ -408,47 +424,42 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        if (!realPions.size()) continue;
-
-        lvTrigg = realPions[itriggreal];
-        phitrigg = lvTrigg.Phi();
-        etatrigg = lvTrigg.Eta();
-        for (int i = 0; i < realPions.size(); i++) {
-            if (i==itriggreal) continue;
-            TLorentzVector lvAssoc = realPions[i];
-            //if (lvAssoc.Pt()>lvTrigg.Pt()) continue;
-            double phiassoc = lvAssoc.Phi();
-            double etaassoc = lvAssoc.Eta();
-            hCorrRealPions->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc); 
-        } 
+        if (realPions.size()) {
+	    hCounter->Fill(1.5); //real triggers
+	    TLorentzVector lvTrigg = realPions[itriggreal];
+            double phitrigg = lvTrigg.Phi();
+            double etatrigg = lvTrigg.Eta();
+            for (int i = 0; i < realPions.size(); i++) {
+                if (i==itriggreal) continue;
+                TLorentzVector lvAssoc = realPions[i];
+                //if (lvAssoc.Pt()>lvTrigg.Pt()) continue;
+                double phiassoc = lvAssoc.Phi();
+                double etaassoc = lvAssoc.Eta();
+                hCorrRealPions->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc); 
+	    } 
+	}
         
-        if (!fakePions.size()) continue;
-
-        lvTrigg = fakePions[itriggfake];
-        phitrigg = lvTrigg.Phi();
-        etatrigg = lvTrigg.Eta();
-        for (int i = 0; i < fakePions.size(); i++) {
-            if (i==itriggfake) continue;
-            TLorentzVector lvAssoc = fakePions[i];
-            //if (lvAssoc.Pt()>lvTrigg.Pt()) continue;
-            double phiassoc = lvAssoc.Phi();
-            double etaassoc = lvAssoc.Eta();
-            hCorrFakePions->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc); 
-        }
-
-        if (nPion0Mid>0) hCounter->Fill(1.5); // number of events with pion0 in mid rapidity
-        if (nPion0For>0) hCounter->Fill(2.5); // number of events with pion0 in forward rapidity 
+        if (fakePions.size()) {
+	    hCounter->Fill(2.5); //measured triggers
+            TLorentzVector lvTrigg = fakePions[itriggfake];
+            double phitrigg = lvTrigg.Phi();
+            double etatrigg = lvTrigg.Eta();
+            for (int i = 0; i < fakePions.size(); i++) {
+                if (i==itriggfake) continue;
+                TLorentzVector lvAssoc = fakePions[i];
+                //if (lvAssoc.Pt()>lvTrigg.Pt()) continue;
+                double phiassoc = lvAssoc.Phi();
+                double etaassoc = lvAssoc.Eta();
+                hCorrFakePions->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc); 
+            }
+	}
 
         // Real pions
-        std::vector<int> listTriggMid, listTriggFor, listTriggChargedMid, listTriggChargedFor;
+        /**std::vector<int> listTriggMid, listTriggFor, listTriggChargedMid, listTriggChargedFor;
         std::vector<int> listAssocMid, listAssocFor, listAssocChargedMid, listAssocChargedFor;
         
         GetTriggAssocLists(arrPion0Mid, arrPion0Mid, listTriggMid, listAssocMid);
         GetTriggAssocLists(arrPion0For, arrPion0For, listTriggFor, listAssocFor);
-        
-        if (listTriggFor.size()>0) hCounter->Fill(3.5); // number of events with trigger pion0 in forward rapidity 
-        if (listTriggFor.size()>0) hCounter->Fill(4.5, (int)listTriggFor.size()); // number of real trigger pion0 in forward rapidity 
-        if (listTriggFor.size() && listAssocFor.size()>0) hCounter->Fill(5.5, (int)listAssocFor.size()); // number of real assoc pion0 in forward rapidity 
         
         DoCorrelations(arrPion0Mid, arrPion0Mid, listTriggMid, listAssocMid, hCorrMid);
         DoCorrelations(arrPion0For, arrPion0For, listTriggFor, listAssocFor, hCorrFor);
@@ -471,7 +482,7 @@ int main(int argc, char *argv[]) {
         DoCorrelations(arrPion0MassTrigg, arrPion0MassAssoc, listTriggMass, listAssocMass, hCorrMassMass);
         DoCorrelations(arrPion0MassTrigg, arrPion0SideAssoc, listTriggMass, listAssocSide, hCorrMassSide);
         DoCorrelations(arrPion0SideTrigg, arrPion0MassAssoc, listTriggSide, listAssocMass, hCorrSideMass);
-        DoCorrelations(arrPion0SideTrigg, arrPion0SideAssoc, listTriggSide, listAssocSide, hCorrSideSide);
+        DoCorrelations(arrPion0SideTrigg, arrPion0SideAssoc, listTriggSide, listAssocSide, hCorrSideSide);**/
 
         // Event mixing
         /**if (iEvent >= nPool) {

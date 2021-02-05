@@ -1,5 +1,5 @@
 ! 1) Settings used in the main program
-Main:numberOfEvents = 100000
+Main:numberOfEvents = 1000000
 Next:numberCount = 500000
 
 ! C) Beam parameter settings
@@ -9,7 +9,7 @@ Beams:eCM = 14000.
 
 ! 3) Setting for the hard-process generation
 HardQCD:all = on
-PromptPhoton:all = off
+PromptPhoton:all = on
 
 PhaseSpace:pTHatMin = 1.0
 

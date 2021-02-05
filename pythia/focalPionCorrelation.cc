@@ -96,6 +96,7 @@ int main(int argc, char *argv[]) {
 
     // Basic histograms
     TH1D *hCounter = new TH1D("hCounter", "hCounter", 10, 0, 10);
+    TH1D *hCounterReal = new TH1D("hNtrigg", "hNtrigg", 6, 0, 6);
     
     for (int i = 0; i <= nIncPtBin; i++) logBinsX[i] = limMin*exp(i*logBW);
     
@@ -344,13 +345,19 @@ int main(int argc, char *argv[]) {
             double etaassoc = lvAssoc.Eta();
             bool isAssocPion = isPion[i];
             hCorrMeasured->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
+            if (isTriggPion) hCounterReal->Fill(0.5);
+            if (!isTriggPion) hCounterReal->Fill(1.5);
             if (isTriggPion && isAssocPion) {
+                hCounterReal->Fill(2.5);
                 hCorrSS->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
             } else if (isTriggPion && !isAssocPion) {
+                hCounterReal->Fill(3.5);
                 hCorrSB->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
             } else if (!isTriggPion && isAssocPion) {
+                hCounterReal->Fill(4.5);
                 hCorrBS->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
             } else {
+                hCounterReal->Fill(5.5);
                 hCorrBB->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
             }
 

@@ -96,6 +96,7 @@ int main(int argc, char *argv[]) {
 
     // Basic histograms
     TH1D *hCounter = new TH1D("hCounter", "hCounter", 10, 0, 10);
+    TH1D *hCounterTrigg = new TH1D("hCounterTrigg", "hCounterTrigg", 6, 0, 6);
     
     for (int i = 0; i <= nIncPtBin; i++) logBinsX[i] = limMin*exp(i*logBW);
     
@@ -366,16 +367,21 @@ int main(int argc, char *argv[]) {
                 double etaassoc = lvAssoc.Eta();
                 bool isAssocPion = isPion[i];
                 hCorrMeasured->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
+                if (isTriggPion) hCounterTrigg->Fill(0.5);
+                if (!isTriggPion) hCounterTrigg->Fill(1.5);
                 if (isTriggPion && isAssocPion) {
+                    hCounterTrigg->Fill(2.5);
                     hCorrSS->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
                 } else if (isTriggPion && !isAssocPion) {
+                    hCounterTrigg->Fill(3.5);
                     hCorrSB->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
                 } else if (!isTriggPion && isAssocPion) {
+                    hCounterTrigg->Fill(4.5);
                     hCorrBS->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
                 } else {
+                    hCounterTrigg->Fill(5.5);
                     hCorrBB->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
                 }
->>>>>>> 167da341db2d4a8e9fe19f55bf574ce168cc706e
             }
 	}
 

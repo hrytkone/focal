@@ -332,34 +332,17 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        if (!candidate.size()) continue;
-
-        TLorentzVector lvTrigg = candidate[itrigg];
-        double phitrigg = lvTrigg.Phi();
-        double etatrigg = lvTrigg.Eta();
-        bool isTriggPion = isPion[itrigg];
-        for (int i = 0; i < candidate.size(); i++) {
-            if (i==itrigg) continue;
-            TLorentzVector lvAssoc = candidate[i];
-            double phiassoc = lvAssoc.Phi();
-            double etaassoc = lvAssoc.Eta();
-            bool isAssocPion = isPion[i];
-            hCorrMeasured->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
-            if (isTriggPion && isAssocPion) {
-                hCorrSS->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
-            } else if (isTriggPion && !isAssocPion) {
-                hCorrSB->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
-            } else if (!isTriggPion && isAssocPion) {
-                hCorrBS->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
-            } else {
-                hCorrBB->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
         if (candidate.size()) {
             TLorentzVector lvTrigg = candidate[itrigg];
             double phitrigg = lvTrigg.Phi();
             double etatrigg = lvTrigg.Eta();
             bool isTriggPion = isPion[itrigg];
-	    if (isPion[itrigg]) hCounter->Fill(3.5); //Rec real pi0 triggers
-	    if (!isPion[itrigg]) hCounter->Fill(4.5); //Rec fake pi0 triggers
+	    if (isPion[itrigg]) hCounterTrigg->Fill(0.5); //Rec real pi0 triggers
+	    if (!isPion[itrigg]) hCounterTrigg->Fill(1.5); //Rec fake pi0 triggers
+	    bool bSSfound = 0;
+	    bool bSBfound = 0;
+	    bool bBSfound = 0;
+	    bool bBBfound = 0;
             for (int i = 0; i < candidate.size(); i++) {
                 if (i==itrigg) continue;
                 TLorentzVector lvAssoc = candidate[i];
@@ -367,19 +350,29 @@ int main(int argc, char *argv[]) {
                 double etaassoc = lvAssoc.Eta();
                 bool isAssocPion = isPion[i];
                 hCorrMeasured->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
-                if (isTriggPion) hCounterTrigg->Fill(0.5);
-                if (!isTriggPion) hCounterTrigg->Fill(1.5);
                 if (isTriggPion && isAssocPion) {
-                    hCounterTrigg->Fill(2.5);
+                    if (!bSSfound) {
+		        hCounterTrigg->Fill(2.5);
+                    	bSSfound = 1;
+                    }
                     hCorrSS->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
                 } else if (isTriggPion && !isAssocPion) {
-                    hCounterTrigg->Fill(3.5);
+                    if (!bSBfound) {
+		        hCounterTrigg->Fill(3.5);
+                    	bSBfound = 1;
+                    }
                     hCorrSB->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
                 } else if (!isTriggPion && isAssocPion) {
-                    hCounterTrigg->Fill(4.5);
+		    if (!bBSfound) {
+		        hCounterTrigg->Fill(4.5);
+                    	bBSfound = 1;
+                    }
                     hCorrBS->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
                 } else {
-                    hCounterTrigg->Fill(5.5);
+		    if (!bBBfound) {
+		        hCounterTrigg->Fill(5.5);
+                    	bBBfound = 1;
+                    }
                     hCorrBB->Fill(GetDeltaPhi(phitrigg, phiassoc), etatrigg - etaassoc);
                 }
             }

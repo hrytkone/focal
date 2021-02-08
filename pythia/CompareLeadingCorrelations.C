@@ -1,4 +1,4 @@
-TString sInputNames[2] = {"300m_pThard-1_corr-ntrigg.root", "300m_pThard-1_leading.root"};
+TString sInputNames[2] = {"2021-02-03_test-data/1400m_pThard-1_corr-ntrigg.root", "2021-02-03_test-data/900m_pThard-1_leading.root"};
 
 void CompareLeadingCorrelations()
 {
@@ -72,7 +72,10 @@ void CompareLeadingCorrelations()
     TH1D *hCorrBSProj = hCorrBS->ProjectionX();
     TH1D *hCorrBBProj = hCorrBB->ProjectionX();
     hCorrBBProj->SetLineColor(kRed);
-    hCorrBBProj->Scale(4.9);
+    //hCorrBBProj->Scale(4.9);
+    
+    int nRealBB = hCorrBBProj->GetEntries();
+    std::cout << "n_pairs,BB (per event) : " << (double)nRealBB/(double)nEvent << std::endl;
 
     // "measured" correlations by summing real correlations
     TH1D *hCorrMassMassRec = (TH1D*)hCorrSSProj->Clone("hCorrSSrec");

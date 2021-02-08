@@ -70,7 +70,7 @@ TLorentzVector GetPhotonSumVector(TClonesArray *arrayPhoton, int iPhoton1, int i
 void ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0trigg, TClonesArray *arrPi0assoc, bool bMass);
 void ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0, bool bMass);
 void FillPionMasses(TClonesArray *arrPhoton, TH1D *hMassesTrigg[nTriggBins], TH1D *hMassesAssoc[nAssocBins]);
-void FillPionMasses(TClonesArray *arrPi0, TH1D *hMassesTrigg, TH1D *hMassesAssoc, int itrigg);
+void FillPionMasses(TClonesArray *arrPhoton, TH1D *hMasses);
 int GetLeadingTriggerIndex(TClonesArray *arrPi0);
 
 int main(int argc, char *argv[]) {
@@ -168,6 +168,8 @@ int main(int argc, char *argv[]) {
             hCorrSideSideMixed[i][j]->Sumw2();**/
         }
     }
+
+    TH1D *hMassLeading = new TH1D("hMassLeading", "hMassLeading", 301, 0.0, 300.0);
 
     TH1D *hPi0MassTrigg[nTriggBins];
     TH1D *hPi0SideTrigg[nTriggBins];
@@ -298,7 +300,10 @@ int main(int argc, char *argv[]) {
                 TLorentzVector *lvTriggReal = (TLorentzVector*)arrPion0For->At(itrigg);
                 DoCorrelations(arrPion0For, lvTriggReal, itrigg, 1, hCorrFor[0][0]);
             }
+
             // Reconstructed pions
+            FillPionMasses(arrPhotonFor, hMassLeading);
+
             ReconstructPions(arrPhotonFor, arrPion0MassAssoc, 1);
             ReconstructPions(arrPhotonFor, arrPion0SideAssoc, 0);
             
@@ -307,11 +312,13 @@ int main(int argc, char *argv[]) {
              
             if (itriggMass > itriggSide) {
                 if (itriggMass < 0) continue;
+                hCounter->Fill(3.5); // number of triggers in mass region
                 TLorentzVector *lvTrigg = (TLorentzVector*)arrPion0MassAssoc->At(itriggMass);
                 DoCorrelations(arrPion0MassAssoc, lvTrigg, itriggMass, 1, hCorrMassMass[0][0]);
                 DoCorrelations(arrPion0SideAssoc, lvTrigg, itriggMass, 0, hCorrMassSide[0][0]);
             } else {
                 if (itriggSide < 0) continue;
+                hCounter->Fill(4.5); // number of triggers in sideband
                 TLorentzVector *lvTrigg = (TLorentzVector*)arrPion0SideAssoc->At(itriggSide);
                 DoCorrelations(arrPion0MassAssoc, lvTrigg, itriggSide, 0, hCorrSideMass[0][0]);
                 DoCorrelations(arrPion0SideAssoc, lvTrigg, itriggSide, 1, hCorrSideSide[0][0]);
@@ -320,7 +327,7 @@ int main(int argc, char *argv[]) {
             // Real pions
             std::vector<int> listTriggMid, listTriggFor, listTriggChargedMid, listTriggChargedFor;
             std::vector<int> listAssocMid, listAssocFor, listAssocChargedMid, listAssocChargedFor;
-        
+
             GetTriggAssocLists(arrPion0Mid, arrPion0Mid, listTriggMid, listAssocMid);
             GetTriggAssocLists(arrPion0For, arrPion0For, listTriggFor, listAssocFor);
         
@@ -351,6 +358,7 @@ int main(int argc, char *argv[]) {
             DoCorrelations(arrPion0SideTrigg, arrPion0MassAssoc, listTriggSide, listAssocMass, hCorrSideMass);
             DoCorrelations(arrPion0SideTrigg, arrPion0SideAssoc, listTriggSide, listAssocSide, hCorrSideSide);
         }
+        
         // Event mixing
         /**if (iEvent >= nPool) {
            for (int ipool = 0; ipool < nPool; ipool++) {
@@ -582,16 +590,15 @@ void FillPionMasses(TClonesArray *arrPhoton, TH1D *hMassesTrigg[nTriggBins], TH1
     }   
 }
 
-void FillPionMasses(TClonesArray *arrPi0, TH1D *hMassesTrigg, TH1D *hMassesAssoc, int itrigg)
+void FillPionMasses(TClonesArray *arrPhoton, TH1D *hMasses)
 {
-    int nPi0 = arrPi0->GetEntriesFast();
-    for (int i = 0; i < nPi0; i++) {
-        TLorentzVector *lvPi0 = (TLorentzVector*)arrPi0->At(i);
-        double mass = 1000.*lvPi0->M();
-        if (i == itrigg) {
-            hMassesTrigg->Fill(mass);
-        } else {
-            hMassesAssoc->Fill(mass);
+    int nPhoton = arrPhoton->GetEntriesFast();
+    for (int i = 1; i < nPhoton; i++) {
+        for (int j = 0; j < i; j++) {
+            TLorentzVector lvSum = GetPhotonSumVector(arrPhoton, i, j);
+            double mass = 1000.*lvSum.M();
+            double pT = lvSum.Pt();
+            if (pT > pTmin) hMasses->Fill(mass);
         }
     }   
 }

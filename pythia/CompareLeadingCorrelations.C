@@ -1,4 +1,4 @@
-TString sInputNames[2] = {"2021-02-03_test-data/1400m_pThard-1_corr-ntrigg.root", "2021-02-03_test-data/900m_pThard-1_leading.root"};
+TString sInputNames[2] = {"2021-02-03_test-data/1400m_pThard-1_corr-ntrigg.root", "2021-02-03_test-data/1000m_pThard-1_leading-ntrigg.root"};
 
 void CompareLeadingCorrelations()
 {
@@ -11,10 +11,23 @@ void CompareLeadingCorrelations()
     // ------------------
     // |   Histograms   |
     // ------------------
-    TH1D *hCounter = (TH1D*)fIn1->Get("hCounter");
-    int nEvent = hCounter->GetBinContent(1);
-    std::cout << "Input file contains " << nEvent << " events, proceed to analyse" << std::endl;
+    TH1D *hCounter1 = (TH1D*)fIn1->Get("hCounter");
+    TH1D *hCounter2 = (TH1D*)fIn2->Get("hCounter");
     
+    int nEvent1 = hCounter1->GetBinContent(1);
+    int nEvent2 = hCounter2->GetBinContent(1);
+    std::cout << "Input file 1 contains " << nEvent1 << " events, input file 2 " << nEvent2 << " events" << std::endl;
+    
+    int nTriggReal = hCounter1->GetBinContent(4);
+    int nTriggFake = hCounter1->GetBinContent(5);
+    int nTriggPeak = 0.807*hCounter2->GetBinContent(4);
+    int nTriggSide = hCounter2->GetBinContent(5);
+    std::cout << "\nNumber of triggers: " << std::endl;
+    std::cout << "\treal : " << nTriggReal << "\tper event : " << (double)nTriggReal/nEvent1 << std::endl;
+    std::cout << "\tfake : " << nTriggFake << "\tper event : " << (double)nTriggFake/nEvent1 << std::endl;
+    std::cout << "\tpeak : " << nTriggPeak << "\tper event : " << (double)nTriggPeak/nEvent2 << std::endl;
+    std::cout << "\tside : " << nTriggSide << "\tper event : " << (double)nTriggSide/nEvent2 << std::endl;
+
     TH2D *hCorrSS = (TH2D*)fIn1->Get("hCorrSS"); hCorrSS->Rebin(4);
     TH2D *hCorrSB = (TH2D*)fIn1->Get("hCorrSB"); hCorrSB->Rebin(4);
     TH2D *hCorrBS = (TH2D*)fIn1->Get("hCorrBS"); hCorrBS->Rebin(4);
@@ -48,35 +61,46 @@ void CompareLeadingCorrelations()
     // "measured" correlations
     TH1D *hCorrMassMassProj = hCorrMassMass->ProjectionX();
     hCorrMassMassProj->SetLineColor(kBlack);
-    //hCorrMassMassProj->Scale(1./0.56);
     hCorrMassMassProj->SetTitle("f_{mass,mass} comparison");
+    hCorrMassMassProj->Scale(1./nEvent2);
+    hCorrMassMassProj->Scale(1./nTriggPeak);
             
     TH1D *hCorrMassSideProj = hCorrMassSide->ProjectionX();
     hCorrMassSideProj->SetLineColor(kBlack);
-    //hCorrMassSideProj->Scale(1./0.61);
     hCorrMassSideProj->SetTitle("f_{mass,side} comparison");
+    hCorrMassSideProj->Scale(1./nEvent2);
+    hCorrMassSideProj->Scale(1./nTriggPeak);
             
     TH1D *hCorrSideMassProj = hCorrSideMass->ProjectionX();
     hCorrSideMassProj->SetLineColor(kBlack);
-    //hCorrSideMassProj->Scale(1./1.8);
     hCorrSideMassProj->SetTitle("f_{side,mass} comparison");
+    hCorrSideMassProj->Scale(1./nEvent2);
+    hCorrSideMassProj->Scale(1./nTriggSide);
             
     TH1D *hCorrSideSideProj = hCorrSideSide->ProjectionX();
     hCorrSideSideProj->SetLineColor(kBlack);
-    //hCorrSideSideProj->Scale(1./4.9);
     hCorrSideSideProj->SetTitle("f_{side,side} comparison");
+    hCorrSideSideProj->Scale(1./nEvent2);
+    hCorrSideSideProj->Scale(1./nTriggSide);
 
     // real correlations
     TH1D *hCorrSSProj = hCorrSS->ProjectionX();
-    TH1D *hCorrSBProj = hCorrSB->ProjectionX();
-    TH1D *hCorrBSProj = hCorrBS->ProjectionX();
-    TH1D *hCorrBBProj = hCorrBB->ProjectionX();
-    hCorrBBProj->SetLineColor(kRed);
-    //hCorrBBProj->Scale(4.9);
+    hCorrSSProj->Scale(1./nEvent1);
+    hCorrSSProj->Scale(1./nTriggReal);
     
-    int nRealBB = hCorrBBProj->GetEntries();
-    std::cout << "n_pairs,BB (per event) : " << (double)nRealBB/(double)nEvent << std::endl;
-
+    TH1D *hCorrSBProj = hCorrSB->ProjectionX();
+    hCorrSBProj->Scale(1./nEvent1);
+    hCorrSBProj->Scale(1./nTriggReal);
+    
+    TH1D *hCorrBSProj = hCorrBS->ProjectionX();
+    hCorrBSProj->Scale(1./nEvent1);
+    hCorrBSProj->Scale(1./nTriggFake);
+    
+    TH1D *hCorrBBProj = hCorrBB->ProjectionX();
+    hCorrBBProj->Scale(1./nEvent1);
+    hCorrBBProj->Scale(1./nTriggFake);
+    hCorrBBProj->SetLineColor(kRed);
+    
     // "measured" correlations by summing real correlations
     TH1D *hCorrMassMassRec = (TH1D*)hCorrSSProj->Clone("hCorrSSrec");
     hCorrMassMassRec->Add(hCorrSBProj);
@@ -128,27 +152,27 @@ void CompareLeadingCorrelations()
     cCorrMassMassComp->SetLogy();
     hCorrMassMassProj->Draw("HIST");
     hCorrMassMassRec->Draw("HIST SAME");
-    hCorrMassMassProj->GetYaxis()->SetRangeUser(50, 150000.0);
+    //hCorrMassMassProj->GetYaxis()->SetRangeUser(50, 150000.0);
     leg1->Draw("SAME");
     
     TCanvas *cCorrMassSideComp = new TCanvas("cCorrMassSideComp", "cCorrMassSideComp", 600, 600);
     cCorrMassSideComp->SetLogy();
     hCorrMassSideProj->Draw("HIST");
     hCorrMassSideRec->Draw("HIST SAME");
-    hCorrMassSideProj->GetYaxis()->SetRangeUser(10, 150000.0);
+    //hCorrMassSideProj->GetYaxis()->SetRangeUser(10, 150000.0);
     leg2->Draw("SAME");
     
     TCanvas *cCorrSideMassComp = new TCanvas("cCorrSideMassComp", "cCorrSideMassComp", 600, 600);
     cCorrSideMassComp->SetLogy();
     hCorrSideMassProj->Draw("HIST");
-    hCorrSideMassProj->GetYaxis()->SetRangeUser(10, 150000.0);
+    //hCorrSideMassProj->GetYaxis()->SetRangeUser(10, 150000.0);
     hCorrSideMassRec->Draw("HIST SAME");
     leg3->Draw("SAME");
     
     TCanvas *cCorrSideSideComp = new TCanvas("cCorrSideSideComp", "cCorrSideSideComp", 600, 600);
     cCorrSideSideComp->SetLogy();
     hCorrSideSideProj->Draw("HIST");
-    hCorrSideSideProj->GetYaxis()->SetRangeUser(1, 150000.0);
+    //hCorrSideSideProj->GetYaxis()->SetRangeUser(1, 150000.0);
     hCorrBBProj->Draw("HIST SAME");
     leg4->Draw("SAME");
     
@@ -162,6 +186,7 @@ void CompareLeadingCorrelations()
     hRatioSideMass->Draw("");
     
     TCanvas *cRatioSideSide = new TCanvas("cRatioSideSide", "cRatioSideSide", 600, 600);
+    hRatioSideSide->Fit("pol0");
     hRatioSideSide->Draw("");
 }
 

@@ -10,6 +10,7 @@
 #include "TH1D.h"
 #include "TH2D.h"
 #include "TRandom3.h"
+#include "TF1.h"
 #include "TStopwatch.h"
 
 using namespace Pythia8;
@@ -17,12 +18,14 @@ using namespace Pythia8;
 //-------------------------
 //         pT bins        |
 //-------------------------
-const int nTriggBins = 1;
-double  triggPt[nTriggBins+1] = {3.0, 1000.0};
+const int nTriggBins = 4;
+double  triggPt[nTriggBins+1] = {1.0, 2.0, 4.0, 8.0, 20.0};
+//double  triggPt[nTriggBins+1] = {3.0, 1000.0};
 //double  triggPt[nTriggBins+1] = {3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 12.0, 15.0, 20.0};
 
-const int nAssocBins = 1;
-double  assocPt[nAssocBins+1] = {3.0, 1000.0};
+const int nAssocBins = 4;
+double  assocPt[nAssocBins+1] = {0.5, 1.0, 2.0, 3.0, 4.0};
+//double  assocPt[nAssocBins+1] = {3.0, 1000.0};
 //double  assocPt[nAssocBins+1] = {1.0, 2.0, 3.0, 4.0, 6.0, 8.0, 10.0, 15.0};
 
 //-------------------------
@@ -59,6 +62,7 @@ bool IsFocalAcceptance(double eta, double etaMin=etaFocalMin, double etaMax=etaF
 int GetBin(double arr[], int nArr, double val);
 double GetDeltaPhi(double phiTrigg, double phiAssoc);
 double PhotonEnergySmearing(TRandom3 *rand, double px, double py, double pz);
+bool IsPhotonRemoved(double ePhoton, TRandom3 *rand, TF1 *fPhotonEff);
 TLorentzVector GetPhotonSumVector(TClonesArray *arrayPhoton, int iPhoton1, int iPhoton2);
 int GetLeadingTriggerIndex(TClonesArray *arrPi0);
 int GetLargerTrigg(TClonesArray *arrPi0Peak, std::vector<int> listTriggPeak, TClonesArray *arrPi0Side, std::vector<int> listTriggSide);
@@ -96,6 +100,7 @@ int main(int argc, char *argv[]) {
 
     int nEvents = pythia.mode("Main:numberOfEvents");
 
+    TF1 *fPhotonEfficiency = new TF1("fPhotonEfficiency", "TMath::Exp(-1.48523/(-5.92702+x))"); // Parameters from fit to efficiency (PhotonEfficiency.C)
     TRandom3 *rand = new TRandom3();
 
     // Basic histograms
@@ -230,17 +235,20 @@ int main(int argc, char *argv[]) {
                 double pz = pythia.event[iPart].pz();
                 double e = TMath::Sqrt(px*px + py*py + pz*pz);
                 double eSmear = PhotonEnergySmearing(rand, px, py, pz);
-                TLorentzVector lvSmeared = TLorentzVector(eSmear*px/e, eSmear*py/e, eSmear*pz/e, eSmear);
+                
+                if (!IsPhotonRemoved(eSmear, rand, fPhotonEfficiency)) {
+                    TLorentzVector lvSmeared = TLorentzVector(eSmear*px/e, eSmear*py/e, eSmear*pz/e, eSmear);
                
-                hPhotonPt->Fill(TMath::Sqrt(px*px + py*py)); 
-                double eta = pythia.event[iPart].eta();
-                if (IsTrackerAcceptance(eta)) {
-                    new((*arrPhotonMid)[nPhotonMid++]) TLorentzVector(lvSmeared);
-                    hPhotonPtMid->Fill(TMath::Sqrt(px*px + py*py)); 
-                }
-                if (IsFocalAcceptance(eta)) {
-                    new((*arrPhotonFor)[nPhotonFor++]) TLorentzVector(lvSmeared);
-                    hPhotonPtFor->Fill(TMath::Sqrt(px*px + py*py)); 
+                    hPhotonPt->Fill(TMath::Sqrt(px*px + py*py)); 
+                    double eta = pythia.event[iPart].eta();
+                    if (IsTrackerAcceptance(eta)) {
+                        new((*arrPhotonMid)[nPhotonMid++]) TLorentzVector(lvSmeared);
+                        hPhotonPtMid->Fill(TMath::Sqrt(px*px + py*py)); 
+                    }
+                    if (IsFocalAcceptance(eta)) {
+                        new((*arrPhotonFor)[nPhotonFor++]) TLorentzVector(lvSmeared);
+                        hPhotonPtFor->Fill(TMath::Sqrt(px*px + py*py)); 
+                    }
                 }
             }
 
@@ -509,6 +517,14 @@ double PhotonEnergySmearing(TRandom3 *rand, double px, double py, double pz)
     double eSmear = -1.0;
     while (eSmear < 0.0) eSmear = rand->Gaus(e, sigma);
     return eSmear;
+}
+
+// To count in single photon efficiency
+bool IsPhotonRemoved(double ePhoton, TRandom3 *rand, TF1 *fPhotonEff)
+{
+    double photonEff = fPhotonEff->Eval(ePhoton);
+    if (rand->Uniform() > photonEff) return true;
+    return false;
 }
 
 TLorentzVector GetPhotonSumVector(TClonesArray *arrPhoton, int iPhoton1, int iPhoton2)

@@ -124,6 +124,15 @@ int main(int argc, char *argv[]) {
     TH1D *hChargedHadronEta = new TH1D("hChargedHadronEta", "hChargedHadronEta", nIncEtaBin, -incEtaRange/2., incEtaRange/2.); hChargedHadronEta->Sumw2();
 
     // Correlation histograms
+    TDirectory *dirCorrMid = fOut->mkdir("CorrMid");
+    TDirectory *dirCorrFor = fOut->mkdir("CorrFor");
+    TDirectory *dirCorrChargedMid = fOut->mkdir("CorrChargedMid");
+    TDirectory *dirCorrChargedFor = fOut->mkdir("CorrChargedFor");
+    TDirectory *dirCorrMassMass = fOut->mkdir("CorrMassMass");
+    TDirectory *dirCorrMassSide = fOut->mkdir("CorrMassSide");
+    TDirectory *dirCorrSideMass = fOut->mkdir("CorrSideMass");
+    TDirectory *dirCorrSideSide = fOut->mkdir("CorrSideSide");
+
     TH2D *hCorrMid[nTriggBins][nAssocBins];
     TH2D *hCorrFor[nTriggBins][nAssocBins];
     TH2D *hCorrChargedMid[nTriggBins][nAssocBins];
@@ -134,41 +143,59 @@ int main(int argc, char *argv[]) {
     TH2D *hCorrSideMass[nTriggBins][nAssocBins];
     TH2D *hCorrSideSide[nTriggBins][nAssocBins];
 
-    /**TH2D *hCorrMassMassMixed[nTriggBins][nAssocBins];
-    TH2D *hCorrMassSideMixed[nTriggBins][nAssocBins];
-    TH2D *hCorrSideMassMixed[nTriggBins][nAssocBins];
-    TH2D *hCorrSideSideMixed[nTriggBins][nAssocBins];**/
-
     for (int i = 0; i < nTriggBins; i++) {
         for (int j = 0; j < nAssocBins; j++) {
-            hCorrMid[i][j] = new TH2D(Form("hCorrMid%d:%d", i, j), Form("hCorrMid%d:%d", i, j), nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinTracker, -2.*etaTrackerRange, 2.*etaTrackerRange);
+
+            double tlow = triggPt[i];
+            double tupp = triggPt[i+1];
+            double alow = assocPt[j];
+            double aupp = assocPt[j+1];
+            
+            if (tlow < aupp) continue;
+
+            dirCorrMid->cd();
+            hCorrMid[i][j] = new TH2D(Form("hCorrMid[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), Form("hCorrMid[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), 
+                                    nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinTracker, -2.*etaTrackerRange, 2.*etaTrackerRange);
             hCorrMid[i][j]->Sumw2();
-            hCorrFor[i][j] = new TH2D(Form("hCorrFor%d:%d", i, j), Form("hCorrFor%d:%d", i, j), nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange, etaFocalRange);
+            
+            dirCorrFor->cd();
+            hCorrFor[i][j] = new TH2D(Form("hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), Form("hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                    nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange, etaFocalRange);
             hCorrFor[i][j]->Sumw2();
-            hCorrChargedMid[i][j] = new TH2D(Form("hCorrChargedMid%d:%d", i, j), Form("hCorrChargedMid%d:%d", i, j), nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinTracker, -2.*etaTrackerRange, 2.*etaTrackerRange);
+            
+            dirCorrChargedMid->cd();
+            hCorrChargedMid[i][j] = new TH2D(Form("hCorrChargedMid[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), Form("hCorrChargedMid[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), 
+                                    nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinTracker, -2.*etaTrackerRange, 2.*etaTrackerRange);
             hCorrChargedMid[i][j]->Sumw2();
-            hCorrChargedFor[i][j] = new TH2D(Form("hCorrChargedFor%d:%d", i, j), Form("hCorrChargedFor%d:%d", i, j), nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange, etaFocalRange);
+            
+            dirCorrChargedFor->cd();
+            hCorrChargedFor[i][j] = new TH2D(Form("hCorrChargedFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), Form("hCorrChargedFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), 
+                                    nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange, etaFocalRange);
             hCorrChargedFor[i][j]->Sumw2();
             
-            hCorrMassMass[i][j] = new TH2D(Form("hCorrMassMass%d:%d", i, j), Form("hCorrMassMass%d:%d", i, j), nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange, etaFocalRange);
+            dirCorrMassMass->cd();
+            hCorrMassMass[i][j] = new TH2D(Form("hCorrMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), Form("hCorrMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), 
+                                    nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange, etaFocalRange);
             hCorrMassMass[i][j]->Sumw2();
-            hCorrMassSide[i][j] = new TH2D(Form("hCorrMassSide%d:%d", i, j), Form("hCorrMassSide%d:%d", i, j), nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange, etaFocalRange);
+
+            dirCorrMassSide->cd();
+            hCorrMassSide[i][j] = new TH2D(Form("hCorrMassSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), Form("hCorrMassSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), 
+                                    nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange, etaFocalRange);
             hCorrMassSide[i][j]->Sumw2();
-            hCorrSideMass[i][j] = new TH2D(Form("hCorrSideMass%d:%d", i, j), Form("hCorrSideMass%d:%d", i, j), nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange, etaFocalRange);
+
+            dirCorrSideMass->cd();
+            hCorrSideMass[i][j] = new TH2D(Form("hCorrSideMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), Form("hCorrSideMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), 
+                                    nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange, etaFocalRange);
             hCorrSideMass[i][j]->Sumw2();
-            hCorrSideSide[i][j] = new TH2D(Form("hCorrSideSide%d:%d", i, j), Form("hCorrSideSide%d:%d", i, j), nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange, etaFocalRange);
+
+            dirCorrSideSide->cd();
+            hCorrSideSide[i][j] = new TH2D(Form("hCorrSideSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), Form("hCorrSideSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), 
+                                    nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange, etaFocalRange);
             hCorrSideSide[i][j]->Sumw2();
-       
-            /**hCorrMassMassMixed[i][j] = new TH2D(Form("hCorrMassMassMixed%d:%d", i, j), Form("hCorrMassMassMixed%d:%d", i, j), nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange/2., etaFocalRange/2.);
-            hCorrMassMassMixed[i][j]->Sumw2();
-            hCorrMassSideMixed[i][j] = new TH2D(Form("hCorrMassSideMixed%d:%d", i, j), Form("hCorrMassSideMixed%d:%d", i, j), nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange/2., etaFocalRange/2.);
-            hCorrMassSideMixed[i][j]->Sumw2();
-            hCorrSideMassMixed[i][j] = new TH2D(Form("hCorrSideMassMixed%d:%d", i, j), Form("hCorrSideMassMixed%d:%d", i, j), nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange/2., etaFocalRange/2.);
-            hCorrSideMassMixed[i][j]->Sumw2();
-            hCorrSideSideMixed[i][j] = new TH2D(Form("hCorrSideSideMixed%d:%d", i, j), Form("hCorrSideSideMixed%d:%d", i, j), nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinFocal, -etaFocalRange/2., etaFocalRange/2.);
-            hCorrSideSideMixed[i][j]->Sumw2();**/
         }
     }
+    
+    fOut->cd();
 
     TH1D *hPi0MassTrigg[nTriggBins];
     for (int i = 0; i < nTriggBins; i++) {
@@ -284,7 +311,6 @@ int main(int argc, char *argv[]) {
                 }
             }
         }
-        
         if (nPi0Mid>0) hCounter->Fill(1.5); // number of events with pion0 in mid rapidity
         if (nPi0For>0) hCounter->Fill(2.5); // number of events with pion0 in forward rapidity 
 
@@ -312,27 +338,6 @@ int main(int argc, char *argv[]) {
             DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0Side, listAssocSide, hCorrMassSide);
             DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, hCorrSideMass);
         }
-
-        // Event mixing
-        /**if (iEvent >= nPool) {
-           for (int ipool = 0; ipool < nPool; ipool++) {
-               DoCorrelations(arrPion0MassTrigg, &arrMassPool[ipool], listTriggMass, assocMassPool[ipool], hCorrMassMassMixed);
-               DoCorrelations(arrPion0MassTrigg, &arrSidePool[ipool], listTriggMass, assocSidePool[ipool], hCorrMassSideMixed);
-               DoCorrelations(arrPion0SideTrigg, &arrMassPool[ipool], listTriggSide, assocMassPool[ipool], hCorrSideMassMixed);
-               DoCorrelations(arrPion0SideTrigg, &arrSidePool[ipool], listTriggSid, assocSidePool[ipool], hCorrSideSideMixed);
-           }
-
-           assocMassPool.erase(assocMassPool.begin());
-           assocSidePool.erase(assocSidePool.begin());
-           arrMassPool.erase(arrMassPool.begin());
-           arrSidePool.erase(arrSidePool.begin());
-        }
-                
-        assocMassPool.push_back(listAssocMass);
-        assocSidePool.push_back(listAssocSide);
-        arrMassPool.push_back(*arrPion0MassAssoc);
-        arrSidePool.push_back(*arrPion0SideAssoc);**/
-
     }
 
     fOut->Write("", TObject::kOverwrite);
@@ -447,6 +452,8 @@ void DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vecto
             double etaAssoc = lvAssoc->Eta();
             int iAssocBin = GetBin(assocPt, nAssocBins, ptAssoc);
 
+            if (triggPt[iTriggBin] < assocPt[iAssocBin+1]) continue;
+            
             double dphi = GetDeltaPhi(phiTrigg, phiAssoc);
             double deta = etaTrigg - etaAssoc;
             hCorr[iTriggBin][iAssocBin]->Fill(dphi, deta);
@@ -479,16 +486,17 @@ void DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> listTrigg, TClon
             double etaAssoc = lvAssoc->Eta();
             int iAssocBin = GetBin(assocPt, nAssocBins, ptAssoc);
 
+            if (triggPt[iTriggBin] < assocPt[iAssocBin+1]) continue;
+            
             double dphi = GetDeltaPhi(phiTrigg, phiAssoc);
             double deta = etaTrigg - etaAssoc;
-
             hCorr[iTriggBin][iAssocBin]->Fill(dphi, deta);
         }
     }
 }
 
 int GetBin(double arr[], int nArr, double val)
-{
+{   
     for (int i=0; i<nArr; i++) {
         if (arr[i]<=val && val<arr[i+1]) return i;
     }

@@ -91,7 +91,7 @@ void AnalyseCorrelations(TString sInputName = "output.root")
         fFitTrigg[it]->SetParameters(-1., 1., 1., 100., 100., 135., 10., 15.);
         fFitTrigg[it]->SetParLimits(5, 132, 138);
         fFitTrigg[it]->SetParLimits(6, 1., 15.);
-        fFitTrigg[it]->SetParLimits(7, 4., 20.);
+        fFitTrigg[it]->SetParLimits(7, 3., 20.);
         fFitTrigg[it]->SetNpx(1000);
         
         fPeakTrigg[it] = new TF1("fPeakTrigg", FitPeak, 20, 300, 5);
@@ -315,7 +315,7 @@ void AnalyseCorrelations(TString sInputName = "output.root")
             hCorr[it][ia]->Add(hCorrMassSideProj[it][ia], -1);
             hCorr[it][ia]->Add(hCorrSideMassProj[it][ia], -1);
             hCorr[it][ia]->Add(hCorrSideSideProj[it][ia]);
-            hCorr[it][ia]->Scale(1./(brGammaCh*brGammaCh)); // Correct for branching ratio
+            //hCorr[it][ia]->Scale(1./(brGammaCh*brGammaCh)); // Correct for branching ratio
 
             if (it==0 && ia==0) {
                 leg2->AddEntry(hCorrMassMassProj[it][ia], "f_{mass,mass}", "l");
@@ -330,10 +330,13 @@ void AnalyseCorrelations(TString sInputName = "output.root")
             leg2->Draw("SAME");
 
             cRatio[it][ia] = new TCanvas(Form("cRatio%d:%d",it,ia), Form("cRatio%d:%d",it,ia), 600, 600);
-
+            
             hRatio[it][ia] = (TH1D*)hCorr[it][ia]->Clone(Form("hRatio%d:%d",it,ia));
             hRatio[it][ia]->Divide(hCorrRealProj[it][ia]);
+            hRatio[it][ia]->GetYaxis()->SetRangeUser(0., 2.);
+            hRatio[it][ia]->Fit("pol1");
             hRatio[it][ia]->Draw();
+            gStyle->SetOptFit();
         }
     }
 }

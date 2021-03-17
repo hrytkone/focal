@@ -72,6 +72,7 @@ void DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vecto
 void DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> listTrigg, TClonesArray *arrPi0Assoc, std::vector<int> listAssoc, TH2D *hCorr[nTriggBins][nAssocBins]);
 void ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0Candidates, bool bMass);
 void GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector<int>& listTrigg, std::vector<int>& listAssoc, int *binsWithTrigg, bool bUseLeading);
+void FillRealTriggers(TH1D *hRealTriggCounter, TClonesArray *arrRealPi0, std::vector<int>& listTrigg);
 void FillPionMasses(TClonesArray *arrPhoton, TH1D *hMassTrigg[nTriggBins], TH1D *hMassAssocPeak[nTriggBins][nAssocBins], TH1D *hMassAssocSide[nTriggBins][nAssocBins], int binsWithTriggPeak[nTriggBins], int binsWithTriggSide[nTriggBins]);
 
 int main(int argc, char *argv[]) {
@@ -105,6 +106,7 @@ int main(int argc, char *argv[]) {
     TRandom3 *rand = new TRandom3();
     // Basic histograms
     TH1D *hCounter = new TH1D("hCounter", "hCounter", 10, 0, 10);
+    TH1D *hRealTriggCounter = new TH1D("hRealTriggCounter", "hRealtriggCounter", 10, 0, 10);
     
     for (int i = 0; i <= nIncPtBin; i++) logBinsX[i] = limMin*exp(i*logBW);
     
@@ -213,6 +215,7 @@ int main(int argc, char *argv[]) {
             
         }
     }
+
     fOut->cd();
     
     // Particle lists
@@ -317,8 +320,10 @@ int main(int argc, char *argv[]) {
                 }
             }
         }
+
         if (nPi0Mid>0) hCounter->Fill(1.5); // number of events with pion0 in mid rapidity
         if (nPi0For>0) hCounter->Fill(2.5); // number of events with pion0 in forward rapidity 
+        
         ReconstructPions(arrPhotonFor, arrPi0Peak, 1);
         ReconstructPions(arrPhotonFor, arrPi0Side, 0);
 
@@ -327,8 +332,9 @@ int main(int argc, char *argv[]) {
         GetTriggAssocLists(arrPi0For, listTriggReal, listAssocReal, binsWithTriggReal, bUseLeading); 
         GetTriggAssocLists(arrPi0Peak, listTriggPeak, listAssocPeak, binsWithTriggPeak, bUseLeading); 
         GetTriggAssocLists(arrPi0Side, listTriggSide, listAssocSide, binsWithTriggSide, bUseLeading); 
-
+    
         FillPionMasses(arrPhotonFor, hPi0MassTrigg, hPi0MassAssocPeak, hPi0MassAssocSide, binsWithTriggPeak, binsWithTriggSide);
+        FillRealTriggers(hRealTriggCounter, arrPi0For, listTriggReal);
         
         DoCorrelations(arrPi0For, listTriggReal, listAssocReal, hCorrFor);
         DoCorrelations(arrPi0Peak, listTriggPeak, listAssocPeak, hCorrMassMass);
@@ -405,6 +411,21 @@ void ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0Candidates, b
             bool bIsInWindow = bMass ? IsMassWindow(mass) : IsSideband(mass); 
             if (bIsInWindow) new ((*arrPi0Candidates)[nCandidate++]) TLorentzVector(lvSum);
         }
+    }
+}
+
+void FillRealTriggers(TH1D *hRealTriggCounter, TClonesArray *arrRealPi0, std::vector<int>& listTrigg)
+{
+    int nTrigg = listTrigg.size();
+    if (nTrigg < 1) return;
+    
+    for (int it = 0; it < nTrigg; it++) {
+        int iTrigg = listTrigg[it];
+        TLorentzVector *lvTrigg = (TLorentzVector*)arrRealPi0->At(iTrigg);
+        double ptTrigg = lvTrigg->Pt();
+        int iTriggBin = GetBin(triggPt, nTriggBins, ptTrigg);
+        if (iTriggBin < 0) std::cout << "iTrigg " << iTriggBin << std::endl;
+        hRealTriggCounter->Fill(iTriggBin+0.5);
     }
 }
 

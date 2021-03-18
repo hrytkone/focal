@@ -102,8 +102,9 @@ int main(int argc, char *argv[]) {
 
     int nEvents = pythia.mode("Main:numberOfEvents");
 
-    TF1 *fPhotonEfficiency = new TF1("fPhotonEfficiency", "TMath::Exp(-1.48523/(-5.92702+x))"); // Parameters from fit to efficiency (PhotonEfficiency.C)
+    TF1 *fPhotonEfficiency = new TF1("fPhotonEfficiency", "TMath::Exp(-3.20093/x)"); // Parameters from fit to efficiency (PhotonEfficiency.C)
     TRandom3 *rand = new TRandom3();
+
     // Basic histograms
     TH1D *hCounter = new TH1D("hCounter", "hCounter", 10, 0, 10);
     TH1D *hRealTriggCounter = new TH1D("hRealTriggCounter", "hRealtriggCounter", 10, 0, 10);
@@ -236,7 +237,7 @@ int main(int argc, char *argv[]) {
 
         hCounter->Fill(0.5); // Number of events
 
-        //std::cout << "event " << iEvent << std::endl;
+        std::cout << "event " << iEvent << std::endl;
 
         if ( !pythia.next() ) continue;
 
@@ -335,7 +336,7 @@ int main(int argc, char *argv[]) {
     
         FillPionMasses(arrPhotonFor, hPi0MassTrigg, hPi0MassAssocPeak, hPi0MassAssocSide, binsWithTriggPeak, binsWithTriggSide);
         FillRealTriggers(hRealTriggCounter, arrPi0For, listTriggReal);
-        
+       
         DoCorrelations(arrPi0For, listTriggReal, listAssocReal, hCorrFor);
         DoCorrelations(arrPi0Peak, listTriggPeak, listAssocPeak, hCorrMassMass);
         DoCorrelations(arrPi0Side, listTriggSide, listAssocSide, hCorrSideSide);
@@ -351,6 +352,7 @@ int main(int argc, char *argv[]) {
             DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, hCorrSideMass);
         }
     }
+
     fOut->Write("", TObject::kOverwrite);
     fOut->Close();
 
@@ -377,7 +379,7 @@ bool IsFocalAcceptance(double eta, double etaMin, double etaMax)
 
 bool IsMassWindow(double mass)
 {
-    return (mass > 100. && mass < 170.) ? true : false;
+    return (mass > 110. && mass < 160.) ? true : false;
 }
 
 bool IsSideband(double mass)
@@ -424,7 +426,6 @@ void FillRealTriggers(TH1D *hRealTriggCounter, TClonesArray *arrRealPi0, std::ve
         TLorentzVector *lvTrigg = (TLorentzVector*)arrRealPi0->At(iTrigg);
         double ptTrigg = lvTrigg->Pt();
         int iTriggBin = GetBin(triggPt, nTriggBins, ptTrigg);
-        if (iTriggBin < 0) std::cout << "iTrigg " << iTriggBin << std::endl;
         hRealTriggCounter->Fill(iTriggBin+0.5);
     }
 }
@@ -457,7 +458,7 @@ void DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vecto
 {
     int nTrigg = listTrigg.size();
     if (nTrigg < 1) return;
-
+    
     for (int it = 0; it < nTrigg; it++) {
         int iTrigg = listTrigg[it];
         TLorentzVector *lvTrigg = (TLorentzVector*)arrPi0->At(iTrigg);
@@ -466,7 +467,7 @@ void DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vecto
         double etaTrigg = lvTrigg->Eta();
         
         int iTriggBin = GetBin(triggPt, nTriggBins, ptTrigg);
-        
+               
         int nAssoc = listAssoc.size();       
         if (nAssoc < 1) continue;
 
@@ -486,6 +487,7 @@ void DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vecto
             hCorr[iTriggBin][iAssocBin]->Fill(dphi, deta);
         }
     }
+
 }
 
 void DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> listTrigg, TClonesArray *arrPi0Assoc, std::vector<int> listAssoc, TH2D *hCorr[nTriggBins][nAssocBins])

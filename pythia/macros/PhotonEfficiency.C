@@ -19,25 +19,24 @@ void PhotonEfficiency()
     hEfficiency->SetBinContent(25, 0.99);
     hEfficiency->SetBinContent(41, 0.99);
 
-    TF1 *fFit = new TF1("fFit", Fit, 0.0, 1500.0, 2);
-    fFit->SetParameters(0., 0.);
+    TF1 *fFit = new TF1("fFit", Fit, 0.0, 1500.0, 1);
     fFit->SetNpx(1000);
     
-    double par[2];
-    hEfficiency->Fit("fFit", "RQ");
+    double par[1];
+    hEfficiency->Fit("fFit", "R+");
     fFit->GetParameters(par);
 
-    std::cout << "Fit result (f(x) = exp(-a/(b+x))) :" << std::endl;
+    std::cout << "Fit result (f(x) = exp(-a/x)) :" << std::endl;
     std::cout << "\ta=" << par[0] << std::endl;
-    std::cout << "\tb=" << par[1] << std::endl;
 
-    TCanvas *c = new TCanvas("c", "c");
-    hEfficiency->Draw("HIST");    
+    TCanvas *c = new TCanvas("c", "c", 600, 600);
+    hEfficiency->Draw("HIST");
+    hEfficiency->GetYaxis()->SetRangeUser(0., 1.1);
+    hEfficiency->SetTitle("Single photon efficiency; E (GeV); efficiency");
     fFit->Draw("SAME");
- 
 }
 
 double Fit(double *x, double *p)
 {
-    return TMath::Exp(-p[0]/(p[1]+x[0]));
+    return TMath::Exp(-p[0]/(x[0]));
 }

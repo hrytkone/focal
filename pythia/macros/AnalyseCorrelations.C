@@ -24,6 +24,10 @@ void AnalyseCorrelations(TString sInputName = "output.root")
     int nEvent = hCounter->GetBinContent(1);
     std::cout << "Input file contains " << nEvent << " events, proceed to analyse" << std::endl;
 
+    TH1D *hRealTriggCounter = (TH1D*)fIn->Get("hRealTriggCounter");
+    int nRealTrigg[nTriggBins];
+    for (int it = 0; it < nTriggBins; it++) nRealTrigg[it] = hRealTriggCounter->GetBinContent(it+1);
+
     TH1D *hMassTrigg[nTriggBins];
     TH1D *hMassAssocPeak[nTriggBins][nAssocBins];
     TH1D *hMassAssocSide[nTriggBins][nAssocBins];
@@ -211,6 +215,7 @@ void AnalyseCorrelations(TString sInputName = "output.root")
     double sa[nTriggBins][nAssocBins], ba[nTriggBins][nAssocBins], suma[nTriggBins][nAssocBins], alphaa[nTriggBins][nAssocBins], betaa[nTriggBins][nAssocBins], bsidea[nTriggBins][nAssocBins];
     double A[nTriggBins][nAssocBins], B[nTriggBins][nAssocBins];
 
+    std::cout << "Number of triggers : " << std::endl;
     for (int it = 0; it < nTriggBins; it++) {
         sumt[it] = fFitTrigg[it]->Integral(110, 160);
         st[it] = fPeakTrigg[it]->Integral(110, 160);
@@ -236,6 +241,9 @@ void AnalyseCorrelations(TString sInputName = "output.root")
             A[it][ia] = bt[it]/bsidet[it];
             B[it][ia] = ba[it][ia]/bsidea[it][ia];
         }
+        
+        std::cout << "\tbin [ " << triggPt[it] << " " << triggPt[it+1] << " ] : \treal=" << nRealTrigg[it] << "\treconst=" << st[it] << std::endl;
+        
     }
 
     TCanvas *cCorrFuncs[nTriggBins][nAssocBins]; 
@@ -315,7 +323,7 @@ void AnalyseCorrelations(TString sInputName = "output.root")
             hCorr[it][ia]->Add(hCorrMassSideProj[it][ia], -1);
             hCorr[it][ia]->Add(hCorrSideMassProj[it][ia], -1);
             hCorr[it][ia]->Add(hCorrSideSideProj[it][ia]);
-            //hCorr[it][ia]->Scale(1./(brGammaCh*brGammaCh)); // Correct for branching ratio
+            hCorr[it][ia]->Scale(1./(brGammaCh*brGammaCh)); // Correct for branching ratio
 
             if (it==0 && ia==0) {
                 leg2->AddEntry(hCorrMassMassProj[it][ia], "f_{mass,mass}", "l");

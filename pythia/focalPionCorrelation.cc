@@ -113,6 +113,7 @@ int main(int argc, char *argv[]) {
     
     TH1D *hPionPt = new TH1D("hPionPt", "hPionPt", nIncPtBin, logBinsX); hPionPt->Sumw2();
     TH1D *hPionPtFor = new TH1D("hPionPtFor", "hPionPtFor", nIncPtBin, logBinsX); hPionPtFor->Sumw2();
+    TH1D *hPionPtForDetected = new TH1D("hPionPtForDetected", "hPionPtForDetected", nIncPtBin, logBinsX); hPionPtForDetected->Sumw2();
     TH1D *hPionPtMid = new TH1D("hPionPtMid", "hPionPtMid", nIncPtBin, logBinsX); hPionPtMid->Sumw2();
     
     TH1D *hChargedHadronPt = new TH1D("hChargedHadronPt", "hChargedHadronPt", nIncPtBin, logBinsX); hChargedHadronPt->Sumw2();
@@ -229,7 +230,7 @@ int main(int argc, char *argv[]) {
 
     TClonesArray *arrPi0Peak = new TClonesArray("TLorentzVector", 1500);
     TClonesArray *arrPi0Side = new TClonesArray("TLorentzVector", 1500);
- 
+
     // 
     // Loop over events
     //
@@ -237,7 +238,7 @@ int main(int argc, char *argv[]) {
 
         hCounter->Fill(0.5); // Number of events
 
-        std::cout << "event " << iEvent << std::endl;
+        //std::cout << "event " << iEvent << std::endl;
 
         if ( !pythia.next() ) continue;
 
@@ -302,6 +303,16 @@ int main(int argc, char *argv[]) {
                 if (IsFocalAcceptance(eta)) {
                     hPionPtFor->Fill(pt);
                     new((*arrPi0For)[nPi0For++]) TLorentzVector(lv);
+                }
+
+                std::vector<int> daughterId = pythia.event[iPart].daughterList();
+                if ((daughterId[0] != daughterId[1]) && (daughterId[0] > 0) && (daughterId[1] > 0)) {
+                    if ( pythia.event[daughterId[0]].id() == 22 && pythia.event[daughterId[0]].id() == 22 ) {
+                        double eta0 = pythia.event[daughterId[0]].eta();
+                        double eta1 = pythia.event[daughterId[1]].eta();
+                        if (IsFocalAcceptance(eta0) && IsFocalAcceptance(eta1))
+                            hPionPtForDetected->Fill(pt);
+                    }
                 }
             }
 

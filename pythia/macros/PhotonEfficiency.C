@@ -23,17 +23,25 @@ void PhotonEfficiency()
     fFit->SetNpx(1000);
     
     double par[1];
-    hEfficiency->Fit("fFit", "R+");
+    hEfficiency->Fit("fFit", "Q0");
     fFit->GetParameters(par);
 
     std::cout << "Fit result (f(x) = exp(-a/x)) :" << std::endl;
     std::cout << "\ta=" << par[0] << std::endl;
 
+    
     TCanvas *c = new TCanvas("c", "c", 600, 600);
+    
+    TLegend *leg1 = new TLegend(0.4, 0.6, 0.78, 0.72);
+    leg1->SetFillStyle(0); leg1->SetBorderSize(0); leg1->SetTextSize(0.03);
+    leg1->AddEntry(hEfficiency, "Simulated efficiency from LOI", "l");
+    leg1->AddEntry(fFit, Form("Fit: f(E) = exp(-a/E), a=%f", par[0]), "l");
+
     hEfficiency->Draw("HIST");
     hEfficiency->GetYaxis()->SetRangeUser(0., 1.1);
-    hEfficiency->SetTitle("Single photon efficiency; E (GeV); efficiency");
+    hEfficiency->SetTitle("; E (GeV); efficiency");
     fFit->Draw("SAME");
+    leg1->Draw("SAME");
 }
 
 double Fit(double *x, double *p)

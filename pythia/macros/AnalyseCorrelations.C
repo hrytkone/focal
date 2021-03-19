@@ -14,7 +14,12 @@ void AnalyseCorrelations(TString sInputName = "output.root")
     double brGammaCh = 0.988;
 
     gStyle->SetOptStat(0);
-
+    gStyle->SetOptFit();
+    gStyle->SetStatY(0.85);                
+    gStyle->SetStatX(0.85);                
+    gStyle->SetStatW(0.2);                
+    gStyle->SetStatH(0.1);                
+    
     TFile *fIn = TFile::Open(sInputName);   
 
     // ------------------
@@ -68,11 +73,11 @@ void AnalyseCorrelations(TString sInputName = "output.root")
     // ---------------
     // |   Legends   |
     // ---------------
-    TLegend *leg1 = new TLegend(0.58, 0.6, 0.78, 0.85);
-    leg1->SetFillStyle(0); leg1->SetBorderSize(0); leg1->SetTextSize(0.05); 
+    TLegend *leg1 = new TLegend(0.58, 0.66, 0.78, 0.82);
+    leg1->SetFillStyle(0); leg1->SetBorderSize(0); leg1->SetTextSize(0.04); 
 
-    TLegend *leg2 = new TLegend(0.58, 0.66, 0.78, 0.85);
-    leg2->SetFillStyle(0); leg2->SetBorderSize(0); leg2->SetTextSize(0.05); 
+    TLegend *leg2 = new TLegend(0.58, 0.7, 0.78, 0.82);
+    leg2->SetFillStyle(0); leg2->SetBorderSize(0); leg2->SetTextSize(0.04); 
 
     // ----------------
     // |   Analysis   |
@@ -95,7 +100,7 @@ void AnalyseCorrelations(TString sInputName = "output.root")
         fFitTrigg[it]->SetParameters(-1., 1., 1., 100., 100., 135., 10., 15.);
         fFitTrigg[it]->SetParLimits(5, 132, 138);
         fFitTrigg[it]->SetParLimits(6, 1., 15.);
-        fFitTrigg[it]->SetParLimits(7, 3., 20.);
+        fFitTrigg[it]->SetParLimits(7, 2., 20.);
         fFitTrigg[it]->SetNpx(1000);
         
         fPeakTrigg[it] = new TF1("fPeakTrigg", FitPeak, 20, 300, 5);
@@ -107,12 +112,12 @@ void AnalyseCorrelations(TString sInputName = "output.root")
         fBgTrigg[it]->SetLineStyle(kDashed);
         fBgTrigg[it]->SetNpx(1000);
         
-        cMassTrigg[it] = new TCanvas(Form("cMassTrigg%d", it), Form("cMassTrigg%d", it), 600, 600);
-        hMassTrigg[it]->Fit("fFitTrigg", "R+");
+        hMassTrigg[it]->Fit("fFitTrigg", "Q0R+");
         fFitTrigg[it]->GetParameters(parTrigg);
         fBgTrigg[it]->SetParameters(parTrigg);
         fPeakTrigg[it]->SetParameters(&parTrigg[3]); 
 
+        cMassTrigg[it] = new TCanvas(Form("cMassTrigg%d", it), Form("cMassTrigg%d", it), 600, 600);
         hMassTrigg[it]->SetTitle(Form("Trigger invariant mass, %.1f < p_{T,t} < %.1f GeV/c; M_{#gamma#gamma} (MeV/c^{2}); counts", triggPt[it], triggPt[it+1]));
         hMassTrigg[it]->GetXaxis()->SetRangeUser(0., 300.);
         hMassTrigg[it]->GetYaxis()->SetMaxDigits(3);
@@ -176,12 +181,12 @@ void AnalyseCorrelations(TString sInputName = "output.root")
             fBgAssoc[it][ia]->SetLineStyle(kDashed);
             fBgAssoc[it][ia]->SetNpx(1000);
 
-            cMassAssocPeak[it][ia] = new TCanvas(Form("cMassAssocPeak%d:%d",it,ia), Form("cMassAssocPeak%d:%d",it,ia), 600, 600);
-            hMassAssocPeak[it][ia]->Fit("fFitAssoc", "R+");
+            hMassAssocPeak[it][ia]->Fit("fFitAssoc", "Q0R+");
             fFitAssoc[it][ia]->GetParameters(parAssoc);
             fBgAssoc[it][ia]->SetParameters(parAssoc);
             fPeakAssoc[it][ia]->SetParameters(&parAssoc[3]);
             
+            cMassAssocPeak[it][ia] = new TCanvas(Form("cMassAssocPeak%d:%d",it,ia), Form("cMassAssocPeak%d:%d",it,ia), 600, 600);
             hMassAssocPeak[it][ia]->SetTitle(Form("%.1f < p_{T,t} < %.1f GeV/c, %.1f < p_{T,a} < %.1f GeV/c; M_{#gamma#gamma}; counts", tlow, tupp, alow, aupp));
             hMassAssocPeak[it][ia]->GetXaxis()->SetRangeUser(0., 300.);
             hMassAssocPeak[it][ia]->GetYaxis()->SetMaxDigits(3);
@@ -324,15 +329,15 @@ void AnalyseCorrelations(TString sInputName = "output.root")
             hCorr[it][ia]->Add(hCorrSideMassProj[it][ia], -1);
             hCorr[it][ia]->Add(hCorrSideSideProj[it][ia]);
             hCorr[it][ia]->Scale(1./(brGammaCh*brGammaCh)); // Correct for branching ratio
+            //hCorr[it][ia]->Scale(1./(0.72*0.72)); // Correct for missing photon pair at limit of acceptance
 
             if (it==0 && ia==0) {
                 leg2->AddEntry(hCorrMassMassProj[it][ia], "f_{mass,mass}", "l");
-                leg2->AddEntry(hCorr[it][ia], "f_{signal,signal}", "l");
+                leg2->AddEntry(hCorr[it][ia], "f_{SS}", "l");
                 leg2->AddEntry(hCorrRealProj[it][ia], "f_{real}", "l");
             }
 
             hCorrMassMassProj[it][ia]->Draw("HIST");
-            hCorrMassMassProj[it][ia]->GetYaxis()->SetMaxDigits(3);
             hCorr[it][ia]->Draw("HIST SAME");
             hCorrRealProj[it][ia]->Draw("HIST SAME");
             leg2->Draw("SAME");
@@ -342,9 +347,9 @@ void AnalyseCorrelations(TString sInputName = "output.root")
             hRatio[it][ia] = (TH1D*)hCorr[it][ia]->Clone(Form("hRatio%d:%d",it,ia));
             hRatio[it][ia]->Divide(hCorrRealProj[it][ia]);
             hRatio[it][ia]->GetYaxis()->SetRangeUser(0., 2.);
+            hRatio[it][ia]->SetTitle(Form("%.1f < p_{T,t} < %.1f GeV/c, %.1f < p_{T,a} < %.1f GeV/c; #Delta#phi; f_{SS}/f_{real}", triggPt[it], triggPt[it+1], assocPt[ia], assocPt[ia+1]));
             hRatio[it][ia]->Fit("pol1");
             hRatio[it][ia]->Draw();
-            gStyle->SetOptFit();
         }
     }
 }

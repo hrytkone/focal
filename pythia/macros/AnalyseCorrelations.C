@@ -329,7 +329,7 @@ void AnalyseCorrelations(TString sInputName = "output.root")
             hCorr[it][ia]->Add(hCorrSideMassProj[it][ia], -1);
             hCorr[it][ia]->Add(hCorrSideSideProj[it][ia]);
             hCorr[it][ia]->Scale(1./(brGammaCh*brGammaCh)); // Correct for branching ratio
-            //hCorr[it][ia]->Scale(1./(0.72*0.72)); // Correct for missing photon pair at limit of acceptance
+            hCorr[it][ia]->Scale(1./(0.95*0.95)); // Correct for missing photon pair at limit of acceptance
 
             if (it==0 && ia==0) {
                 leg2->AddEntry(hCorrMassMassProj[it][ia], "f_{mass,mass}", "l");

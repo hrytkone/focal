@@ -68,8 +68,8 @@ TLorentzVector GetPhotonSumVector(TClonesArray *arrayPhoton, int iPhoton1, int i
 int GetLeadingTriggerIndex(TClonesArray *arrPi0);
 int GetLargerTrigg(TClonesArray *arrPi0Peak, std::vector<int> listTriggPeak, TClonesArray *arrPi0Side, std::vector<int> listTriggSide);
 
-void DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vector<int> listAssoc, TH2D *hCorr[nTriggBins][nAssocBins]);
-void DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> listTrigg, TClonesArray *arrPi0Assoc, std::vector<int> listAssoc, TH2D *hCorr[nTriggBins][nAssocBins]);
+void DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vector<int> listAssoc, TH2D *hCorr[nTriggBins][nAssocBins], bool bUseWeight, TF1 *fPhotonAcceptanceEfficiency);
+void DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> listTrigg, TClonesArray *arrPi0Assoc, std::vector<int> listAssoc, TH2D *hCorr[nTriggBins][nAssocBins], bool bUseWeightTrigg, bool bUseWeightAssoc, TF1 *fPhotonAcceptanceEfficiency);
 void ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0Candidates, bool bMass);
 void GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector<int>& listTrigg, std::vector<int>& listAssoc, int *binsWithTrigg, bool bUseLeading);
 void FillRealTriggers(TH1D *hRealTriggCounter, TClonesArray *arrRealPi0, std::vector<int>& listTrigg);
@@ -103,6 +103,7 @@ int main(int argc, char *argv[]) {
     int nEvents = pythia.mode("Main:numberOfEvents");
 
     TF1 *fPhotonEfficiency = new TF1("fPhotonEfficiency", "TMath::Exp(-3.20093/x)"); // Parameters from fit to efficiency (PhotonEfficiency.C)
+    TF1 *fPhotonAcceptanceEfficiency = new TF1("fPhotonAcceptanceEfficiency", "TMath::Exp(-0.117082/(x + 0.0832931))"); // Parameters from fit (CheckMissingPionsRatio.C)
     TRandom3 *rand = new TRandom3();
 
     // Basic histograms
@@ -348,19 +349,19 @@ int main(int argc, char *argv[]) {
         FillPionMasses(arrPhotonFor, hPi0MassTrigg, hPi0MassAssocPeak, hPi0MassAssocSide, binsWithTriggPeak, binsWithTriggSide);
         FillRealTriggers(hRealTriggCounter, arrPi0For, listTriggReal);
        
-        DoCorrelations(arrPi0For, listTriggReal, listAssocReal, hCorrFor);
-        DoCorrelations(arrPi0Peak, listTriggPeak, listAssocPeak, hCorrMassMass);
-        DoCorrelations(arrPi0Side, listTriggSide, listAssocSide, hCorrSideSide);
+        DoCorrelations(arrPi0For, listTriggReal, listAssocReal, hCorrFor, 0, fPhotonAcceptanceEfficiency);
+        DoCorrelations(arrPi0Peak, listTriggPeak, listAssocPeak, hCorrMassMass, 1, fPhotonAcceptanceEfficiency);
+        DoCorrelations(arrPi0Side, listTriggSide, listAssocSide, hCorrSideSide, 0, fPhotonAcceptanceEfficiency);
         if (bUseLeading) {
             int isPeakTriggLarger = GetLargerTrigg(arrPi0Peak, listTriggPeak, arrPi0Side, listTriggSide);
             if (isPeakTriggLarger) {
-                DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0Side, listAssocSide, hCorrMassSide);
+                DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0Side, listAssocSide, hCorrMassSide, 1, 0, fPhotonAcceptanceEfficiency);
             } else {
-                DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, hCorrSideMass);
+                DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, hCorrSideMass, 0, 1, fPhotonAcceptanceEfficiency);
             }
         } else {
-            DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0Side, listAssocSide, hCorrMassSide);
-            DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, hCorrSideMass);
+            DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0Side, listAssocSide, hCorrMassSide, 1, 0, fPhotonAcceptanceEfficiency);
+            DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, hCorrSideMass, 0, 1, fPhotonAcceptanceEfficiency);
         }
     }
 
@@ -465,8 +466,11 @@ void GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector<int>& listTr
     }
 }
 
-void DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vector<int> listAssoc, TH2D *hCorr[nTriggBins][nAssocBins])
+void DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vector<int> listAssoc, TH2D *hCorr[nTriggBins][nAssocBins], bool bUseWeight, TF1 *fPhotonAcceptanceEfficiency)
 {
+    double wTrigg = 1.0;
+    double wAssoc = 1.0;
+
     int nTrigg = listTrigg.size();
     if (nTrigg < 1) return;
     
@@ -482,6 +486,8 @@ void DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vecto
         int nAssoc = listAssoc.size();       
         if (nAssoc < 1) continue;
 
+        if (bUseWeight) wTrigg = 1./fPhotonAcceptanceEfficiency->Eval(ptTrigg);
+        
         for (int ia = 0; ia < nAssoc; ia++) {
             int iAssoc = listAssoc[ia];
             if (iTrigg==iAssoc) continue; // autocorrelations
@@ -493,16 +499,21 @@ void DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vecto
 
             if (triggPt[iTriggBin] < assocPt[iAssocBin+1]) continue;
             
+            if (bUseWeight) wAssoc = 1./fPhotonAcceptanceEfficiency->Eval(ptAssoc); 
+
             double dphi = GetDeltaPhi(phiTrigg, phiAssoc);
             double deta = etaTrigg - etaAssoc;
-            hCorr[iTriggBin][iAssocBin]->Fill(dphi, deta);
+            hCorr[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
         }
     }
 
 }
 
-void DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> listTrigg, TClonesArray *arrPi0Assoc, std::vector<int> listAssoc, TH2D *hCorr[nTriggBins][nAssocBins])
+void DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> listTrigg, TClonesArray *arrPi0Assoc, std::vector<int> listAssoc, TH2D *hCorr[nTriggBins][nAssocBins], bool bUseWeightTrigg, bool bUseWeightAssoc, TF1 *fPhotonAcceptanceEfficiency)
 {
+    double wTrigg = 1.0;
+    double wAssoc = 1.0;
+    
     int nTrigg = listTrigg.size();
     if (nTrigg < 1) return;
 
@@ -516,6 +527,8 @@ void DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> listTrigg, TClon
         
         int nAssoc = listAssoc.size();       
         if (nAssoc < 1) continue;
+        
+        if (bUseWeightTrigg) wTrigg = 1./fPhotonAcceptanceEfficiency->Eval(ptTrigg);
 
         for (int ia = 0; ia < nAssoc; ia++) {
             int iAssoc = listAssoc[ia];
@@ -528,9 +541,11 @@ void DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> listTrigg, TClon
 
             if (triggPt[iTriggBin] < assocPt[iAssocBin+1]) continue;
             
+            if (bUseWeightAssoc) wAssoc = 1./fPhotonAcceptanceEfficiency->Eval(ptAssoc);
+            
             double dphi = GetDeltaPhi(phiTrigg, phiAssoc);
             double deta = etaTrigg - etaAssoc;
-            hCorr[iTriggBin][iAssocBin]->Fill(dphi, deta);
+            hCorr[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
         }
     }
 }

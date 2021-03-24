@@ -28,7 +28,6 @@ void PhotonEfficiency()
 
     std::cout << "Fit result (f(x) = exp(-a/x)) :" << std::endl;
     std::cout << "\ta=" << par[0] << std::endl;
-
     
     TCanvas *c = new TCanvas("c", "c", 600, 600);
     

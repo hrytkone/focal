@@ -1,3 +1,5 @@
+double Fit(double *x, double *p);
+
 void CheckMissingPionsRatio(TString sInputName = "output.root")
 {
 
@@ -28,7 +30,22 @@ void CheckMissingPionsRatio(TString sInputName = "output.root")
     hRatio->SetTitle("Ratio of detected #pi^{0}'s to all #pi^{0}'s in FoCal acceptance; p_{T} (GeV); Ratio");
     hRatio->GetYaxis()->SetTitleOffset(1.);
     hRatio->GetYaxis()->SetRangeUser(0., 1.2);
-    
+   
+    TF1 *fFit = new TF1("fFit", Fit, 0., 11., 2);
+    double par[2];
+    hRatio->Fit("fFit","Q0");
+    fFit->GetParameters(par);
+
+    std::cout << "Fit function : exp(a/(x + b))" << std::endl;
+    std::cout << "\ta = " << par[0] << std::endl;
+    std::cout << "\tb = " << par[1] << std::endl;
+
     TCanvas *cRatio = new TCanvas("cRatio", "cRatio", 600, 600);
     hRatio->Draw();
+    fFit->Draw("SAME");
+}
+
+double Fit(double *x, double *p)
+{
+    return TMath::Exp(p[0]/(x[0] + p[1]));
 }

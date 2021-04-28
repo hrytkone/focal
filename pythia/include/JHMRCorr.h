@@ -1,5 +1,5 @@
-#ifndef ALIJHMRDATAMANAGER_H
-#define ALIJHMRDATAMANAGER_H
+#ifndef JHMRCORR_H
+#define JHMRCORR_H
 
 #include <iostream>
 #include <fstream>
@@ -17,11 +17,11 @@
 using namespace std;
 using namespace Pythia8;
 
-class AliJHMRDataManager {
+class JHMRCorr {
   
 public:
     
-    AliJHMRDataManager():
+    JHMRCorr():
 
     bool IsTrackerAcceptance(double eta, double etaRange=etaTrackerRange);
     bool IsFocalAcceptance(double eta, double etaMin=etaFocalMin, double etaMax=etaFocalMax);
@@ -29,7 +29,7 @@ public:
     double GetDeltaPhi(double phiTrigg, double phiAssoc);
     double PhotonEnergySmearing(TRandom3 *rand, double px, double py, double pz);
     bool IsPhotonRemoved(double ePhoton, TRandom3 *rand, TF1 *fPhotonEff);
-TLorentzVector GetPhotonSumVector(TClonesArray *arrayPhoton, int iPhoton1, int iPhoton2);
+    TLorentzVector GetPhotonSumVector(TClonesArray *arrayPhoton, int iPhoton1, int iPhoton2);
     int GetLeadingTriggerIndex(TClonesArray *arrPi0);
     int GetLargerTrigg(TClonesArray *arrPi0Peak, std::vector<int> listTriggPeak, TClonesArray *arrPi0Side, std::vector<int> listTriggSide);
 
@@ -38,7 +38,6 @@ TLorentzVector GetPhotonSumVector(TClonesArray *arrayPhoton, int iPhoton1, int i
     void ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0Candidates, bool bMass);
     void GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector<int>& listTrigg, std::vector<int>& listAssoc, int *binsWithTrigg, bool bUseLeading);
 
-protected:
 
     //-------------------------
     //         pT bins        |

@@ -104,153 +104,50 @@ int main(int argc, char *argv[]) {
 
     int nEvents = pythia.mode("Main:numberOfEvents");
 
+    JHMRHist *fHistos = new JHMRHist();
+    JHMRPythiaCatalyst *fCatalyst = new JHMRPythiaCatalyst(histos);
+    JHMRCorr *fCorr = new JHMRCorr(histos);
+
     TF1 *fPhotonEfficiency = new TF1("fPhotonEfficiency", "TMath::Exp(-3.20093/x)"); // Parameters from fit to efficiency (PhotonEfficiency.C)
     TF1 *fPhotonAcceptanceEfficiency = new TF1("fPhotonAcceptanceEfficiency", "TMath::Exp(-0.117082/(x + 0.0832931))"); // Parameters from fit (CheckMissingPionsRatio.C)
     TRandom3 *rand = new TRandom3();
 
     fOut->cd();
-    
-    // Particle lists
-    TClonesArray *arrPi0Mid = new TClonesArray("TLorentzVector", 1500);
-    TClonesArray *arrPi0For = new TClonesArray("TLorentzVector", 1500);
-    TClonesArray *arrChargedMid = new TClonesArray("TLorentzVector", 1500);
-    TClonesArray *arrChargedFor = new TClonesArray("TLorentzVector", 1500);
-    TClonesArray *arrPhotonMid = new TClonesArray("TLorentzVector", 1500);
-    TClonesArray *arrPhotonFor = new TClonesArray("TLorentzVector", 1500);
-
-    TClonesArray *arrPi0Peak = new TClonesArray("TLorentzVector", 1500);
-    TClonesArray *arrPi0Side = new TClonesArray("TLorentzVector", 1500);
 
     // 
     // Loop over events
     //
     for ( int iEvent = 0; iEvent < nEvents; ++iEvent ) {
 
-        hCounter->Fill(0.5); // Number of events
-
         //std::cout << "event " << iEvent << std::endl;
 
         if ( !pythia.next() ) continue;
-
-        int nPi0Mid = 0;
-        int nPi0For = 0;
-        int nChargedMid = 0;
-        int nChargedFor = 0;
-        int nPhotonMid = 0;
-        int nPhotonFor = 0;
-
-        arrPi0Mid->Clear();
-        arrPi0For->Clear();
-        arrChargedMid->Clear();
-        arrChargedFor->Clear();
-        arrPhotonMid->Clear();
-        arrPhotonFor->Clear();
-    
-        arrPi0Peak->Clear(); 
-        arrPi0Side->Clear();
-
-        // Collect particles of interest
-        for (int iPart = 0; iPart < pythia.event.size(); iPart++) {
-
-            TLorentzVector lv(pythia.event[iPart].px(), pythia.event[iPart].py(), pythia.event[iPart].pz(), pythia.event[iPart].e());
-
-            if (pythia.event[iPart].id()==22) { // photons
-                double px = pythia.event[iPart].px();
-                double py = pythia.event[iPart].py();
-                double pz = pythia.event[iPart].pz();
-                double e = TMath::Sqrt(px*px + py*py + pz*pz);
-                double eSmear = PhotonEnergySmearing(rand, px, py, pz);
-     
-                hPhotonEnergyReal->Fill(eSmear);
-
-                if (!IsPhotonRemoved(eSmear, rand, fPhotonEfficiency)) {
-                    hPhotonEnergy->Fill(eSmear);
-                    TLorentzVector lvSmeared = TLorentzVector(eSmear*px/e, eSmear*py/e, eSmear*pz/e, eSmear);
-               
-                    hPhotonPt->Fill(TMath::Sqrt(px*px + py*py)); 
-                    double eta = pythia.event[iPart].eta();
-                    if (IsTrackerAcceptance(eta)) {
-                        new((*arrPhotonMid)[nPhotonMid++]) TLorentzVector(lvSmeared);
-                        hPhotonPtMid->Fill(TMath::Sqrt(px*px + py*py)); 
-                    }
-                    if (IsFocalAcceptance(eta)) {
-                        new((*arrPhotonFor)[nPhotonFor++]) TLorentzVector(lvSmeared);
-                        hPhotonPtFor->Fill(TMath::Sqrt(px*px + py*py)); 
-                    }
-                }
-            }
-
-            if (pythia.event[iPart].id()==111) { // Pions
-                double pt = pythia.event[iPart].pT();
-                double eta = pythia.event[iPart].eta();
-
-                hPionPt->Fill(pt);
-                hPionEta->Fill(eta);
-                if (IsTrackerAcceptance(eta)) {
-                    hPionPtMid->Fill(pt);
-                    new((*arrPi0Mid)[nPi0Mid++]) TLorentzVector(lv);
-                }
-                if (IsFocalAcceptance(eta)) {
-                    hPionPtFor->Fill(pt);
-                    new((*arrPi0For)[nPi0For++]) TLorentzVector(lv);
-                }
-
-                std::vector<int> daughterId = pythia.event[iPart].daughterList();
-                if ((daughterId[0] != daughterId[1]) && (daughterId[0] > 0) && (daughterId[1] > 0)) {
-                    if ( pythia.event[daughterId[0]].id() == 22 && pythia.event[daughterId[0]].id() == 22 ) {
-                        double eta0 = pythia.event[daughterId[0]].eta();
-                        double eta1 = pythia.event[daughterId[1]].eta();
-                        if (IsFocalAcceptance(eta0) && IsFocalAcceptance(eta1))
-                            hPionPtForDetected->Fill(pt);
-                    }
-                }
-            }
-
-            if (pythia.event[iPart].isFinal() && pythia.event[iPart].isHadron() && pythia.event[iPart].isCharged()) { // charged hadrons
-                double pt = pythia.event[iPart].pT();
-                double eta = pythia.event[iPart].eta();
-
-                hChargedHadronPt->Fill(pt);
-                hChargedHadronEta->Fill(eta);
-                if (IsTrackerAcceptance(eta)) {
-                    hChargedHadronPtMid->Fill(pt);
-                    new((*arrChargedMid)[nChargedMid++]) TLorentzVector(lv);
-               }
-                if (IsFocalAcceptance(eta)) {
-                    hChargedHadronPtFor->Fill(pt);
-                    new((*arrChargedFor)[nChargedFor++]) TLorentzVector(lv);
-                }
-            }
-        }
-
-        if (nPi0Mid>0) hCounter->Fill(1.5); // number of events with pion0 in mid rapidity
-        if (nPi0For>0) hCounter->Fill(2.5); // number of events with pion0 in forward rapidity 
         
-        ReconstructPions(arrPhotonFor, arrPi0Peak, 1);
-        ReconstructPions(arrPhotonFor, arrPi0Side, 0);
+        fCatalyst->ReconstructPions(arrPhotonFor, arrPi0Peak, 1);
+        fCatalyst->ReconstructPions(arrPhotonFor, arrPi0Side, 0);
 
         std::vector<int> listTriggReal, listAssocReal, listTriggPeak, listTriggSide, listAssocPeak, listAssocSide;
         int binsWithTriggReal[nTriggBins+1] = {0}, binsWithTriggPeak[nTriggBins+1] = {0}, binsWithTriggSide[nTriggBins+1] = {0};
-        GetTriggAssocLists(arrPi0For, listTriggReal, listAssocReal, binsWithTriggReal, bUseLeading); 
-        GetTriggAssocLists(arrPi0Peak, listTriggPeak, listAssocPeak, binsWithTriggPeak, bUseLeading); 
-        GetTriggAssocLists(arrPi0Side, listTriggSide, listAssocSide, binsWithTriggSide, bUseLeading); 
+        fCorr->GetTriggAssocLists(arrPi0For, listTriggReal, listAssocReal, binsWithTriggReal, bUseLeading); 
+        fCorr->GetTriggAssocLists(arrPi0Peak, listTriggPeak, listAssocPeak, binsWithTriggPeak, bUseLeading); 
+        fCorr->GetTriggAssocLists(arrPi0Side, listTriggSide, listAssocSide, binsWithTriggSide, bUseLeading); 
     
         FillPionMasses(arrPhotonFor, hPi0MassTrigg, hPi0MassAssocPeak, hPi0MassAssocSide, binsWithTriggPeak, binsWithTriggSide);
         FillRealTriggers(hRealTriggCounter, arrPi0For, listTriggReal);
        
-        DoCorrelations(arrPi0For, listTriggReal, listAssocReal, hCorrFor, 0, fPhotonAcceptanceEfficiency);
-        DoCorrelations(arrPi0Peak, listTriggPeak, listAssocPeak, hCorrMassMass, 1, fPhotonAcceptanceEfficiency);
-        DoCorrelations(arrPi0Side, listTriggSide, listAssocSide, hCorrSideSide, 0, fPhotonAcceptanceEfficiency);
+        fCorr->DoCorrelations(arrPi0For, listTriggReal, listAssocReal, hCorrFor, 0, fPhotonAcceptanceEfficiency);
+        fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, listAssocPeak, hCorrMassMass, 1, fPhotonAcceptanceEfficiency);
+        fCorr->DoCorrelations(arrPi0Side, listTriggSide, listAssocSide, hCorrSideSide, 0, fPhotonAcceptanceEfficiency);
         if (bUseLeading) {
-            int isPeakTriggLarger = GetLargerTrigg(arrPi0Peak, listTriggPeak, arrPi0Side, listTriggSide);
+            int isPeakTriggLarger = fCorr->GetLargerTrigg(arrPi0Peak, listTriggPeak, arrPi0Side, listTriggSide);
             if (isPeakTriggLarger) {
-                DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0Side, listAssocSide, hCorrMassSide, 1, 0, fPhotonAcceptanceEfficiency);
+                fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0Side, listAssocSide, hCorrMassSide, 1, 0, fPhotonAcceptanceEfficiency);
             } else {
-                DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, hCorrSideMass, 0, 1, fPhotonAcceptanceEfficiency);
+                fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, hCorrSideMass, 0, 1, fPhotonAcceptanceEfficiency);
             }
         } else {
-            DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0Side, listAssocSide, hCorrMassSide, 1, 0, fPhotonAcceptanceEfficiency);
-            DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, hCorrSideMass, 0, 1, fPhotonAcceptanceEfficiency);
+            fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0Side, listAssocSide, hCorrMassSide, 1, 0, fPhotonAcceptanceEfficiency);
+            fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, hCorrSideMass, 0, 1, fPhotonAcceptanceEfficiency);
         }
     }
 

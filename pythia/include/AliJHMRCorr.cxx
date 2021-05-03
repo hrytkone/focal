@@ -1,28 +1,28 @@
-#include "AliJHMRDataManager.h"
+#include "AliJHMRCorr.h"
 
-bool IsTrackerAcceptance(double eta, double etaRange)
+bool AliJHMRCorr::IsTrackerAcceptance(double eta, double etaRange)
 {
     return TMath::Abs(eta) < etaRange/2. ? true : false;
 }
 
-bool IsFocalAcceptance(double eta, double etaMin, double etaMax)
+bool AliJHMRCorr::IsFocalAcceptance(double eta, double etaMin, double etaMax)
 {
     return (eta > etaMin && eta < etaMax) ? true : false;
 }
 
-bool IsMassWindow(double mass)
+bool AliJHMRCorr::IsMassWindow(double mass)
 {
     return (mass > 110. && mass < 160.) ? true : false;
 }
 
-bool IsSideband(double mass)
+bool AliJHMRCorr::IsSideband(double mass)
 {
     return ((mass > 40. && mass < 80.) || (mass > 210. && mass < 280.)) ? true : false;
 }
 
 // Return 1 if trigger from peak has larger pT than trigger from sideband, 0 if sideband
 // trigger pT is larger
-int GetLargerTrigg(TClonesArray *arrPi0Peak, std::vector<int> listTriggPeak, TClonesArray *arrPi0Side, std::vector<int> listTriggSide)
+int AliJHMRCorr::GetLargerTrigg(TClonesArray *arrPi0Peak, std::vector<int> listTriggPeak, TClonesArray *arrPi0Side, std::vector<int> listTriggSide)
 {
     if (!listTriggPeak.size()) return 0;
     if (!listTriggSide.size()) return 1;
@@ -34,7 +34,7 @@ int GetLargerTrigg(TClonesArray *arrPi0Peak, std::vector<int> listTriggPeak, TCl
     return 0;
 }
 
-void ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0Candidates, bool bMass)
+void AliJHMRCorr::ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0Candidates, bool bMass)
 {
     int nCandidate = 0;
     int nPhoton = arrPhoton->GetEntriesFast();
@@ -49,7 +49,7 @@ void ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0Candidates, b
     }
 }
 
-void GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector<int>& listTrigg, std::vector<int>& listAssoc, int *binsWithTrigg, bool bUseLeading)
+void AliJHMRCorr::GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector<int>& listTrigg, std::vector<int>& listAssoc, int *binsWithTrigg, bool bUseLeading)
 {
     int iLeadingTrigg = -1;
     if (bUseLeading) {
@@ -73,7 +73,7 @@ void GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector<int>& listTr
     }
 }
 
-void DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vector<int> listAssoc, TH2D *hCorr[nTriggBins][nAssocBins], bool bUseWeight, TF1 *fPhotonAcceptanceEfficiency)
+void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vector<int> listAssoc, TH2D *hCorr[nTriggBins][nAssocBins], bool bUseWeight, TF1 *fPhotonAcceptanceEfficiency)
 {
     double wTrigg = 1.0;
     double wAssoc = 1.0;
@@ -116,7 +116,7 @@ void DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vecto
 
 }
 
-void DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> listTrigg, TClonesArray *arrPi0Assoc, std::vector<int> listAssoc, TH2D *hCorr[nTriggBins][nAssocBins], bool bUseWeightTrigg, bool bUseWeightAssoc, TF1 *fPhotonAcceptanceEfficiency)
+void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> listTrigg, TClonesArray *arrPi0Assoc, std::vector<int> listAssoc, TH2D *hCorr[nTriggBins][nAssocBins], bool bUseWeightTrigg, bool bUseWeightAssoc, TF1 *fPhotonAcceptanceEfficiency)
 {
     double wTrigg = 1.0;
     double wAssoc = 1.0;
@@ -157,7 +157,7 @@ void DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> listTrigg, TClon
     }
 }
 
-int GetBin(double arr[], int nArr, double val)
+int AliJHMRCorr::GetBin(double arr[], int nArr, double val)
 {   
     for (int i=0; i<nArr; i++) {
         if (arr[i]<=val && val<arr[i+1]) return i;
@@ -165,7 +165,7 @@ int GetBin(double arr[], int nArr, double val)
     return -1;
 }
 
-double GetDeltaPhi(double phiTrigg, double phiAssoc)
+double AliJHMRCorr::GetDeltaPhi(double phiTrigg, double phiAssoc)
 {
     double dphi = phiTrigg - phiAssoc;
     if (dphi>3.0*TMath::Pi()/2.0) return dphi - 2.0*TMath::Pi();
@@ -175,7 +175,7 @@ double GetDeltaPhi(double phiTrigg, double phiAssoc)
 
 // For FoCal:
 //      sigma/E = a/sqrt(E) + b = 0.27/sqrt(E) + 0.01
-double PhotonEnergySmearing(TRandom3 *rand, double px, double py, double pz)
+double AliJHMRCorr::PhotonEnergySmearing(TRandom3 *rand, double px, double py, double pz)
 {
     const double eCut = 0.01;
     double e = sqrt(px*px + py*py + pz*pz);
@@ -190,14 +190,14 @@ double PhotonEnergySmearing(TRandom3 *rand, double px, double py, double pz)
 }
 
 // To count in single photon efficiency
-bool IsPhotonRemoved(double ePhoton, TRandom3 *rand, TF1 *fPhotonEff)
+bool AliJHMRCorr::IsPhotonRemoved(double ePhoton, TRandom3 *rand, TF1 *fPhotonEff)
 {
     double photonEff = fPhotonEff->Eval(ePhoton);
     if (rand->Uniform() > photonEff) return true;
     return false;
 }
 
-TLorentzVector GetPhotonSumVector(TClonesArray *arrPhoton, int iPhoton1, int iPhoton2)
+TLorentzVector AliJHMRCorr::GetPhotonSumVector(TClonesArray *arrPhoton, int iPhoton1, int iPhoton2)
 {
     TLorentzVector *lv1 = (TLorentzVector*)arrPhoton->At(iPhoton1);
     TLorentzVector *lv2 = (TLorentzVector*)arrPhoton->At(iPhoton2);
@@ -206,7 +206,7 @@ TLorentzVector GetPhotonSumVector(TClonesArray *arrPhoton, int iPhoton1, int iPh
     return lvSum;
 }
 
-int GetLeadingTriggerIndex(TClonesArray *arrPi0)
+int AliJHMRCorr::GetLeadingTriggerIndex(TClonesArray *arrPi0)
 {
     int itrigg = -1;
     double pTmax = 0;

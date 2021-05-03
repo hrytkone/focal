@@ -1,5 +1,7 @@
-#ifndef JHMRCORR_H
-#define JHMRCORR_H
+#ifndef ALIJHMRCORR_H
+#define ALIJHMRCORR_H
+
+#include "AliJHMRConst.h"
 
 #include <iostream>
 #include <fstream>
@@ -17,11 +19,11 @@
 using namespace std;
 using namespace Pythia8;
 
-class JHMRCorr {
+class AliJHMRCorr {
   
 public:
     
-    JHMRCorr():
+    AliJHMRCorr():
 
     bool IsTrackerAcceptance(double eta, double etaRange=etaTrackerRange);
     bool IsFocalAcceptance(double eta, double etaMin=etaFocalMin, double etaMax=etaFocalMax);
@@ -38,19 +40,8 @@ public:
     void ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0Candidates, bool bMass);
     void GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector<int>& listTrigg, std::vector<int>& listAssoc, int *binsWithTrigg, bool bUseLeading);
 
-
-    //-------------------------
-    //         pT bins        |
-    //-------------------------
-    const int nTriggBins = 4;
-    double  triggPt[nTriggBins+1] = {1.0, 2.0, 4.0, 8.0, 20.0};
-    //double  triggPt[nTriggBins+1] = {3.0, 1000.0};
-    //double  triggPt[nTriggBins+1] = {3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 12.0, 15.0, 20.0};
-
-    const int nAssocBins = 4;
-    double  assocPt[nAssocBins+1] = {0.5, 1.0, 2.0, 3.0, 4.0};
-    //double  assocPt[nAssocBins+1] = {3.0, 1000.0};
-    //double  assocPt[nAssocBins+1] = {1.0, 2.0, 3.0, 4.0, 6.0, 8.0, 10.0, 15.0};
+    bool IsMassWindow(double mass);
+    bool IsSideband(double mass);
   
 };
 

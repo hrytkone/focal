@@ -1,54 +1,42 @@
 #include "AliJHMRHist.h"
 
-void CreateHistos() {
+
+void AliJHMRHist::CreateHistos() {
     // Basic histograms
-    TH1D *hCounter = new TH1D("hCounter", "hCounter", 10, 0, 10);
-    TH1D *hRealTriggCounter = new TH1D("hRealTriggCounter", "hRealtriggCounter", 10, 0, 10);
+    hCounter = new TH1D("hCounter", "hCounter", 10, 0, 10);
+    hRealTriggCounter = new TH1D("hRealTriggCounter", "hRealtriggCounter", 10, 0, 10);
     
     for (int i = 0; i <= nIncPtBin; i++) logBinsX[i] = limMin*exp(i*logBW);
     
-    TH1D *hPionPt = new TH1D("hPionPt", "hPionPt", nIncPtBin, logBinsX); hPionPt->Sumw2();
-    TH1D *hPionPtFor = new TH1D("hPionPtFor", "hPionPtFor", nIncPtBin, logBinsX); hPionPtFor->Sumw2();
-    TH1D *hPionPtForDetected = new TH1D("hPionPtForDetected", "hPionPtForDetected", nIncPtBin, logBinsX); hPionPtForDetected->Sumw2();
-    TH1D *hPionPtMid = new TH1D("hPionPtMid", "hPionPtMid", nIncPtBin, logBinsX); hPionPtMid->Sumw2();
+    hPionPt = new TH1D("hPionPt", "hPionPt", nIncPtBin, logBinsX); hPionPt->Sumw2();
+    hPionPtFor = new TH1D("hPionPtFor", "hPionPtFor", nIncPtBin, logBinsX); hPionPtFor->Sumw2();
+    hPionPtForDetected = new TH1D("hPionPtForDetected", "hPionPtForDetected", nIncPtBin, logBinsX); hPionPtForDetected->Sumw2();
+    hPionPtMid = new TH1D("hPionPtMid", "hPionPtMid", nIncPtBin, logBinsX); hPionPtMid->Sumw2();
     
-    TH1D *hChargedHadronPt = new TH1D("hChargedHadronPt", "hChargedHadronPt", nIncPtBin, logBinsX); hChargedHadronPt->Sumw2();
-    TH1D *hChargedHadronPtFor = new TH1D("hChargedHadronPtFor", "hChargedHadronPtFor", nIncPtBin, logBinsX); hChargedHadronPtFor->Sumw2();
-    TH1D *hChargedHadronPtMid = new TH1D("hChargedHadronPtMid", "hChargedHadronPtMid", nIncPtBin, logBinsX); hChargedHadronPtMid->Sumw2();
+    hChargedHadronPt = new TH1D("hChargedHadronPt", "hChargedHadronPt", nIncPtBin, logBinsX); hChargedHadronPt->Sumw2();
+    hChargedHadronPtFor = new TH1D("hChargedHadronPtFor", "hChargedHadronPtFor", nIncPtBin, logBinsX); hChargedHadronPtFor->Sumw2();
+    hChargedHadronPtMid = new TH1D("hChargedHadronPtMid", "hChargedHadronPtMid", nIncPtBin, logBinsX); hChargedHadronPtMid->Sumw2();
 
-    TH1D *hPhotonPt = new TH1D("hPhotonPt", "hPhotonPt", nIncPtBin, logBinsX); hPhotonPt->Sumw2();
-    TH1D *hPhotonPtFor = new TH1D("hPhotonPtFor", "hPhotonPtFor", nIncPtBin, logBinsX); hPhotonPtFor->Sumw2();
-    TH1D *hPhotonPtMid = new TH1D("hPhotonPtMid", "hPhotonPtMid", nIncPtBin, logBinsX); hPhotonPtMid->Sumw2();
-    TH1D *hPhotonEnergyReal = new TH1D("hPhotonEnergyReal", "hPhotonEnergyReal", nPhotonEnergyBin, limPhotonEnergyMin, limPhotonEnergyMax); hPhotonEnergyReal->Sumw2();
-    TH1D *hPhotonEnergy = new TH1D("hPhotonEnergy", "hPhotonEnergy", nPhotonEnergyBin, limPhotonEnergyMin, limPhotonEnergyMax); hPhotonEnergy->Sumw2();
+    hPhotonPt = new TH1D("hPhotonPt", "hPhotonPt", nIncPtBin, logBinsX); hPhotonPt->Sumw2();
+    hPhotonPtFor = new TH1D("hPhotonPtFor", "hPhotonPtFor", nIncPtBin, logBinsX); hPhotonPtFor->Sumw2();
+    hPhotonPtMid = new TH1D("hPhotonPtMid", "hPhotonPtMid", nIncPtBin, logBinsX); hPhotonPtMid->Sumw2();
+    hPhotonEnergyReal = new TH1D("hPhotonEnergyReal", "hPhotonEnergyReal", nPhotonEnergyBin, limPhotonEnergyMin, limPhotonEnergyMax); hPhotonEnergyReal->Sumw2();
+    hPhotonEnergy = new TH1D("hPhotonEnergy", "hPhotonEnergy", nPhotonEnergyBin, limPhotonEnergyMin, limPhotonEnergyMax); hPhotonEnergy->Sumw2();
     
-    TH1D *hPionEta = new TH1D("hPionEta", "hPionEta", nIncEtaBin, -incEtaRange/2., incEtaRange/2.); hPionEta->Sumw2();
-    TH1D *hChargedHadronEta = new TH1D("hChargedHadronEta", "hChargedHadronEta", nIncEtaBin, -incEtaRange/2., incEtaRange/2.); hChargedHadronEta->Sumw2();
+    hPionEta = new TH1D("hPionEta", "hPionEta", nIncEtaBin, -incEtaRange/2., incEtaRange/2.); hPionEta->Sumw2();
+    hChargedHadronEta = new TH1D("hChargedHadronEta", "hChargedHadronEta", nIncEtaBin, -incEtaRange/2., incEtaRange/2.); hChargedHadronEta->Sumw2();
 
     // Correlation and mass histograms
-    TDirectory *dirMasses = fOut->mkdir("Masses");
-    TDirectory *dirCorrMid = fOut->mkdir("CorrMid");
-    TDirectory *dirCorrFor = fOut->mkdir("CorrFor");
-    TDirectory *dirCorrChargedMid = fOut->mkdir("CorrChargedMid");
-    TDirectory *dirCorrChargedFor = fOut->mkdir("CorrChargedFor");
-    TDirectory *dirCorrMassMass = fOut->mkdir("CorrMassMass");
-    TDirectory *dirCorrMassSide = fOut->mkdir("CorrMassSide");
-    TDirectory *dirCorrSideMass = fOut->mkdir("CorrSideMass");
-    TDirectory *dirCorrSideSide = fOut->mkdir("CorrSideSide");
+    dirMasses = fOut->mkdir("Masses");
+    dirCorrMid = fOut->mkdir("CorrMid");
+    dirCorrFor = fOut->mkdir("CorrFor");
+    dirCorrChargedMid = fOut->mkdir("CorrChargedMid");
+    dirCorrChargedFor = fOut->mkdir("CorrChargedFor");
+    dirCorrMassMass = fOut->mkdir("CorrMassMass");
+    dirCorrMassSide = fOut->mkdir("CorrMassSide");
+    dirCorrSideMass = fOut->mkdir("CorrSideMass");
+    dirCorrSideSide = fOut->mkdir("CorrSideSide");
 
-    TH1D *hPi0MassTrigg[nTriggBins];
-    TH1D *hPi0MassAssocPeak[nTriggBins][nAssocBins];
-    TH1D *hPi0MassAssocSide[nTriggBins][nAssocBins];
- 
-    TH2D *hCorrMid[nTriggBins][nAssocBins];
-    TH2D *hCorrFor[nTriggBins][nAssocBins];
-    TH2D *hCorrChargedMid[nTriggBins][nAssocBins];
-    TH2D *hCorrChargedFor[nTriggBins][nAssocBins];
-    
-    TH2D *hCorrMassMass[nTriggBins][nAssocBins];
-    TH2D *hCorrMassSide[nTriggBins][nAssocBins];
-    TH2D *hCorrSideMass[nTriggBins][nAssocBins];
-    TH2D *hCorrSideSide[nTriggBins][nAssocBins];
 
     for (int i = 0; i < nTriggBins; i++) {
         double tlow = triggPt[i];

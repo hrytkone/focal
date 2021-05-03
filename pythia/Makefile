@@ -1,60 +1,59 @@
-# Makefile is a part of the PYTHIA event generator.
-# Copyright (C) 2018 Torbjorn Sjostrand.
-# PYTHIA is licenced under the GNU GPL v2 or later, see COPYING for details.
-# Please respect the MCnet Guidelines, see GUIDELINES for details.
-# Author: Philip Ilten, September 2014.
-#
-# This is is the Makefile used to build PYTHIA examples on POSIX systems.
-# Example usage is:
-#     make main01
-# For help using the make command please consult the local system documentation,
-# i.e. "man make" or "make --help".
+PROGRAM       = focalPionCorrelation
 
-################################################################################
-# VARIABLES: Definition of the relevant variables from the configuration script.
-################################################################################
+version       = JTKT
+CXX           = g++
+CXXFLAGS      = -O -Wall -g -Wno-deprecated -D$(version)
+LD            = g++
+LDFLAGS       = -O
+SOFLAGS       = -shared
+#############################################
+# -bind_at_load helps to remove linker error
+############################################
+CXXFLAGS += $(shell root-config --cflags)
+LDFLAGS  = $(shell root-config --libs)
+#CXXFLAGS += $(shell $(FASTJET)/bin/fastjet-config --cxxflags )
+#LDFLAGS += $(shell $(FASTJET)/bin/fastjet-config --libs --plugins )
+#LDFLAGS += -L$(FASTJET)/lib -lfastjettools -lfastjet -lfastjetplugins -lsiscone_spherical -lsiscone
+LDFLAGS += -L$(PYTHIA8)/lib -lpythia8
+INCS    += -I$(PYTHIA8)/include
+CXXFLAGS  += $(INCS)
+LDFLAGS += $L -ldl
 
-# Set the shell.
-SHELL=/usr/bin/env bash
+HDRSDICT = include/AliJBaseTrack.h include/AliJHMRHist.h include/AliJHMRCorr.h include/AliJHMRPythiaCatalyst.h
+           
+HDRS	+= $(HDRSDICT)  nanoDict.h
 
-# Include the configuration.
--include Makefile.inc
 
-# Check distribution (use local version first, then installed version).
-ifneq ("$(wildcard ../lib/libpythia8.*)","")
-  PREFIX_LIB=../lib
-  PREFIX_INCLUDE=../include
-endif
-CXX_COMMON:=-I$(PREFIX_INCLUDE) $(CXX_COMMON) $(GZIP_LIB)
-CXX_COMMON+= -L$(PREFIX_LIB) -Wl,-rpath,$(PREFIX_LIB) -lpythia8 -ldl
-PYTHIA=$(PREFIX_LIB)/libpythia8$(LIB_SUFFIX)
+SRCS = $(HDRS:.h=.cxx)
+OBJS = $(HDRS:.h=.o)
 
-################################################################################
-# RULES: Definition of the rules used to build the PYTHIA examples.
-################################################################################
+all:            $(PROGRAM)
 
-# Rules without physical targets (secondary expansion for specific rules).
-.SECONDEXPANSION:
-.PHONY: all clean
+$(PROGRAM):     $(OBJS) $(PROGRAM).cc
+		@echo "Linking $(PROGRAM) ..."
+		$(CXX)  -lPhysics -L$(PWD) $(PROGRAM).cc $(CXXFLAGS) $(OBJS) $(LDFLAGS) -o $(PROGRAM) 
+		@echo "finally done"
 
-# All targets (no default behavior).
-all:
-	$(info Usage: make focalPionCorrelation)
+%.cxx:
 
-# PYTHIA library.
-$(PYTHIA):
-	$(error Error: PYTHIA must be built, please run "make"\
-                in the top PYTHIA directory)
+%: %.cxx
+#  commands to execute (built-in):
+	$(LINK.cc) $^ $(CXXFLAGS) $(LOADLIBES) $(LDLIBS) -o $@
 
-focalPionCorrelation: $(PYTHIA) $$@.cc
-ifeq ($(ROOT_USE),true)
-	$(CXX) $@.cc -o $@ -w $(CXX_COMMON) $(ROOT_LIB)\
-	 `${ROOT_CONFIG} --cflags --glibs --libs`
-else
-	@echo "Error: $@ requires ROOT"
-endif
+%.o: %.cxx %.h
+	@echo "Compile"
+	@echo "$(OUTPUT_OPTION)"
+#  commands to execute (built-in):
+	$(COMPILE.cc) $(OUTPUT_OPTION) $<
+	@echo "Done"
 
-# Clean.
-.PHONY : clean
-clean :
-	-rm -f focalPionCorrelation
+
+clean:
+		rm -f $(OBJS) core *Dict* $(PROGRAM).o *.d $(PROGRAM) $(PROGRAM).sl
+
+cl:  clean $(PROGRAM)
+
+nanoDict.cc: $(HDRSDICT)
+		@echo "Generating dictionary ..."
+		@rm -f nanoDict.cc nanoDict.hh nanoDict.h
+		@rootcint nanoDict.cc -c -D$(version) $(HDRSDICT) $(INCS)

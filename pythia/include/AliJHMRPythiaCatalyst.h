@@ -1,10 +1,10 @@
 //===========================================================
-// JHMRPythiaCatalyst.h
+// AliJHMRPythiaCatalyst.h
 // DongJo Kim (dong.jo.kim@cern.ch)
 //===========================================================
 
-#ifndef JHMRPYTHIACATALYST_H
-#define JHMRPYTHIACATALYST_H
+#ifndef ALIJHMRPYTHIACATALYST_H
+#define ALIJHMRPYTHIACATALYST_H
 
 #include <iostream>
 #include <fstream>
@@ -17,19 +17,19 @@
 #include "TClonesArray.h"
 #include "TRandom3.h"
 
-#include "../JCORRAN/Base/AliJBaseTrack.h"
-#include "JHMRHist.h"
+#include "AliJBaseTrack.h"
+#include "AliJHMRHist.h"
 #include "set"
 #include "map"
 
 using namespace std;
 using namespace Pythia8; 
 
-class JHMRPythiaCatalyst {
+class AliJHMRPythiaCatalyst {
 
 	public:
 
-		JHMRPythiaCatalyst (Event &inevent, JHMRHist *inhistos): 
+		AliJHMRPythiaCatalyst (Event &inevent, AliJHMRHist *inhistos): 
 			event(inevent),
 			histos(inhistos){
 

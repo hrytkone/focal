@@ -19,11 +19,12 @@
 
 #include "AliJBaseTrack.h"
 #include "AliJHMRHist.h"
+#include "AliJHMRConst.h"
 #include "set"
 #include "map"
 
 using namespace std;
-using namespace Pythia8; 
+using namespace Pythia8;
 
 class AliJHMRPythiaCatalyst {
 
@@ -43,8 +44,8 @@ class AliJHMRPythiaCatalyst {
 			UniqueID=0;
 		}
 
-		void GetParticles(int = 0);
-		TClonesArray * GetInputList() const{return fInputList;}
+		void GetParticles(particleType iType);
+		TClonesArray * GetInputList() const {return fInputList;}
 
 		TRandom3 *unif;
 
@@ -53,7 +54,7 @@ class AliJHMRPythiaCatalyst {
 		TClonesArray *fInputList;  // tracklist
 
 		Event &event;
-		JHMRHist *histos;
+		AliJHMRHist *histos;
 
 		double TrackEtaRange ;
 

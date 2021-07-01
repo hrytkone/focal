@@ -26,12 +26,13 @@
 #include <iostream>
 #include <TLorentzVector.h>
 #include <TMath.h>
-#include  "AliJConst.h"
 
 using namespace std;
 
 class AliJBaseTrack : public TLorentzVector {
     public:
+        const double kJPi = TMath::Pi();
+        const double kJTwoPi = TMath::Pi();
         enum { kIsIsolated,kPrimary,kNFlag };
         AliJBaseTrack();
         AliJBaseTrack(float px,float py, float pz, float e, Int_t id, Short_t ptype, Char_t charge); // constructor
@@ -40,7 +41,7 @@ class AliJBaseTrack : public TLorentzVector {
         virtual ~AliJBaseTrack(){;}    //destructor
 
         double EtaAbs(){ return TMath::Abs(Eta()); }
-        float   GetTwoPiPhi() const {return Phi()>-kJPi/3 ? Phi() : kJTwoPi+Phi();} 
+        float GetTwoPiPhi() const {return Phi()>-kJPi/3 ? Phi() : kJTwoPi+Phi();} 
         TLorentzVector GetLorentzVector(){ return TLorentzVector(Px(), Py(), Pz(), E());}
 
         Int_t         GetID()           const { return fID;}

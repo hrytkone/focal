@@ -1,5 +1,12 @@
 #include "AliJHMRCorr.h"
 
+AliJHMRCorr::AliJHMRCorr()
+{
+    fPhotonEfficiency = new TF1("fPhotonEfficiency", "TMath::Exp(-3.20093/x)"); // Parameters from fit to efficiency (PhotonEfficiency.C)
+    fPhotonAcceptanceEfficiency = new TF1("fPhotonAcceptanceEfficiency", "TMath::Exp(-0.117082/(x + 0.0832931))"); // Parameters from fit (CheckMissingPionsRatio.C)
+    fRand = new TRandom3();
+}
+
 bool AliJHMRCorr::IsTrackerAcceptance(double eta, double etaRange)
 {
     return TMath::Abs(eta) < etaRange/2. ? true : false;
@@ -73,7 +80,7 @@ void AliJHMRCorr::GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector
     }
 }
 
-void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vector<int> listAssoc, TH2D *hCorr[nTriggBins][nAssocBins], bool bUseWeight, TF1 *fPhotonAcceptanceEfficiency)
+void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vector<int> listAssoc, TH2D *hCorr[nTriggBins][nAssocBins], bool bUseWeight)
 {
     double wTrigg = 1.0;
     double wAssoc = 1.0;
@@ -116,7 +123,7 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrig
 
 }
 
-void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> listTrigg, TClonesArray *arrPi0Assoc, std::vector<int> listAssoc, TH2D *hCorr[nTriggBins][nAssocBins], bool bUseWeightTrigg, bool bUseWeightAssoc, TF1 *fPhotonAcceptanceEfficiency)
+void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> listTrigg, TClonesArray *arrPi0Assoc, std::vector<int> listAssoc, TH2D *hCorr[nTriggBins][nAssocBins], bool bUseWeightTrigg, bool bUseWeightAssoc)
 {
     double wTrigg = 1.0;
     double wAssoc = 1.0;
@@ -175,7 +182,7 @@ double AliJHMRCorr::GetDeltaPhi(double phiTrigg, double phiAssoc)
 
 // For FoCal:
 //      sigma/E = a/sqrt(E) + b = 0.27/sqrt(E) + 0.01
-double AliJHMRCorr::PhotonEnergySmearing(TRandom3 *rand, double px, double py, double pz)
+double AliJHMRCorr::PhotonEnergySmearing(double px, double py, double pz)
 {
     const double eCut = 0.01;
     double e = sqrt(px*px + py*py + pz*pz);
@@ -185,15 +192,15 @@ double AliJHMRCorr::PhotonEnergySmearing(TRandom3 *rand, double px, double py, d
     double b = 0.01;
     double sigma = sqrt(a*a*e + b*b*e*e);
     double eSmear = -1.0;
-    while (eSmear < 0.0) eSmear = rand->Gaus(e, sigma);
+    while (eSmear < 0.0) eSmear = fRand->Gaus(e, sigma);
     return eSmear;
 }
 
 // To count in single photon efficiency
-bool AliJHMRCorr::IsPhotonRemoved(double ePhoton, TRandom3 *rand, TF1 *fPhotonEff)
+bool AliJHMRCorr::IsPhotonRemoved(double ePhoton)
 {
-    double photonEff = fPhotonEff->Eval(ePhoton);
-    if (rand->Uniform() > photonEff) return true;
+    double photonEff = fPhotonEfficiency->Eval(ePhoton);
+    if (fRand->Uniform() > photonEff) return true;
     return false;
 }
 
@@ -221,3 +228,38 @@ int AliJHMRCorr::GetLeadingTriggerIndex(TClonesArray *arrPi0)
     }
     return itrigg;
 }
+
+void AliJHMRCorr::FillRealTriggers(AliJHMRHist *histos, TClonesArray *arrRealPi0, std::vector<int>& listTrigg)
+{
+    int nTrigg = listTrigg.size();
+    if (nTrigg < 1) return;
+    
+    for (int it = 0; it < nTrigg; it++) {
+        int iTrigg = listTrigg[it];
+        TLorentzVector *lvTrigg = (TLorentzVector*)arrRealPi0->At(iTrigg);
+        double ptTrigg = lvTrigg->Pt();
+        int iTriggBin = GetBin(triggPt, nTriggBins, ptTrigg);
+        histos->hRealTriggCounter->Fill(iTriggBin+0.5);
+    }
+}
+
+void AliJHMRCorr::FillPionMasses(TClonesArray *arrPhoton, AliJHMRHist *histos, int binsWithTriggPeak[nTriggBins], int binsWithTriggSide[nTriggBins])
+{
+    int nPhoton = arrPhoton->GetEntriesFast();
+    for (int i = 1; i < nPhoton; i++) {
+        for (int j = 0; j < i; j++) {
+            TLorentzVector lvSum = GetPhotonSumVector(arrPhoton, i, j);
+            double mass = 1000.*lvSum.M();
+            double pT = lvSum.Pt();
+            int iTriggBin = GetBin(triggPt, nTriggBins, pT);
+            int iAssocBin = GetBin(assocPt, nAssocBins, pT);
+            if (iTriggBin >= 0) histos->hPi0MassTrigg[iTriggBin]->Fill(mass);
+            for (int it = 0; it < nTriggBins; it++) {
+                if (triggPt[it] < assocPt[iAssocBin+1]) continue;
+                if (binsWithTriggPeak[it] > 0 && iAssocBin >= 0) histos->hPi0MassAssocPeak[it][iAssocBin]->Fill(mass);
+                if (binsWithTriggSide[it] > 0 && iAssocBin >= 0) histos->hPi0MassAssocSide[it][iAssocBin]->Fill(mass);
+            }
+        }
+    }
+}
+

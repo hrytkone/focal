@@ -24,57 +24,54 @@ class AliJHMRHist {
         AliJHMRHist(const AliJHMRHist& obj);
         AliJHMRHist& operator=(const AliJHMRHist& obj);
 
-
         // create histograms 
-        void CreateHistos();
+        void CreateHistos(TFile *output);
+        
+        TH1D *hCounter;
+        TH1D *hRealTriggCounter;
 
-    protected:
+        TH1D *hPionPt;
+        TH1D *hPionPtFor;
+        TH1D *hPionPtForDetected;
+        TH1D *hPionPtMid;
+        
+        TH1D *hChargedHadronPt;
+        TH1D *hChargedHadronPtFor;
+        TH1D *hChargedHadronPtMid;
 
-    //-------------------------
-    //  Histogram parameters  |
-    //-------------------------
+        TH1D *hPhotonPt;
+        TH1D *hPhotonPtFor;
+        TH1D *hPhotonPtMid;
+        TH1D *hPhotonEnergyReal;
+        TH1D *hPhotonEnergy;
+        
+        TH1D *hPionEta;
+        TH1D *hChargedHadronEta;
 
-    TH1D *hPionPt;
-    TH1D *hPionPtFor;
-    TH1D *hPionPtForDetected;
-    TH1D *hPionPtMid;
-    
-    TH1D *hChargedHadronPt;
-    TH1D *hChargedHadronPtFor;
-    TH1D *hChargedHadronPtMid;
+        TH2D *hCorrMid[nTriggBins][nAssocBins];
+        TH2D *hCorrFor[nTriggBins][nAssocBins];
+        TH2D *hCorrChargedMid[nTriggBins][nAssocBins];
+        TH2D *hCorrChargedFor[nTriggBins][nAssocBins];
+        
+        TH2D *hCorrMassMass[nTriggBins][nAssocBins];
+        TH2D *hCorrMassSide[nTriggBins][nAssocBins];
+        TH2D *hCorrSideMass[nTriggBins][nAssocBins];
+        TH2D *hCorrSideSide[nTriggBins][nAssocBins];
 
-    TH1D *hPhotonPt;
-    TH1D *hPhotonPtFor;
-    TH1D *hPhotonPtMid;
-    TH1D *hPhotonEnergyReal;
-    TH1D *hPhotonEnergy;
-    
-    TH1D *hPionEta;
-    TH1D *hChargedHadronEta;
+        TH1D *hPi0MassTrigg[nTriggBins];
+        TH1D *hPi0MassAssocPeak[nTriggBins][nAssocBins];
+        TH1D *hPi0MassAssocSide[nTriggBins][nAssocBins];
 
-    TH2D *hCorrMid[nTriggBins][nAssocBins];
-    TH2D *hCorrFor[nTriggBins][nAssocBins];
-    TH2D *hCorrChargedMid[nTriggBins][nAssocBins];
-    TH2D *hCorrChargedFor[nTriggBins][nAssocBins];
-    
-    TH2D *hCorrMassMass[nTriggBins][nAssocBins];
-    TH2D *hCorrMassSide[nTriggBins][nAssocBins];
-    TH2D *hCorrSideMass[nTriggBins][nAssocBins];
-    TH2D *hCorrSideSide[nTriggBins][nAssocBins];
+        TDirectory *dirMasses;
+        TDirectory *dirCorrMid;
+        TDirectory *dirCorrFor;
+        TDirectory *dirCorrChargedMid;
+        TDirectory *dirCorrChargedFor;
+        TDirectory *dirCorrMassMass;
+        TDirectory *dirCorrMassSide;
+        TDirectory *dirCorrSideMass;
+        TDirectory *dirCorrSideSide;
 
-    TH1D *hPi0MassTrigg[nTriggBins];
-    TH1D *hPi0MassAssocPeak[nTriggBins][nAssocBins];
-    TH1D *hPi0MassAssocSide[nTriggBins][nAssocBins];
-
-    TDirectory *dirMasses;
-    TDirectory *dirCorrMid;
-    TDirectory *dirCorrFor;
-    TDirectory *dirCorrChargedMid;
-    TDirectory *dirCorrChargedFor;
-    TDirectory *dirCorrMassMass;
-    TDirectory *dirCorrMassSide;
-    TDirectory *dirCorrSideMass;
-    TDirectory *dirCorrSideSide;
 };
 
 #endif

@@ -23,7 +23,6 @@ HDRSDICT = include/AliJBaseTrack.h include/AliJHMRHist.h include/AliJHMRCorr.h i
            
 HDRS	+= $(HDRSDICT)  nanoDict.h
 
-
 SRCS = $(HDRS:.h=.cxx)
 OBJS = $(HDRS:.h=.o)
 

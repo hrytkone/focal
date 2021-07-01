@@ -1,7 +1,6 @@
 #include "AliJHMRHist.h"
 
-
-void AliJHMRHist::CreateHistos() {
+void AliJHMRHist::CreateHistos(TFile *output) {
     // Basic histograms
     hCounter = new TH1D("hCounter", "hCounter", 10, 0, 10);
     hRealTriggCounter = new TH1D("hRealTriggCounter", "hRealtriggCounter", 10, 0, 10);
@@ -27,16 +26,15 @@ void AliJHMRHist::CreateHistos() {
     hChargedHadronEta = new TH1D("hChargedHadronEta", "hChargedHadronEta", nIncEtaBin, -incEtaRange/2., incEtaRange/2.); hChargedHadronEta->Sumw2();
 
     // Correlation and mass histograms
-    dirMasses = fOut->mkdir("Masses");
-    dirCorrMid = fOut->mkdir("CorrMid");
-    dirCorrFor = fOut->mkdir("CorrFor");
-    dirCorrChargedMid = fOut->mkdir("CorrChargedMid");
-    dirCorrChargedFor = fOut->mkdir("CorrChargedFor");
-    dirCorrMassMass = fOut->mkdir("CorrMassMass");
-    dirCorrMassSide = fOut->mkdir("CorrMassSide");
-    dirCorrSideMass = fOut->mkdir("CorrSideMass");
-    dirCorrSideSide = fOut->mkdir("CorrSideSide");
-
+    dirMasses = output->mkdir("Masses");
+    dirCorrMid = output->mkdir("CorrMid");
+    dirCorrFor = output->mkdir("CorrFor");
+    dirCorrChargedMid = output->mkdir("CorrChargedMid");
+    dirCorrChargedFor = output->mkdir("CorrChargedFor");
+    dirCorrMassMass = output->mkdir("CorrMassMass");
+    dirCorrMassSide = output->mkdir("CorrMassSide");
+    dirCorrSideMass = output->mkdir("CorrSideMass");
+    dirCorrSideSide = output->mkdir("CorrSideSide");
 
     for (int i = 0; i < nTriggBins; i++) {
         double tlow = triggPt[i];
@@ -102,4 +100,3 @@ void AliJHMRHist::CreateHistos() {
         }
     }
 }
-

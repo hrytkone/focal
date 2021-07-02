@@ -49,7 +49,7 @@ void AliJHMRCorr::ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0
         for (int j = 0; j < i; j++) {
             TLorentzVector lvSum = GetPhotonSumVector(arrPhoton, i, j);
             double mass = 1000.*lvSum.M();
-            double pT = lvSum.Pt();
+            //double pT = lvSum.Pt();
             bool bIsInWindow = bMass ? IsMassWindow(mass) : IsSideband(mass); 
             if (bIsInWindow) new ((*arrPi0Candidates)[nCandidate++]) TLorentzVector(lvSum);
         }
@@ -68,8 +68,8 @@ void AliJHMRCorr::GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector
     for (int i = 0; i < nPi0Candidates; i++) {
         TLorentzVector *lvPion = (TLorentzVector*)arrPi0Candidates->At(i);
         double pT = lvPion->Pt();
-        int iTrigg = GetBin(triggPt, nTriggBins, pT);
-        int iAssoc = GetBin(assocPt, nAssocBins, pT);
+        int iTrigg = GetBin(triggPt, NTRIGGBINS, pT);
+        int iAssoc = GetBin(assocPt, NASSOCBINS, pT);
         if (bUseLeading) {
             if (i != iLeadingTrigg && iAssoc >= 0) listAssoc.push_back(i);
         } else {
@@ -80,7 +80,7 @@ void AliJHMRCorr::GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector
     }
 }
 
-void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vector<int> listAssoc, TH2D *hCorr[nTriggBins][nAssocBins], bool bUseWeight)
+void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vector<int> listAssoc, TH2D *hCorr[NTRIGGBINS][NASSOCBINS], bool bUseWeight)
 {
     double wTrigg = 1.0;
     double wAssoc = 1.0;
@@ -95,7 +95,7 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrig
         double phiTrigg = lvTrigg->Phi();
         double etaTrigg = lvTrigg->Eta();
         
-        int iTriggBin = GetBin(triggPt, nTriggBins, ptTrigg);
+        int iTriggBin = GetBin(triggPt, NTRIGGBINS, ptTrigg);
                
         int nAssoc = listAssoc.size();       
         if (nAssoc < 1) continue;
@@ -109,7 +109,7 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrig
             double ptAssoc = lvAssoc->Pt();
             double phiAssoc = lvAssoc->Phi();
             double etaAssoc = lvAssoc->Eta();
-            int iAssocBin = GetBin(assocPt, nAssocBins, ptAssoc);
+            int iAssocBin = GetBin(assocPt, NASSOCBINS, ptAssoc);
 
             if (triggPt[iTriggBin] < assocPt[iAssocBin+1]) continue;
             
@@ -123,7 +123,7 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrig
 
 }
 
-void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> listTrigg, TClonesArray *arrPi0Assoc, std::vector<int> listAssoc, TH2D *hCorr[nTriggBins][nAssocBins], bool bUseWeightTrigg, bool bUseWeightAssoc)
+void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> listTrigg, TClonesArray *arrPi0Assoc, std::vector<int> listAssoc, TH2D *hCorr[NTRIGGBINS][NASSOCBINS], bool bUseWeightTrigg, bool bUseWeightAssoc)
 {
     double wTrigg = 1.0;
     double wAssoc = 1.0;
@@ -137,7 +137,7 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> lis
         double ptTrigg = lvTrigg->Pt();
         double phiTrigg = lvTrigg->Phi();
         double etaTrigg = lvTrigg->Eta();
-        int iTriggBin = GetBin(triggPt, nTriggBins, ptTrigg);
+        int iTriggBin = GetBin(triggPt, NTRIGGBINS, ptTrigg);
         
         int nAssoc = listAssoc.size();       
         if (nAssoc < 1) continue;
@@ -151,7 +151,7 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> lis
             double ptAssoc = lvAssoc->Pt();
             double phiAssoc = lvAssoc->Phi();
             double etaAssoc = lvAssoc->Eta();
-            int iAssocBin = GetBin(assocPt, nAssocBins, ptAssoc);
+            int iAssocBin = GetBin(assocPt, NASSOCBINS, ptAssoc);
 
             if (triggPt[iTriggBin] < assocPt[iAssocBin+1]) continue;
             
@@ -238,12 +238,12 @@ void AliJHMRCorr::FillRealTriggers(AliJHMRHist *histos, TClonesArray *arrRealPi0
         int iTrigg = listTrigg[it];
         TLorentzVector *lvTrigg = (TLorentzVector*)arrRealPi0->At(iTrigg);
         double ptTrigg = lvTrigg->Pt();
-        int iTriggBin = GetBin(triggPt, nTriggBins, ptTrigg);
+        int iTriggBin = GetBin(triggPt, NTRIGGBINS, ptTrigg);
         histos->hRealTriggCounter->Fill(iTriggBin+0.5);
     }
 }
 
-void AliJHMRCorr::FillPionMasses(TClonesArray *arrPhoton, AliJHMRHist *histos, int binsWithTriggPeak[nTriggBins], int binsWithTriggSide[nTriggBins])
+void AliJHMRCorr::FillPionMasses(TClonesArray *arrPhoton, AliJHMRHist *histos, int binsWithTriggPeak[NTRIGGBINS], int binsWithTriggSide[NTRIGGBINS])
 {
     int nPhoton = arrPhoton->GetEntriesFast();
     for (int i = 1; i < nPhoton; i++) {
@@ -251,10 +251,10 @@ void AliJHMRCorr::FillPionMasses(TClonesArray *arrPhoton, AliJHMRHist *histos, i
             TLorentzVector lvSum = GetPhotonSumVector(arrPhoton, i, j);
             double mass = 1000.*lvSum.M();
             double pT = lvSum.Pt();
-            int iTriggBin = GetBin(triggPt, nTriggBins, pT);
-            int iAssocBin = GetBin(assocPt, nAssocBins, pT);
+            int iTriggBin = GetBin(triggPt, NTRIGGBINS, pT);
+            int iAssocBin = GetBin(assocPt, NASSOCBINS, pT);
             if (iTriggBin >= 0) histos->hPi0MassTrigg[iTriggBin]->Fill(mass);
-            for (int it = 0; it < nTriggBins; it++) {
+            for (int it = 0; it < NTRIGGBINS; it++) {
                 if (triggPt[it] < assocPt[iAssocBin+1]) continue;
                 if (binsWithTriggPeak[it] > 0 && iAssocBin >= 0) histos->hPi0MassAssocPeak[it][iAssocBin]->Fill(mass);
                 if (binsWithTriggSide[it] > 0 && iAssocBin >= 0) histos->hPi0MassAssocSide[it][iAssocBin]->Fill(mass);

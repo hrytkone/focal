@@ -13,6 +13,7 @@
 #include "TF1.h"
 #include "TStopwatch.h"
 
+#include "include/AliJHMRConst.h"
 #include "include/AliJHMRHist.h"
 #include "include/AliJHMRCorr.h"
 #include "include/AliJHMRPythiaCatalyst.h"
@@ -52,9 +53,9 @@ int main(int argc, char *argv[]) {
     AliJHMRPythiaCatalyst *fCatalyst = new AliJHMRPythiaCatalyst(pythia.event, fHistos);
     AliJHMRCorr *fCorr = new AliJHMRCorr();
 
-    TClonesArray *arrPhotonFor;
-    TClonesArray *arrPi0Peak;
-    TClonesArray *arrPi0Side;
+    TClonesArray *arrPhotonFor = new TClonesArray("TLorentzVector", 1500);
+    TClonesArray *arrPi0Peak = new TClonesArray("TLorentzVector", 1500);
+    TClonesArray *arrPi0Side = new TClonesArray("TLorentzVector", 1500);
 
     fOut->cd();
 
@@ -75,7 +76,7 @@ int main(int argc, char *argv[]) {
         fCorr->ReconstructPions(arrPhotonFor, arrPi0Side, 0);
 
         std::vector<int> listTriggReal, listAssocReal, listTriggPeak, listTriggSide, listAssocPeak, listAssocSide;
-        int binsWithTriggReal[nTriggBins+1] = {0}, binsWithTriggPeak[nTriggBins+1] = {0}, binsWithTriggSide[nTriggBins+1] = {0};
+        int binsWithTriggReal[NTRIGGBINS+1] = {0}, binsWithTriggPeak[NTRIGGBINS+1] = {0}, binsWithTriggSide[NTRIGGBINS+1] = {0};
         //fCorr->GetTriggAssocLists(arrPi0For, listTriggReal, listAssocReal, binsWithTriggReal, bUseLeading); 
         fCorr->GetTriggAssocLists(arrPi0Peak, listTriggPeak, listAssocPeak, binsWithTriggPeak, bUseLeading); 
         fCorr->GetTriggAssocLists(arrPi0Side, listTriggSide, listAssocSide, binsWithTriggSide, bUseLeading); 

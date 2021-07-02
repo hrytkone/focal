@@ -1,41 +1,47 @@
 #ifndef ALIJHMRCONST_H
-#define ALIJHMRCONST_H 1
+#define ALIJHMRCONST_H
 
 #include "TMath.h"
 
+#define NTRIGGBINS 4
+#define NASSOCBINS 4
+#define NINCPTBIN 150
+#define NINCETABIN 150
+#define NPHOTONENERGYBIN 150
+
 enum particleType { kJHadron, kJPi0, kJDecayPhoton };
 
-const int nTriggBins = 4;
-double  triggPt[nTriggBins+1] = {1.0, 2.0, 4.0, 8.0, 20.0};
+//extern const int nTriggBins;
+extern double triggPt[NTRIGGBINS+1];
 
-const int nAssocBins = 4;
-double  assocPt[nAssocBins+1] = {0.5, 1.0, 2.0, 3.0, 4.0};
+//extern const int nAssocBins;
+extern double assocPt[NASSOCBINS+1];
 
-const double kJPi = TMath::Pi();
-const double kJTwoPi = 2 * TMath::Pi();
+extern const double kJPi;
+extern const double kJTwoPi;
 
-const double etaBinWidth = 0.025;
-const double phiBinWidth = 0.025;
+extern const double etaBinWidth;
+extern const double phiBinWidth;
 
-const double etaTrackerRange = 0.9;
-const double etaFocalMin = 3.2;
-const double etaFocalMax = 5.8;
-const double etaFocalRange = etaFocalMax - etaFocalMin;
-const int nEtaBinTracker = 2.*int(etaTrackerRange/etaBinWidth) + 1;
-const int nEtaBinFocal = int(etaFocalRange/etaBinWidth) + 1;
+extern const double etaTrackerRange;
+extern const double etaFocalMin;
+extern const double etaFocalMax;
+extern const double etaFocalRange;
+extern const int nEtaBinTracker;
+extern const int nEtaBinFocal;
 
-const double deltaPhiMin = -kJPi/2.0;
-const double deltaPhiMax = 3.0*kJPi/2.0;
-const int nPhiBin = int((deltaPhiMax-deltaPhiMin)/phiBinWidth) + 1;
+extern const double deltaPhiMin;
+extern const double deltaPhiMax;
+extern const int nPhiBin;
 
-const int nIncPtBin = 150;
-double logBinsX[nIncPtBin+1], limMin = 0.1, limMax = 100;
-const double logBW = (log(limMax) - log(limMin))/nIncPtBin;
+//extern const int nIncPtBin;
+extern double logBinsX[NINCPTBIN+1], limMin, limMax;
+extern const double logBW;
 
-const int nIncEtaBin = 150;
-const double incEtaRange = 20.0;
+//extern const int nIncEtaBin = 150;
+extern const double incEtaRange;
 
-const int nPhotonEnergyBin = 150;
-double limPhotonEnergyMin = 0., limPhotonEnergyMax = 1500.;
+//extern const int nPhotonEnergyBin = 150;
+extern double limPhotonEnergyMin, limPhotonEnergyMax;
 
 #endif

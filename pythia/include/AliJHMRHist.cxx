@@ -5,25 +5,25 @@ void AliJHMRHist::CreateHistos(TFile *output) {
     hCounter = new TH1D("hCounter", "hCounter", 10, 0, 10);
     hRealTriggCounter = new TH1D("hRealTriggCounter", "hRealtriggCounter", 10, 0, 10);
     
-    for (int i = 0; i <= nIncPtBin; i++) logBinsX[i] = limMin*exp(i*logBW);
+    for (int i = 0; i <= NINCPTBIN; i++) logBinsX[i] = limMin*exp(i*logBW);
     
-    hPionPt = new TH1D("hPionPt", "hPionPt", nIncPtBin, logBinsX); hPionPt->Sumw2();
-    hPionPtFor = new TH1D("hPionPtFor", "hPionPtFor", nIncPtBin, logBinsX); hPionPtFor->Sumw2();
-    hPionPtForDetected = new TH1D("hPionPtForDetected", "hPionPtForDetected", nIncPtBin, logBinsX); hPionPtForDetected->Sumw2();
-    hPionPtMid = new TH1D("hPionPtMid", "hPionPtMid", nIncPtBin, logBinsX); hPionPtMid->Sumw2();
+    hPionPt = new TH1D("hPionPt", "hPionPt", NINCPTBIN, logBinsX); hPionPt->Sumw2();
+    hPionPtFor = new TH1D("hPionPtFor", "hPionPtFor", NINCPTBIN, logBinsX); hPionPtFor->Sumw2();
+    hPionPtForDetected = new TH1D("hPionPtForDetected", "hPionPtForDetected", NINCPTBIN, logBinsX); hPionPtForDetected->Sumw2();
+    hPionPtMid = new TH1D("hPionPtMid", "hPionPtMid", NINCPTBIN, logBinsX); hPionPtMid->Sumw2();
     
-    hChargedHadronPt = new TH1D("hChargedHadronPt", "hChargedHadronPt", nIncPtBin, logBinsX); hChargedHadronPt->Sumw2();
-    hChargedHadronPtFor = new TH1D("hChargedHadronPtFor", "hChargedHadronPtFor", nIncPtBin, logBinsX); hChargedHadronPtFor->Sumw2();
-    hChargedHadronPtMid = new TH1D("hChargedHadronPtMid", "hChargedHadronPtMid", nIncPtBin, logBinsX); hChargedHadronPtMid->Sumw2();
+    hChargedHadronPt = new TH1D("hChargedHadronPt", "hChargedHadronPt", NINCPTBIN, logBinsX); hChargedHadronPt->Sumw2();
+    hChargedHadronPtFor = new TH1D("hChargedHadronPtFor", "hChargedHadronPtFor", NINCPTBIN, logBinsX); hChargedHadronPtFor->Sumw2();
+    hChargedHadronPtMid = new TH1D("hChargedHadronPtMid", "hChargedHadronPtMid", NINCPTBIN, logBinsX); hChargedHadronPtMid->Sumw2();
 
-    hPhotonPt = new TH1D("hPhotonPt", "hPhotonPt", nIncPtBin, logBinsX); hPhotonPt->Sumw2();
-    hPhotonPtFor = new TH1D("hPhotonPtFor", "hPhotonPtFor", nIncPtBin, logBinsX); hPhotonPtFor->Sumw2();
-    hPhotonPtMid = new TH1D("hPhotonPtMid", "hPhotonPtMid", nIncPtBin, logBinsX); hPhotonPtMid->Sumw2();
-    hPhotonEnergyReal = new TH1D("hPhotonEnergyReal", "hPhotonEnergyReal", nPhotonEnergyBin, limPhotonEnergyMin, limPhotonEnergyMax); hPhotonEnergyReal->Sumw2();
-    hPhotonEnergy = new TH1D("hPhotonEnergy", "hPhotonEnergy", nPhotonEnergyBin, limPhotonEnergyMin, limPhotonEnergyMax); hPhotonEnergy->Sumw2();
+    hPhotonPt = new TH1D("hPhotonPt", "hPhotonPt", NINCPTBIN, logBinsX); hPhotonPt->Sumw2();
+    hPhotonPtFor = new TH1D("hPhotonPtFor", "hPhotonPtFor", NINCPTBIN, logBinsX); hPhotonPtFor->Sumw2();
+    hPhotonPtMid = new TH1D("hPhotonPtMid", "hPhotonPtMid", NINCPTBIN, logBinsX); hPhotonPtMid->Sumw2();
+    hPhotonEnergyReal = new TH1D("hPhotonEnergyReal", "hPhotonEnergyReal", NPHOTONENERGYBIN, limPhotonEnergyMin, limPhotonEnergyMax); hPhotonEnergyReal->Sumw2();
+    hPhotonEnergy = new TH1D("hPhotonEnergy", "hPhotonEnergy", NPHOTONENERGYBIN, limPhotonEnergyMin, limPhotonEnergyMax); hPhotonEnergy->Sumw2();
     
-    hPionEta = new TH1D("hPionEta", "hPionEta", nIncEtaBin, -incEtaRange/2., incEtaRange/2.); hPionEta->Sumw2();
-    hChargedHadronEta = new TH1D("hChargedHadronEta", "hChargedHadronEta", nIncEtaBin, -incEtaRange/2., incEtaRange/2.); hChargedHadronEta->Sumw2();
+    hPionEta = new TH1D("hPionEta", "hPionEta", NINCETABIN, -incEtaRange/2., incEtaRange/2.); hPionEta->Sumw2();
+    hChargedHadronEta = new TH1D("hChargedHadronEta", "hChargedHadronEta", NINCETABIN, -incEtaRange/2., incEtaRange/2.); hChargedHadronEta->Sumw2();
 
     // Correlation and mass histograms
     dirMasses = output->mkdir("Masses");
@@ -36,14 +36,14 @@ void AliJHMRHist::CreateHistos(TFile *output) {
     dirCorrSideMass = output->mkdir("CorrSideMass");
     dirCorrSideSide = output->mkdir("CorrSideSide");
 
-    for (int i = 0; i < nTriggBins; i++) {
+    for (int i = 0; i < NTRIGGBINS; i++) {
         double tlow = triggPt[i];
         double tupp = triggPt[i+1];
         dirMasses->cd();
         hPi0MassTrigg[i] = new TH1D(Form("hPi0MassTrigg[%4.1f,%4.1f]",tlow,tupp), Form("hPi0MassTrigg[%4.1f,%4.1f]",tlow,tupp), 360, 0.0, 720.0);
         hPi0MassTrigg[i]->Sumw2();
 
-        for (int j = 0; j < nAssocBins; j++) {
+        for (int j = 0; j < NASSOCBINS; j++) {
             double alow = assocPt[j];
             double aupp = assocPt[j+1];
 

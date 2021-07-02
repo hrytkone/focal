@@ -38,6 +38,7 @@
 namespace std {} using namespace std;
 
 // Header files passed as explicit arguments
+#include "include/AliJHMRConst.h"
 #include "include/AliJBaseTrack.h"
 #include "include/AliJHMRHist.h"
 #include "include/AliJHMRCorr.h"
@@ -301,6 +302,7 @@ namespace ROOT {
 namespace {
   void TriggerDictionaryInitialization_nanoDict_Impl() {
     static const char* headers[] = {
+"include/AliJHMRConst.h",
 "include/AliJBaseTrack.h",
 "include/AliJHMRHist.h",
 "include/AliJHMRCorr.h",
@@ -308,7 +310,7 @@ namespace {
 0
     };
     static const char* includePaths[] = {
-"/home/alidock/.sw/slc7_x86-64/pythia/latest/include",
+"/home/alidock/pythia8245/include",
 "/home/alidock/.sw/slc7_x86-64/ROOT/v6-20-08-alice1-73/include/",
 "/mnt/Desktop/focal/pythia/",
 0
@@ -333,6 +335,7 @@ class __attribute__((annotate("$clingAutoload$include/AliJHMRPythiaCatalyst.h"))
 
 #define _BACKWARD_BACKWARD_WARNING_H
 // Inline headers
+#include "include/AliJHMRConst.h"
 #include "include/AliJBaseTrack.h"
 #include "include/AliJHMRHist.h"
 #include "include/AliJHMRCorr.h"

@@ -18,7 +18,7 @@
 class AliJHMRHist {
 
     public:
-        AliJHMRHist(); //constructor
+        AliJHMRHist() { } //constructor
         virtual ~AliJHMRHist(){ }    //destructor
         
         AliJHMRHist(const AliJHMRHist& obj);
@@ -48,19 +48,19 @@ class AliJHMRHist {
         TH1D *hPionEta;
         TH1D *hChargedHadronEta;
 
-        TH2D *hCorrMid[nTriggBins][nAssocBins];
-        TH2D *hCorrFor[nTriggBins][nAssocBins];
-        TH2D *hCorrChargedMid[nTriggBins][nAssocBins];
-        TH2D *hCorrChargedFor[nTriggBins][nAssocBins];
+        TH2D *hCorrMid[NTRIGGBINS][NASSOCBINS];
+        TH2D *hCorrFor[NTRIGGBINS][NASSOCBINS];
+        TH2D *hCorrChargedMid[NTRIGGBINS][NASSOCBINS];
+        TH2D *hCorrChargedFor[NTRIGGBINS][NASSOCBINS];
         
-        TH2D *hCorrMassMass[nTriggBins][nAssocBins];
-        TH2D *hCorrMassSide[nTriggBins][nAssocBins];
-        TH2D *hCorrSideMass[nTriggBins][nAssocBins];
-        TH2D *hCorrSideSide[nTriggBins][nAssocBins];
+        TH2D *hCorrMassMass[NTRIGGBINS][NASSOCBINS];
+        TH2D *hCorrMassSide[NTRIGGBINS][NASSOCBINS];
+        TH2D *hCorrSideMass[NTRIGGBINS][NASSOCBINS];
+        TH2D *hCorrSideSide[NTRIGGBINS][NASSOCBINS];
 
-        TH1D *hPi0MassTrigg[nTriggBins];
-        TH1D *hPi0MassAssocPeak[nTriggBins][nAssocBins];
-        TH1D *hPi0MassAssocSide[nTriggBins][nAssocBins];
+        TH1D *hPi0MassTrigg[NTRIGGBINS];
+        TH1D *hPi0MassAssocPeak[NTRIGGBINS][NASSOCBINS];
+        TH1D *hPi0MassAssocSide[NTRIGGBINS][NASSOCBINS];
 
         TDirectory *dirMasses;
         TDirectory *dirCorrMid;

@@ -19,7 +19,7 @@ INCS    += -I$(PYTHIA8)/include
 CXXFLAGS  += $(INCS)
 LDFLAGS += $L -ldl
 
-HDRSDICT = include/AliJBaseTrack.h include/AliJHMRHist.h include/AliJHMRCorr.h include/AliJHMRPythiaCatalyst.h
+HDRSDICT = include/AliJHMRConst.h include/AliJBaseTrack.h include/AliJHMRHist.h include/AliJHMRCorr.h include/AliJHMRPythiaCatalyst.h
            
 HDRS	+= $(HDRSDICT)  nanoDict.h
 

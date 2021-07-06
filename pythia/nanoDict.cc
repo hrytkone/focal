@@ -106,7 +106,7 @@ namespace ROOT {
       ::AliJHMRHist *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(::AliJHMRHist));
       static ::ROOT::TGenericClassInfo 
-         instance("AliJHMRHist", "include/AliJHMRHist.h", 18,
+         instance("AliJHMRHist", "include/AliJHMRHist.h", 19,
                   typeid(::AliJHMRHist), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &AliJHMRHist_Dictionary, isa_proxy, 0,
                   sizeof(::AliJHMRHist) );
@@ -139,8 +139,6 @@ namespace ROOT {
 namespace ROOT {
    static TClass *AliJHMRCorr_Dictionary();
    static void AliJHMRCorr_TClassManip(TClass*);
-   static void *new_AliJHMRCorr(void *p = 0);
-   static void *newArray_AliJHMRCorr(Long_t size, void *p);
    static void delete_AliJHMRCorr(void *p);
    static void deleteArray_AliJHMRCorr(void *p);
    static void destruct_AliJHMRCorr(void *p);
@@ -155,8 +153,6 @@ namespace ROOT {
                   typeid(::AliJHMRCorr), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &AliJHMRCorr_Dictionary, isa_proxy, 0,
                   sizeof(::AliJHMRCorr) );
-      instance.SetNew(&new_AliJHMRCorr);
-      instance.SetNewArray(&newArray_AliJHMRCorr);
       instance.SetDelete(&delete_AliJHMRCorr);
       instance.SetDeleteArray(&deleteArray_AliJHMRCorr);
       instance.SetDestructor(&destruct_AliJHMRCorr);
@@ -194,7 +190,7 @@ namespace ROOT {
       ::AliJHMRPythiaCatalyst *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(::AliJHMRPythiaCatalyst));
       static ::ROOT::TGenericClassInfo 
-         instance("AliJHMRPythiaCatalyst", "include/AliJHMRPythiaCatalyst.h", 29,
+         instance("AliJHMRPythiaCatalyst", "include/AliJHMRPythiaCatalyst.h", 24,
                   typeid(::AliJHMRPythiaCatalyst), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &AliJHMRPythiaCatalyst_Dictionary, isa_proxy, 0,
                   sizeof(::AliJHMRPythiaCatalyst) );
@@ -265,13 +261,6 @@ namespace ROOT {
 } // end of namespace ROOT for class ::AliJHMRHist
 
 namespace ROOT {
-   // Wrappers around operator new
-   static void *new_AliJHMRCorr(void *p) {
-      return  p ? new(p) ::AliJHMRCorr : new ::AliJHMRCorr;
-   }
-   static void *newArray_AliJHMRCorr(Long_t nElements, void *p) {
-      return p ? new(p) ::AliJHMRCorr[nElements] : new ::AliJHMRCorr[nElements];
-   }
    // Wrapper around operator delete
    static void delete_AliJHMRCorr(void *p) {
       delete ((::AliJHMRCorr*)p);

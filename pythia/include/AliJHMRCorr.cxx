@@ -1,12 +1,5 @@
 #include "AliJHMRCorr.h"
 
-AliJHMRCorr::AliJHMRCorr()
-{
-    fPhotonEfficiency = new TF1("fPhotonEfficiency", "TMath::Exp(-3.20093/x)"); // Parameters from fit to efficiency (PhotonEfficiency.C)
-    fPhotonAcceptanceEfficiency = new TF1("fPhotonAcceptanceEfficiency", "TMath::Exp(-0.117082/(x + 0.0832931))"); // Parameters from fit (CheckMissingPionsRatio.C)
-    fRand = new TRandom3();
-}
-
 bool AliJHMRCorr::IsTrackerAcceptance(double eta, double etaRange)
 {
     return TMath::Abs(eta) < etaRange/2. ? true : false;
@@ -196,6 +189,20 @@ double AliJHMRCorr::PhotonEnergySmearing(double px, double py, double pz)
     return eSmear;
 }
 
+void AliJHMRCorr::SmearEnergies(TClonesArray * arrParticles)
+{
+    int nent = arrParticles->GetEntriesFast();
+    for ( int ient = 0; ient < nent; ient++ ) {
+        TLorentzVector *lv = (TLorentzVector*)arrParticles->At(ient);
+        double px = lv->Px();
+        double py = lv->Py();
+        double pz = lv->Pz();
+        double e = lv->E();
+        double eSmear = PhotonEnergySmearing(px, py, pz);
+        lv->SetPxPyPzE(eSmear*px/e, eSmear*py/e, eSmear*pz/e, eSmear);         
+    }
+}
+
 // To count in single photon efficiency
 bool AliJHMRCorr::IsPhotonRemoved(double ePhoton)
 {
@@ -229,7 +236,7 @@ int AliJHMRCorr::GetLeadingTriggerIndex(TClonesArray *arrPi0)
     return itrigg;
 }
 
-void AliJHMRCorr::FillRealTriggers(AliJHMRHist *histos, TClonesArray *arrRealPi0, std::vector<int>& listTrigg)
+void AliJHMRCorr::FillRealTriggers(TClonesArray *arrRealPi0, std::vector<int>& listTrigg)
 {
     int nTrigg = listTrigg.size();
     if (nTrigg < 1) return;
@@ -243,7 +250,7 @@ void AliJHMRCorr::FillRealTriggers(AliJHMRHist *histos, TClonesArray *arrRealPi0
     }
 }
 
-void AliJHMRCorr::FillPionMasses(TClonesArray *arrPhoton, AliJHMRHist *histos, int binsWithTriggPeak[NTRIGGBINS], int binsWithTriggSide[NTRIGGBINS])
+void AliJHMRCorr::FillPionMasses(TClonesArray *arrPhoton, int binsWithTriggPeak[NTRIGGBINS], int binsWithTriggSide[NTRIGGBINS])
 {
     int nPhoton = arrPhoton->GetEntriesFast();
     for (int i = 1; i < nPhoton; i++) {

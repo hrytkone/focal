@@ -23,7 +23,7 @@ using namespace Pythia8;
 int main(int argc, char *argv[]) {
 
     if (argc==1) {
-        cout << "Usage : ./focalPionCorrelation output.root bUseLeading pythiaSettings.cmnd seed" << endl;
+        cout << "Usage : ./focalPionCorrelation output.root bUseLeading bDebugOn pythiaSettings.cmnd seed" << endl;
         return 0;
     }
 
@@ -32,8 +32,9 @@ int main(int argc, char *argv[]) {
 
     TString outFileName = argc > 1 ? argv[1] : "output.root";
     int bUseLeading = argc > 2 ? atol(argv[2]) : 0;
-    TString pythiaSettings = argc > 3 ? argv[3] : "PythiaHard.cmnd";
-    int seed = argc > 4 ? atol(argv[4]) : 0;
+    int bDebugOn = argc > 3 ? atol(argv[3]) : 0;    
+    TString pythiaSettings = argc > 4 ? argv[4] : "PythiaHard.cmnd";
+    int seed = argc > 5 ? atol(argv[5]) : 0;
 
     TFile *fOut = new TFile(outFileName, "RECREATE");
 
@@ -51,9 +52,10 @@ int main(int argc, char *argv[]) {
     fHistos->CreateHistos(fOut);
 
     AliJHMRPythiaCatalyst *fCatalyst = new AliJHMRPythiaCatalyst(pythia.event, fHistos);
-    AliJHMRCorr *fCorr = new AliJHMRCorr();
+    AliJHMRCorr *fCorr = new AliJHMRCorr(fHistos);
 
     TClonesArray *arrPhotonFor = new TClonesArray("TLorentzVector", 1500);
+    TClonesArray *arrPi0Real = new TClonesArray("TLorentzVector", 1500);    
     TClonesArray *arrPi0Peak = new TClonesArray("TLorentzVector", 1500);
     TClonesArray *arrPi0Side = new TClonesArray("TLorentzVector", 1500);
 
@@ -64,27 +66,42 @@ int main(int argc, char *argv[]) {
     //
     for ( int iEvent = 0; iEvent < nEvents; ++iEvent ) {
 
-        //std::cout << "event " << iEvent << std::endl;
+        fHistos->hCounter->Fill(0.5); // number of events
+
+        if (bDebugOn)
+            std::cout << "\nEvent " << iEvent << std::endl;
 
         if ( !pythia.next() ) continue;
         
         fCatalyst->InitializeEvent();
-        fCatalyst->GetParticles(kJDecayPhoton);
-        arrPhotonFor = fCatalyst->GetInputList();
+        fCatalyst->GetParticles(kJFoCal);
+        //fCatalyst->GetParticles(kJFull);        
+        arrPhotonFor = fCatalyst->GetParticleList(kJDecayPhoton);
+        arrPi0Real = fCatalyst->GetParticleList(kJPi0);
+
+        fCorr->SmearEnergies(arrPhotonFor);
+
+        fHistos->FillPtEta(kJDecayPhoton, arrPhotonFor);
+        fHistos->FillPtEta(kJPi0, arrPi0Real);
 
         fCorr->ReconstructPions(arrPhotonFor, arrPi0Peak, 1);
         fCorr->ReconstructPions(arrPhotonFor, arrPi0Side, 0);
 
+        if (bDebugOn)
+            std::cout << "Number of Pi0 (real) : " << arrPi0Real->GetEntriesFast() 
+                      << "\t (rec, peak) : " << arrPi0Peak->GetEntriesFast()
+                      << "\t gamma : " << arrPhotonFor->GetEntriesFast() << std::endl;
+
         std::vector<int> listTriggReal, listAssocReal, listTriggPeak, listTriggSide, listAssocPeak, listAssocSide;
         int binsWithTriggReal[NTRIGGBINS+1] = {0}, binsWithTriggPeak[NTRIGGBINS+1] = {0}, binsWithTriggSide[NTRIGGBINS+1] = {0};
-        //fCorr->GetTriggAssocLists(arrPi0For, listTriggReal, listAssocReal, binsWithTriggReal, bUseLeading); 
+        fCorr->GetTriggAssocLists(arrPi0Real, listTriggReal, listAssocReal, binsWithTriggReal, bUseLeading); 
         fCorr->GetTriggAssocLists(arrPi0Peak, listTriggPeak, listAssocPeak, binsWithTriggPeak, bUseLeading); 
         fCorr->GetTriggAssocLists(arrPi0Side, listTriggSide, listAssocSide, binsWithTriggSide, bUseLeading); 
     
-        fCorr->FillPionMasses(arrPhotonFor, fHistos, binsWithTriggPeak, binsWithTriggSide);
-        //fCorr->FillRealTriggers(fHistos, arrPi0For, listTriggReal);
+        fCorr->FillPionMasses(arrPhotonFor, binsWithTriggPeak, binsWithTriggSide);
+        fCorr->FillRealTriggers(arrPi0Real, listTriggReal);
        
-        //fCorr->DoCorrelations(arrPi0For, listTriggReal, listAssocReal, hCorrFor, 0);
+        fCorr->DoCorrelations(arrPi0Real, listTriggReal, listAssocReal, fHistos->hCorrFor, 0);
         fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, listAssocPeak, fHistos->hCorrMassMass, 1);
         fCorr->DoCorrelations(arrPi0Side, listTriggSide, listAssocSide, fHistos->hCorrSideSide, 0);
         if (bUseLeading) {
@@ -100,6 +117,7 @@ int main(int argc, char *argv[]) {
         }
 
         arrPhotonFor->Clear("C");
+        arrPi0Real->Clear("C");        
         arrPi0Peak->Clear("C");
         arrPi0Side->Clear("C");
     }

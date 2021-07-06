@@ -4,3 +4,5 @@ pythia/Makefile.inc
 pythia/output/*
 pythia/outputfiles/
 pythia/*.log
+*.o
+nanoDict*

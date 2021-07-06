@@ -1,8 +1,3 @@
-//===========================================================
-// AliJHMRPythiaCatalyst.h
-// DongJo Kim (dong.jo.kim@cern.ch)
-//===========================================================
-
 #ifndef ALIJHMRPYTHIACATALYST_H
 #define ALIJHMRPYTHIACATALYST_H
 
@@ -30,34 +25,35 @@ class AliJHMRPythiaCatalyst {
 
 	public:
 
-		AliJHMRPythiaCatalyst (Event &inevent, AliJHMRHist *inhistos): 
+		AliJHMRPythiaCatalyst (Event &inevent, AliJHMRHist *inhistos) : 
 			event(inevent),
 			histos(inhistos){
-
 				unif = new TRandom3();
-				fInputList = new TClonesArray("AliJBaseTrack", 1500 );
-				TrackEtaRange = 0.8;
+				fInputListHadron = new TClonesArray("AliJBaseTrack", 1500);
+				fInputListPi0 = new TClonesArray("AliJBaseTrack", 1500);
+				fInputListPhoton = new TClonesArray("AliJBaseTrack", 1500);								
 			}
 
 		void InitializeEvent(){
-			fInputList->Clear();
+			fInputListHadron->Clear("C");			
+			fInputListPi0->Clear("C");			
+			fInputListPhoton->Clear("C");
 			UniqueID=0;
 		}
 
-		void GetParticles(particleType iType);
-		TClonesArray * GetInputList() const {return fInputList;}
+		void GetParticles(detector idet);
+		TClonesArray * GetParticleList(particleType itype);
 
 		TRandom3 *unif;
 
 		int UniqueID;
 		TLorentzVector lvParticle;
-		TClonesArray *fInputList;  // tracklist
+		TClonesArray *fInputListHadron;
+		TClonesArray *fInputListPi0;	
+		TClonesArray *fInputListPhoton;
 
 		Event &event;
 		AliJHMRHist *histos;
-
-		double TrackEtaRange ;
-
 };
 
 #endif

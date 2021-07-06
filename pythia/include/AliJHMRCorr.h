@@ -27,7 +27,13 @@ class AliJHMRCorr {
   
 public:
     
-    AliJHMRCorr();
+    AliJHMRCorr(AliJHMRHist *inhistos) : 
+        histos(inhistos) { 
+            fPhotonEfficiency = new TF1("fPhotonEfficiency", "TMath::Exp(-3.20093/x)"); // Parameters from fit to efficiency (PhotonEfficiency.C)
+            fPhotonAcceptanceEfficiency = new TF1("fPhotonAcceptanceEfficiency", "TMath::Exp(-0.117082/(x + 0.0832931))"); // Parameters from fit (CheckMissingPionsRatio.C)
+            fRand = new TRandom3();
+        }
+
     virtual ~AliJHMRCorr(){ }
 
     bool IsTrackerAcceptance(double eta, double etaRange=etaTrackerRange);
@@ -35,6 +41,7 @@ public:
     int GetBin(double arr[], int nArr, double val);
     double GetDeltaPhi(double phiTrigg, double phiAssoc);
     double PhotonEnergySmearing(double px, double py, double pz);
+    void SmearEnergies(TClonesArray * arrParticles);
     bool IsPhotonRemoved(double ePhoton);
     TLorentzVector GetPhotonSumVector(TClonesArray *arrayPhoton, int iPhoton1, int iPhoton2);
     int GetLeadingTriggerIndex(TClonesArray *arrPi0);
@@ -48,14 +55,15 @@ public:
     bool IsMassWindow(double mass);
     bool IsSideband(double mass);
 
-    void FillRealTriggers(AliJHMRHist *histos, TClonesArray *arrRealPi0, std::vector<int>& listTrigg);
-    void FillPionMasses(TClonesArray *arrPhoton, AliJHMRHist *histos, int binsWithTriggPeak[NTRIGGBINS], int binsWithTriggSide[NTRIGGBINS]);
+    void FillRealTriggers(TClonesArray *arrRealPi0, std::vector<int>& listTrigg);
+    void FillPionMasses(TClonesArray *arrPhoton, int binsWithTriggPeak[NTRIGGBINS], int binsWithTriggSide[NTRIGGBINS]);
 
 protected:
 
     TF1 *fPhotonEfficiency;
     TF1 *fPhotonAcceptanceEfficiency;
     TRandom3 *fRand;
+    AliJHMRHist *histos;
 };
 
 #endif

@@ -14,6 +14,7 @@
 #include <TFile.h>
 #include <TList.h>
 #include <TLorentzVector.h>
+#include <TClonesArray.h>
 
 class AliJHMRHist {
 
@@ -26,26 +27,28 @@ class AliJHMRHist {
 
         // create histograms 
         void CreateHistos(TFile *output);
+        void FillPtEta(particleType itype, TClonesArray * arrParticles);
         
         TH1D *hCounter;
         TH1D *hRealTriggCounter;
 
         TH1D *hPionPt;
-        TH1D *hPionPtFor;
-        TH1D *hPionPtForDetected;
-        TH1D *hPionPtMid;
+        //TH1D *hPionPtFor;
+        //TH1D *hPionPtForDetected;
+        //TH1D *hPionPtMid;
         
         TH1D *hChargedHadronPt;
-        TH1D *hChargedHadronPtFor;
-        TH1D *hChargedHadronPtMid;
+        //TH1D *hChargedHadronPtFor;
+        //TH1D *hChargedHadronPtMid;
 
         TH1D *hPhotonPt;
-        TH1D *hPhotonPtFor;
-        TH1D *hPhotonPtMid;
-        TH1D *hPhotonEnergyReal;
-        TH1D *hPhotonEnergy;
+        //TH1D *hPhotonPtFor;
+        //TH1D *hPhotonPtMid;
+        //TH1D *hPhotonEnergyReal;
+        //TH1D *hPhotonEnergy;
         
         TH1D *hPionEta;
+        TH1D *hPhotonEta;        
         TH1D *hChargedHadronEta;
 
         TH2D *hCorrMid[NTRIGGBINS][NASSOCBINS];

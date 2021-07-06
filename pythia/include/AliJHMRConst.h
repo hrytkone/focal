@@ -3,6 +3,7 @@
 
 #include "TMath.h"
 
+#define NDET 3
 #define NTRIGGBINS 4
 #define NASSOCBINS 4
 #define NINCPTBIN 150
@@ -10,11 +11,11 @@
 #define NPHOTONENERGYBIN 150
 
 enum particleType { kJHadron, kJPi0, kJDecayPhoton };
+enum detector { kJFoCal, kJTracker, kJFull };
 
-//extern const int nTriggBins;
+extern const double detEta[NDET][2];
+
 extern double triggPt[NTRIGGBINS+1];
-
-//extern const int nAssocBins;
 extern double assocPt[NASSOCBINS+1];
 
 extern const double kJPi;

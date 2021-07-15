@@ -10,7 +10,7 @@
 #define NINCETABIN 150
 #define NPHOTONENERGYBIN 150
 
-enum particleType { kJHadron, kJPi0, kJDecayPhoton };
+enum particleType { kJHadron, kJPi0, kJDecayPhoton, kJRecPi0 };
 enum detector { kJFoCal, kJTracker, kJFull };
 
 extern const double detEta[NDET][2];

@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
         
         fCatalyst->InitializeEvent();
         fCatalyst->GetParticles(kJFoCal);
-        //fCatalyst->GetParticles(kJFull);        
+        //fCatalyst->GetParticles(kJFull);
         arrPhotonFor = fCatalyst->GetParticleList(kJDecayPhoton);
         arrPi0Real = fCatalyst->GetParticleList(kJPi0);
 

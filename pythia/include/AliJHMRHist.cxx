@@ -8,6 +8,7 @@ void AliJHMRHist::CreateHistos(TFile *output) {
     for (int i = 0; i <= NINCPTBIN; i++) logBinsX[i] = limMin*exp(i*logBW);
     
     hPionPt = new TH1D("hPionPt", "hPionPt", NINCPTBIN, logBinsX); hPionPt->Sumw2();
+    hRecPionPt = new TH1D("hRecPionPt", "hRecPionPt", NINCPTBIN, logBinsX); hRecPionPt->Sumw2();
     //hPionPtFor = new TH1D("hPionPtFor", "hPionPtFor", NINCPTBIN, logBinsX); hPionPtFor->Sumw2();
     //hPionPtForDetected = new TH1D("hPionPtForDetected", "hPionPtForDetected", NINCPTBIN, logBinsX); hPionPtForDetected->Sumw2();
     //hPionPtMid = new TH1D("hPionPtMid", "hPionPtMid", NINCPTBIN, logBinsX); hPionPtMid->Sumw2();
@@ -122,6 +123,11 @@ void AliJHMRHist::FillPtEta(particleType itype, TClonesArray * arrParticles)
         if (itype==kJDecayPhoton) {
             hPhotonPt->Fill(pT);
             hPhotonEta->Fill(eta);
+        }
+
+        if (itype==kJRecPi0) {
+            hRecPi0Pt->Fill(pT);
+            hRecPi0Eta->Fill(eta);
         }
     }
 }

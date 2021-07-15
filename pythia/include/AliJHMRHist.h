@@ -48,7 +48,7 @@ class AliJHMRHist {
         //TH1D *hPhotonEnergy;
         
         TH1D *hPionEta;
-        TH1D *hPhotonEta;        
+        TH1D *hPhotonEta;
         TH1D *hChargedHadronEta;
 
         TH2D *hCorrMid[NTRIGGBINS][NASSOCBINS];

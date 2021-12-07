@@ -1,0 +1,15 @@
+! 1) Settings used in the main program
+Main:numberOfEvents = 100000
+Next:numberCount = 10000
+
+! 2) Beam parameter settings
+Beams:idA = 2212
+Beams:idB = 1000791970
+Beams:eA = 100
+Beams:eB = 100
+Beams:frameType = 2
+
+! 3) Heavy ion settings
+HeavyIon:SigFitErr = 0.02,0.02,0.1,0.05,0.05,0.0,0.1,0.0
+HeavyIon:SigFitDefPar = 17.24,2.15,0.33,0.0,0.0,0.0,0.0,0.0
+HeavyIon:SigFitNGen = 20

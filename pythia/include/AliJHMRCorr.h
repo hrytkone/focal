@@ -24,11 +24,11 @@ using namespace std;
 using namespace Pythia8;
 
 class AliJHMRCorr {
-  
+
 public:
-    
-    AliJHMRCorr(AliJHMRHist *inhistos) : 
-        histos(inhistos) { 
+
+    AliJHMRCorr(AliJHMRHist *inhistos) :
+        histos(inhistos) {
             fPhotonEfficiency = new TF1("fPhotonEfficiency", "TMath::Exp(-3.20093/x)"); // Parameters from fit to efficiency (PhotonEfficiency.C)
             fPhotonAcceptanceEfficiency = new TF1("fPhotonAcceptanceEfficiency", "TMath::Exp(-0.117082/(x + 0.0832931))"); // Parameters from fit (CheckMissingPionsRatio.C)
             fRand = new TRandom3();
@@ -37,7 +37,7 @@ public:
     virtual ~AliJHMRCorr(){ }
 
     bool IsTrackerAcceptance(double eta, double etaRange=etaTrackerRange);
-    bool IsFocalAcceptance(double eta, double etaMin=etaFocalMin, double etaMax=etaFocalMax);
+    bool IsDetAcceptance(double eta, detector labelDet);
     int GetBin(double arr[], int nArr, double val);
     double GetDeltaPhi(double phiTrigg, double phiAssoc);
     double PhotonEnergySmearing(double px, double py, double pz);
@@ -67,4 +67,3 @@ protected:
 };
 
 #endif
-

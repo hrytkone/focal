@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
 
     TString outFileName = argc > 1 ? argv[1] : "output.root";
     int bUseLeading = argc > 2 ? atol(argv[2]) : 0;
-    int bDebugOn = argc > 3 ? atol(argv[3]) : 0;    
+    int bDebugOn = argc > 3 ? atol(argv[3]) : 0;
     TString pythiaSettings = argc > 4 ? argv[4] : "PythiaHard.cmnd";
     int seed = argc > 5 ? atol(argv[5]) : 0;
 
@@ -49,19 +49,19 @@ int main(int argc, char *argv[]) {
     int nEvents = pythia.mode("Main:numberOfEvents");
 
     AliJHMRHist *fHistos = new AliJHMRHist();
-    fHistos->CreateHistos(fOut);
+    fHistos->CreateHistos(fOut, kJSTAR);
 
     AliJHMRPythiaCatalyst *fCatalyst = new AliJHMRPythiaCatalyst(pythia.event, fHistos);
     AliJHMRCorr *fCorr = new AliJHMRCorr(fHistos);
 
     TClonesArray *arrPhotonFor = new TClonesArray("TLorentzVector", 1500);
-    TClonesArray *arrPi0Real = new TClonesArray("TLorentzVector", 1500);    
+    TClonesArray *arrPi0Real = new TClonesArray("TLorentzVector", 1500);
     TClonesArray *arrPi0Peak = new TClonesArray("TLorentzVector", 1500);
     TClonesArray *arrPi0Side = new TClonesArray("TLorentzVector", 1500);
 
     fOut->cd();
 
-    // 
+    //
     // Loop over events
     //
     for ( int iEvent = 0; iEvent < nEvents; ++iEvent ) {
@@ -72,9 +72,9 @@ int main(int argc, char *argv[]) {
             std::cout << "\nEvent " << iEvent << std::endl;
 
         if ( !pythia.next() ) continue;
-        
+
         fCatalyst->InitializeEvent();
-        fCatalyst->GetParticles(kJFoCal);
+        fCatalyst->GetParticles(kJSTAR);
         //fCatalyst->GetParticles(kJFull);
         arrPhotonFor = fCatalyst->GetParticleList(kJDecayPhoton);
         arrPi0Real = fCatalyst->GetParticleList(kJPi0);
@@ -88,19 +88,19 @@ int main(int argc, char *argv[]) {
         fCorr->ReconstructPions(arrPhotonFor, arrPi0Side, 0);
 
         if (bDebugOn)
-            std::cout << "Number of Pi0 (real) : " << arrPi0Real->GetEntriesFast() 
+            std::cout << "Number of Pi0 (real) : " << arrPi0Real->GetEntriesFast()
                       << "\t (rec, peak) : " << arrPi0Peak->GetEntriesFast()
                       << "\t gamma : " << arrPhotonFor->GetEntriesFast() << std::endl;
 
         std::vector<int> listTriggReal, listAssocReal, listTriggPeak, listTriggSide, listAssocPeak, listAssocSide;
         int binsWithTriggReal[NTRIGGBINS+1] = {0}, binsWithTriggPeak[NTRIGGBINS+1] = {0}, binsWithTriggSide[NTRIGGBINS+1] = {0};
-        fCorr->GetTriggAssocLists(arrPi0Real, listTriggReal, listAssocReal, binsWithTriggReal, bUseLeading); 
-        fCorr->GetTriggAssocLists(arrPi0Peak, listTriggPeak, listAssocPeak, binsWithTriggPeak, bUseLeading); 
-        fCorr->GetTriggAssocLists(arrPi0Side, listTriggSide, listAssocSide, binsWithTriggSide, bUseLeading); 
-    
+        fCorr->GetTriggAssocLists(arrPi0Real, listTriggReal, listAssocReal, binsWithTriggReal, bUseLeading);
+        fCorr->GetTriggAssocLists(arrPi0Peak, listTriggPeak, listAssocPeak, binsWithTriggPeak, bUseLeading);
+        fCorr->GetTriggAssocLists(arrPi0Side, listTriggSide, listAssocSide, binsWithTriggSide, bUseLeading);
+
         fCorr->FillPionMasses(arrPhotonFor, binsWithTriggPeak, binsWithTriggSide);
         fCorr->FillRealTriggers(arrPi0Real, listTriggReal);
-       
+
         fCorr->DoCorrelations(arrPi0Real, listTriggReal, listAssocReal, fHistos->hCorrFor, 0);
         fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, listAssocPeak, fHistos->hCorrMassMass, 1);
         fCorr->DoCorrelations(arrPi0Side, listTriggSide, listAssocSide, fHistos->hCorrSideSide, 0);
@@ -117,7 +117,7 @@ int main(int argc, char *argv[]) {
         }
 
         arrPhotonFor->Clear("C");
-        arrPi0Real->Clear("C");        
+        arrPi0Real->Clear("C");
         arrPi0Peak->Clear("C");
         arrPi0Side->Clear("C");
     }

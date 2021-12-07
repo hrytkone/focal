@@ -32,10 +32,10 @@
 //______________________________________________________________________________
 AliJBaseTrack::AliJBaseTrack():
     fID(-1),
-    fLabel(-9999), 
-    fParticleType(-1), 
-    fCharge(0), 
-    fStatus(0), 
+    fLabel(-9999),
+    fParticleType(-1),
+    fCharge(0),
+    fStatus(0),
     fFlags(0),
     fTriggID(-1),
     fAssocID(-1),
@@ -48,12 +48,12 @@ AliJBaseTrack::AliJBaseTrack():
 
 //_____________________________________________________________
 AliJBaseTrack::AliJBaseTrack(float px,float py, float pz, float e, Int_t id, Short_t ptype, Char_t charge):
-    TLorentzVector( px, py, pz, e ), 
+    TLorentzVector( px, py, pz, e ),
     fID(id),
     fLabel(-9999),
-    fParticleType(ptype), 
-    fCharge(charge), 
-    fStatus(0), 
+    fParticleType(ptype),
+    fCharge(charge),
+    fStatus(0),
     fFlags(0),
     fTriggID(-1),
     fAssocID(-1),
@@ -66,12 +66,12 @@ AliJBaseTrack::AliJBaseTrack(float px,float py, float pz, float e, Int_t id, Sho
 
 //_____________________________________________________________
 AliJBaseTrack::AliJBaseTrack(const AliJBaseTrack& a):
-    TLorentzVector  (a), 
+    TLorentzVector  (a),
     fID             (a.fID),
     fLabel          (a.fLabel),
-    fParticleType   ( a.fParticleType ), 
-    fCharge         ( a.fCharge ), 
-    fStatus         ( a.fStatus ), 
+    fParticleType   ( a.fParticleType ),
+    fCharge         ( a.fCharge ),
+    fStatus         ( a.fStatus ),
     fFlags       ( a.fFlags ),
     fTriggID( a.fTriggID ),
     fAssocID( a.fAssocID ),
@@ -101,7 +101,7 @@ AliJBaseTrack::AliJBaseTrack(const TLorentzVector& a):
 }
 //_____________________________________________________________
 AliJBaseTrack& AliJBaseTrack::operator=(const AliJBaseTrack& trk){
-  //operator =  
+  //operator =
   if(this != &trk){
     TLorentzVector::operator=(trk);
     fID           = trk.fID;
@@ -123,19 +123,17 @@ AliJBaseTrack& AliJBaseTrack::operator=(const AliJBaseTrack& trk){
 void AliJBaseTrack::Print(Option_t *option) const{
   //object print out
   //JUNUSED(option);
-  std::cout<<Form("(ID,Type,Charge,Flags)=(%d, %d, %d, %d)" , 
-                  fID, fParticleType, fCharge,  fFlags );
+  std::cout << Form("(ID,Type,Charge,Flags)=(%d, %d, %d, %d)", fID, fParticleType, fCharge,  fFlags );
   TLorentzVector::Print();
-  cout<<"ID ="<<fID <<endl; 
-  cout<<"fLabel="<<fLabel <<endl; 
-  cout<<"fParticleType="<<fParticleType <<endl; 
-  cout<<"fCharge="<<fCharge <<endl; 
-  cout<<"fStatus="<<fStatus <<endl; 
-  cout<<"fFlags="<<fFlags <<endl; 
-  cout<<"fTriggID="<<fTriggID <<endl; 
-  cout<<"fAssocID="<<fAssocID <<endl; 
-  cout<<"fTracEff="<<fTracEff <<endl; 
+  cout<<"ID ="<<fID <<endl;
+  cout<<"fLabel="<<fLabel <<endl;
+  cout<<"fParticleType="<<fParticleType <<endl;
+  cout<<"fCharge="<<fCharge <<endl;
+  cout<<"fStatus="<<fStatus <<endl;
+  cout<<"fFlags="<<fFlags <<endl;
+  cout<<"fTriggID="<<fTriggID <<endl;
+  cout<<"fAssocID="<<fAssocID <<endl;
+  cout<<"fTracEff="<<fTracEff <<endl;
 }
 
 //ClassImp(AliJBaseTrack)
-

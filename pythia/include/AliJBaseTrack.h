@@ -21,6 +21,7 @@
 
 #ifndef ROOT_TObject
 #include <TObject.h>
+#include <TString.h>
 #endif
 
 #include <iostream>
@@ -41,25 +42,25 @@ class AliJBaseTrack : public TLorentzVector {
         virtual ~AliJBaseTrack(){;}    //destructor
 
         double EtaAbs(){ return TMath::Abs(Eta()); }
-        float GetTwoPiPhi() const {return Phi()>-kJPi/3 ? Phi() : kJTwoPi+Phi();} 
+        float GetTwoPiPhi() const {return Phi()>-kJPi/3 ? Phi() : kJTwoPi+Phi();}
         TLorentzVector GetLorentzVector(){ return TLorentzVector(Px(), Py(), Pz(), E());}
 
         Int_t         GetID()           const { return fID;}
         Int_t         GetLabel()        const { return fLabel; }
         Short_t       GetParticleType() const { return fParticleType;}
         ULong64_t     GetStatus()       const { return fStatus; }
-        Short_t       GetCharge()       const { return fCharge; } 
+        Short_t       GetCharge()       const { return fCharge; }
         UInt_t        GetFlags()        const { return fFlags; }
         Bool_t        GetIsIsolated()   const { return IsTrue(kIsIsolated);}
 
         Int_t         GetTriggBin()     const { return fTriggID; }
         Int_t         GetAssocBin()     const { return fAssocID; }
-        Double32_t    GetTrackEff()     const { 
+        Double32_t    GetTrackEff()     const {
             if(fTracEff==-1) {  cout<<"AliJBaseTrack: Uninitilized track eff " <<endl;  exit(-1);
             } else return fTracEff;  }
         Bool_t        IsInTriggerBin()  const { return fTriggID>=0; }
         Bool_t        IsInAssocBin()    const { return fAssocID>=0; }
-        Double_t      GetWeight()       const { return fWeight;}             
+        Double_t      GetWeight()       const { return fWeight;}
         Int_t         GetMCIndex()      const { return fMCIndex;}
 
         void SetID      (const int id){fID=id;}
@@ -92,12 +93,12 @@ class AliJBaseTrack : public TLorentzVector {
     protected:
         Int_t         fID;            // Unique track ID
         Int_t         fLabel;         // Unique track label for MC-Data relation
-        Short_t       fParticleType;  // ParticleType 
+        Short_t       fParticleType;  // ParticleType
         Char_t        fCharge;        // track charge for real data
-        ULong64_t     fStatus;        // reconstruction status flags or MC status 
+        ULong64_t     fStatus;        // reconstruction status flags or MC status
         UInt_t        fFlags;         // store series of any boolen value.
 
-        Int_t         fTriggID, fAssocID; //!   //id of trigger and assoc particle 
+        Int_t         fTriggID, fAssocID; //!   //id of trigger and assoc particle
         Double32_t    fTracEff;           //!   //track efficiency
         Int_t         fMCIndex;           //!   //index of corresp. MC track
         Double_t      fWeight;            //!   //particle weight
@@ -106,4 +107,3 @@ class AliJBaseTrack : public TLorentzVector {
 };
 
 #endif
-

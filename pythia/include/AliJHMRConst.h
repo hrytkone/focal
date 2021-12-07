@@ -3,15 +3,15 @@
 
 #include "TMath.h"
 
-#define NDET 3
-#define NTRIGGBINS 4
-#define NASSOCBINS 4
+#define NDET 4
+#define NTRIGGBINS 2
+#define NASSOCBINS 3
 #define NINCPTBIN 150
 #define NINCETABIN 150
 #define NPHOTONENERGYBIN 150
 
 enum particleType { kJHadron, kJPi0, kJDecayPhoton, kJRecPi0 };
-enum detector { kJFoCal, kJTracker, kJFull };
+enum detector { kJFoCal, kJSTAR, kJTracker, kJFull };
 
 extern const double detEta[NDET][2];
 
@@ -25,11 +25,11 @@ extern const double etaBinWidth;
 extern const double phiBinWidth;
 
 extern const double etaTrackerRange;
-extern const double etaFocalMin;
-extern const double etaFocalMax;
 extern const double etaFocalRange;
+extern const double etaSTARRange;
 extern const int nEtaBinTracker;
 extern const int nEtaBinFocal;
+extern const int nEtaBinSTAR;
 
 extern const double deltaPhiMin;
 extern const double deltaPhiMax;

@@ -21,22 +21,23 @@ class AliJHMRHist {
     public:
         AliJHMRHist() { } //constructor
         virtual ~AliJHMRHist(){ }    //destructor
-        
+
         AliJHMRHist(const AliJHMRHist& obj);
         AliJHMRHist& operator=(const AliJHMRHist& obj);
 
-        // create histograms 
-        void CreateHistos(TFile *output);
+        // create histograms
+        void CreateHistos(TFile *output, detector labelDet);
         void FillPtEta(particleType itype, TClonesArray * arrParticles);
-        
+
         TH1D *hCounter;
         TH1D *hRealTriggCounter;
 
         TH1D *hPionPt;
+        TH1D *hRecPionPt;
         //TH1D *hPionPtFor;
         //TH1D *hPionPtForDetected;
         //TH1D *hPionPtMid;
-        
+
         TH1D *hChargedHadronPt;
         //TH1D *hChargedHadronPtFor;
         //TH1D *hChargedHadronPtMid;
@@ -46,8 +47,9 @@ class AliJHMRHist {
         //TH1D *hPhotonPtMid;
         //TH1D *hPhotonEnergyReal;
         //TH1D *hPhotonEnergy;
-        
+
         TH1D *hPionEta;
+        TH1D *hRecPionEta;
         TH1D *hPhotonEta;
         TH1D *hChargedHadronEta;
 
@@ -55,7 +57,7 @@ class AliJHMRHist {
         TH2D *hCorrFor[NTRIGGBINS][NASSOCBINS];
         TH2D *hCorrChargedMid[NTRIGGBINS][NASSOCBINS];
         TH2D *hCorrChargedFor[NTRIGGBINS][NASSOCBINS];
-        
+
         TH2D *hCorrMassMass[NTRIGGBINS][NASSOCBINS];
         TH2D *hCorrMassSide[NTRIGGBINS][NASSOCBINS];
         TH2D *hCorrSideMass[NTRIGGBINS][NASSOCBINS];
@@ -78,26 +80,3 @@ class AliJHMRHist {
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

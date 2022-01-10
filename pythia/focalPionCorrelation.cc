@@ -50,6 +50,7 @@ int main(int argc, char *argv[]) {
 
     AliJHMRHist *fHistos = new AliJHMRHist();
     fHistos->CreateHistos(fOut, kJSTAR);
+    //fHistos->CreateHistos(fOut, kJFull);
 
     AliJHMRPythiaCatalyst *fCatalyst = new AliJHMRPythiaCatalyst(pythia.event, fHistos);
     AliJHMRCorr *fCorr = new AliJHMRCorr(fHistos);

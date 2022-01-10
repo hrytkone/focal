@@ -263,6 +263,7 @@ void AliJHMRCorr::FillPionMasses(TClonesArray *arrPhoton, int binsWithTriggPeak[
             if (iTriggBin >= 0) histos->hPi0MassTrigg[iTriggBin]->Fill(mass);
             for (int it = 0; it < NTRIGGBINS; it++) {
                 if (triggPt[it] < assocPt[iAssocBin+1]) continue;
+                //if (it==0 && iAssocBin!=-1) std::cout << iAssocBin << " " << binsWithTriggPeak[it] << std::endl;
                 if (binsWithTriggPeak[it] > 0 && iAssocBin >= 0) histos->hPi0MassAssocPeak[it][iAssocBin]->Fill(mass);
                 if (binsWithTriggSide[it] > 0 && iAssocBin >= 0) histos->hPi0MassAssocSide[it][iAssocBin]->Fill(mass);
             }

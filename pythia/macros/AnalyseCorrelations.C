@@ -1,122 +1,115 @@
-void dataTest();
+#include "AnalyseCorrelations.h"
 
-void LoadInput();
-void DoAnalysis();
-void GetNormalisations();
-
-double FitPeak(double *x, double *p);
-double FitBackground(double *x, double *p);
-double FitFunction(double *x, double *p);
-
-const int nTriggBins = 4;
-const int nAssocBins = 4;
-double triggPt[nTriggBins+1] = {1.0, 2.0, 4.0, 8.0, 20.0};
-double assocPt[nAssocBins+1] = {0.5, 1.0, 2.0, 3.0, 4.0};
-
-// Input
-int nEvent;
-int nRealTrigg[nTriggBins];
-
-TH1D *hCounter;
-TH1D *hRealTriggCounter;
-TH1D *hMassTrigg[nTriggBins];
-TH1D *hMassAssocPeak[nTriggBins][nAssocBins];
-TH1D *hMassAssocSide[nTriggBins][nAssocBins];
-
-TH2D *hCorrReal[nTriggBins][nAssocBins];
-TH2D *hCorrMassMass[nTriggBins][nAssocBins];
-TH2D *hCorrMassSide[nTriggBins][nAssocBins];
-TH2D *hCorrSideMass[nTriggBins][nAssocBins];
-TH2D *hCorrSideSide[nTriggBins][nAssocBins];
-
-// Output
-double alphat[nTriggBins];
-double betat[nTriggBins];
-double alphaa[nTriggBins][nAssocBins];
-double betaa[nTriggBins][nAssocBins];
-double A[nTriggBins][nAssocBins], B[nTriggBins][nAssocBins];
-
-TF1 *fFitTrigg[nTriggBins];
-TF1 *fPeakTrigg[nTriggBins];
-TF1 *fBgTrigg[nTriggBins];
-TF1 *fFitAssoc[nTriggBins][nAssocBins];
-TF1 *fPeakAssoc[nTriggBins][nAssocBins];
-TF1 *fBgAssoc[nTriggBins][nAssocBins];
-
-TH1D *hCorrRealProj[nTriggBins][nAssocBins];
-TH1D *hCorrMassMassProj[nTriggBins][nAssocBins];
-TH1D *hCorrMassSideProj[nTriggBins][nAssocBins];
-TH1D *hCorrSideMassProj[nTriggBins][nAssocBins];
-TH1D *hCorrSideSideProj[nTriggBins][nAssocBins];
-TH1D *hCorr[nTriggBins][nAssocBins];
-
-TFile *fin;
-TFile *fout;
-
-void dataTest()
+void AnalyseCorrelations()
 {
-	const int ndata = 1;
-	TString filePythia[ndata] = {
-		"/mnt/focal/pythia/test_1m_focal.root"
+    processDataSTAR();
+}
+
+void processDataSTAR()
+{
+	TString fInName[ndata] = {
+        "/mnt/STAR-sim/output_pAu.root",
+        "/mnt/STAR-sim/output_pp.root"
 	};
 
-	TString fileout[ndata] = {
-		"analyse_test_1m_focal.root"
+	TString fOutName[ndata] = {
+        "analysis_STAR_pAu.root",
+		"analysis_STAR_pp.root"
 	};
 
 
 	for (int idata = 0; idata < ndata; idata++) {
-		fin = TFile::Open(filePythia[idata]);
-		fout = TFile::Open(fileout[idata], "RECREATE");
-		
+		fIn = TFile::Open(fInName[idata]);
+		fOut = TFile::Open(fOutName[idata], "RECREATE");
+
 		LoadInput();
 		GetNormalisations();
 		DoAnalysis();
-		fout->Write();
+        PlotMassHistos();
+		fOut->Write();
 
-		fin->Close();
-		fout->Close();
+		fIn->Close();
+		fOut->Close();
+	}
+}
+
+void LoadInput()
+{
+
+	hCounter = (TH1D*)fIn->Get("hCounter");
+	nEvent = hCounter->GetBinContent(1);
+	std::cout << "Input file contains " << nEvent << " events, proceed to analyse" << std::endl;
+
+	hRealTriggCounter = (TH1D*)fIn->Get("hRealTriggCounter");
+	for (int it = 0; it < nTriggBins; it++) nRealTrigg[it] = hRealTriggCounter->GetBinContent(it+1);
+
+	for (int it = 0; it < nTriggBins; it++) {
+	    double tlow = triggPt[it];
+	    double tupp = triggPt[it+1];
+
+	    hMassTrigg[it] = (TH1D*)fIn->Get(Form("Masses/hPi0MassTrigg[%4.1f,%4.1f]",tlow,tupp));
+	    //hMassTrigg[it]->Scale(1./nEvent);
+	    //hMassTrigg[it]->Rebin();
+
+	    for (int ia = 0; ia < nAssocBins; ia++) {
+	        double alow = assocPt[ia];
+	        double aupp = assocPt[ia+1];
+
+	        if (tlow < aupp) continue;
+
+	        hMassAssocPeak[it][ia] = (TH1D*)fIn->Get(Form("Masses/hPi0MassAssocPeak[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
+	        //hMassAssocPeak[it][ia]->Scale(1./nEvent);
+
+	        hMassAssocSide[it][ia] = (TH1D*)fIn->Get(Form("Masses/hPi0MassAssocSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
+	        //hMassAssocSide[it][ia]->Scale(1./nEvent);
+
+	        hCorrReal[it][ia] = (TH2D*)fIn->Get(Form("CorrFor/hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrReal[it][ia]->Rebin2D(4);
+	        hCorrMassMass[it][ia] = (TH2D*)fIn->Get(Form("CorrMassMass/hCorrMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrMassMass[it][ia]->Rebin2D(4);
+	        hCorrMassSide[it][ia] = (TH2D*)fIn->Get(Form("CorrMassSide/hCorrMassSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrMassSide[it][ia]->Rebin2D(4);
+	        hCorrSideMass[it][ia] = (TH2D*)fIn->Get(Form("CorrSideMass/hCorrSideMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrSideMass[it][ia]->Rebin2D(4);
+	        hCorrSideSide[it][ia] = (TH2D*)fIn->Get(Form("CorrSideSide/hCorrSideSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrSideSide[it][ia]->Rebin2D(4);
+	    }
 	}
 }
 
 void DoAnalysis()
 {
     for (int it = 0; it < nTriggBins; it++) {
-        for (int ia = 0; ia < nAssocBins; ia++) {        
+        for (int ia = 0; ia < nAssocBins; ia++) {
             double tlow = triggPt[it];
             double tupp = triggPt[it+1];
             double alow = assocPt[ia];
             double aupp = assocPt[ia+1];
- 
+
             if (tlow < aupp) continue;
-            
+
             double nPairReal = hCorrReal[it][ia]->GetEntries();
             double nPairMassMass = hCorrMassMass[it][ia]->GetEntries();
             double nPairMassSide = hCorrMassSide[it][ia]->GetEntries();
             double nPairSideMass = hCorrSideMass[it][ia]->GetEntries();
             double nPairSideSide = hCorrSideSide[it][ia]->GetEntries();
-            
+
             hCorrRealProj[it][ia] = hCorrReal[it][ia]->ProjectionX();
             //hCorrRealProj[it][ia]->Scale(1.0/nPairMassMass);
 
             hCorrMassMassProj[it][ia] = hCorrMassMass[it][ia]->ProjectionX();
             //hCorrMassMassProj[it][ia]->Scale(1.0/nPairMassMass);
             //hCorrMassMassProj[it][ia]->Scale(1/(alphat[it]*alphaa[it][ia]));
-            
+
             hCorrMassSideProj[it][ia] = hCorrMassSide[it][ia]->ProjectionX();
             //hCorrMassSideProj[it][ia]->Scale(1.0/nPairMassSide);
             //hCorrMassSideProj[it][ia]->Scale(betaa[it][ia]/(alphat[it]*alphaa[it][ia]));
-            hCorrMassSideProj[it][ia]->Scale(B[it][ia]);
-            
+            //hCorrMassSideProj[it][ia]->Scale(B[it][ia]);
+
             hCorrSideMassProj[it][ia] = hCorrSideMass[it][ia]->ProjectionX();
             //hCorrSideMassProj[it][ia]->Scale(1.0/nPairSideMass);
             //hCorrSideMassProj[it][ia]->Scale(betat[it]/(alphat[it]*alphaa[it][ia]));
-            hCorrSideMassProj[it][ia]->Scale(A[it][ia]);
-            
+            //hCorrSideMassProj[it][ia]->Scale(A[it][ia]);
+
             hCorrSideSideProj[it][ia] = hCorrSideSide[it][ia]->ProjectionX();
             //hCorrSideSideProj[it][ia]->Scale(1.0/nPairSideSide);
             //hCorrSideSideProj[it][ia]->Scale((betat[it]*betaa[it][ia])/(alphat[it]*alphaa[it][ia]));
-            hCorrSideSideProj[it][ia]->Scale((A[it][ia]*B[it][ia]));
+            //hCorrSideSideProj[it][ia]->Scale((A[it][ia]*B[it][ia]));
 
             hCorr[it][ia] = (TH1D*)hCorrMassMassProj[it][ia]->Clone(Form("hCorr%d:%d",it,ia));
             hCorr[it][ia]->Add(hCorrMassSideProj[it][ia], -1);
@@ -145,17 +138,17 @@ void GetNormalisations()
         fFitTrigg[it]->SetParLimits(6, 1., 15.);
         fFitTrigg[it]->SetParLimits(7, 2., 20.);
         fFitTrigg[it]->SetNpx(1000);
-        
+
         fPeakTrigg[it] = new TF1(Form("fPeakTrigg[%4.1f,%4.1f]",tlow,tupp), FitPeak, 20, 300, 5);
         fPeakTrigg[it]->SetNpx(1000);
-        
+
         fBgTrigg[it] = new TF1(Form("fBgTrigg[%4.1f,%4.1f]",tlow,tupp), FitBackground, 20, 300, 4);
         fBgTrigg[it]->SetNpx(1000);
-        
+
         hMassTrigg[it]->Fit(Form("fFitTrigg[%4.1f,%4.1f]",tlow,tupp), "Q0R+");
         fFitTrigg[it]->GetParameters(parTrigg);
         fBgTrigg[it]->SetParameters(parTrigg);
-        fPeakTrigg[it]->SetParameters(&parTrigg[3]); 
+        fPeakTrigg[it]->SetParameters(&parTrigg[3]);
 
         double sumt = fFitTrigg[it]->Integral(110, 160);
         double st = fPeakTrigg[it]->Integral(110, 160);
@@ -167,9 +160,9 @@ void GetNormalisations()
         for (int ia = 0; ia < nAssocBins; ia++) {
             double alow = assocPt[ia];
             double aupp = assocPt[ia+1];
- 
+
             if (tlow < aupp) continue;
-            
+
             fFitAssoc[it][ia] = new TF1(Form("fFitAssoc[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), FitFunction, 10, 300, 8);
             fFitAssoc[it][ia]->SetParameters(0., 0., 0., 0., 0., 135., 30., 50.);
             fFitAssoc[it][ia]->SetParLimits(5, 132, 138);
@@ -203,48 +196,21 @@ void GetNormalisations()
     }
 }
 
-void LoadInput()
+void PlotMassHistos()
 {
-
-	hCounter = (TH1D*)fin->Get("hCounter");
-	nEvent = hCounter->GetBinContent(1);
-	std::cout << "Input file contains " << nEvent << " events, proceed to analyse" << std::endl;
-
-	hRealTriggCounter = (TH1D*)fin->Get("hRealTriggCounter");
-	for (int it = 0; it < nTriggBins; it++) nRealTrigg[it] = hRealTriggCounter->GetBinContent(it+1);
-
-	for (int it = 0; it < nTriggBins; it++) {
-	    double tlow = triggPt[it];
-	    double tupp = triggPt[it+1];
-	    
-	    hMassTrigg[it] = (TH1D*)fin->Get(Form("Masses/hPi0MassTrigg[%4.1f,%4.1f]",tlow,tupp));
-	    //hMassTrigg[it]->Scale(1./nEvent);
-	    //hMassTrigg[it]->Rebin();
-
-	    for (int ia = 0; ia < nAssocBins; ia++) {
-	        double alow = assocPt[ia];
-	        double aupp = assocPt[ia+1];
-
-	        if (tlow < aupp) continue;
-	        
-	        hMassAssocPeak[it][ia] = (TH1D*)fin->Get(Form("Masses/hPi0MassAssocPeak[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
-	        //hMassAssocPeak[it][ia]->Scale(1./nEvent);
-	        
-	        hMassAssocSide[it][ia] = (TH1D*)fin->Get(Form("Masses/hPi0MassAssocSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
-	        //hMassAssocSide[it][ia]->Scale(1./nEvent);
-	        
-	        hCorrReal[it][ia] = (TH2D*)fin->Get(Form("CorrFor/hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrReal[it][ia]->Rebin2D(4);
-	        hCorrMassMass[it][ia] = (TH2D*)fin->Get(Form("CorrMassMass/hCorrMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrMassMass[it][ia]->Rebin2D(4);
-	        hCorrMassSide[it][ia] = (TH2D*)fin->Get(Form("CorrMassSide/hCorrMassSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrMassSide[it][ia]->Rebin2D(4);
-	        hCorrSideMass[it][ia] = (TH2D*)fin->Get(Form("CorrSideMass/hCorrSideMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrSideMass[it][ia]->Rebin2D(4);
-	        hCorrSideSide[it][ia] = (TH2D*)fin->Get(Form("CorrSideSide/hCorrSideSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrSideSide[it][ia]->Rebin2D(4);
-	    }
-	}
-
+    for (int i=0; i<ndata; i++) {
+        cMassesTrigg[i] = new TCanvas(Form("cMassesTrigg%d",i), "", 800, 400);
+        cMassesTrigg[i]->Divide(2,1);
+        for (int it=0; it<nTriggBins; it++) {
+            cMassesTrigg[i]->cd(it+1);
+            hMassTrigg[it]->Draw();
+        }
+        cMassesTrigg[i]->SaveAs(Form("masstrigg%d.pdf",i));
+    }
 }
 
 double FitPeak(double *x, double *p)
-{   
+{
     double c1 = p[0];
     double c2 = p[1];
     double mu = p[2];

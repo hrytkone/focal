@@ -75,6 +75,7 @@ int main(int argc, char *argv[]) {
         if ( !pythia.next() ) continue;
 
         fCatalyst->InitializeEvent();
+        fCatalyst->FillMultiplicityBBC();
         fCatalyst->GetParticles(kJSTAR);
         //fCatalyst->GetParticles(kJFull);
         arrPhotonFor = fCatalyst->GetParticleList(kJDecayPhoton);

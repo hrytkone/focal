@@ -32,21 +32,12 @@ class AliJHMRHist {
         TH1D *hCounter;
         TH1D *hRealTriggCounter;
 
+        TH1D *hMultiplicityBBC; // For centrality in pAu
+
         TH1D *hPionPt;
         TH1D *hRecPionPt;
-        //TH1D *hPionPtFor;
-        //TH1D *hPionPtForDetected;
-        //TH1D *hPionPtMid;
-
         TH1D *hChargedHadronPt;
-        //TH1D *hChargedHadronPtFor;
-        //TH1D *hChargedHadronPtMid;
-
         TH1D *hPhotonPt;
-        //TH1D *hPhotonPtFor;
-        //TH1D *hPhotonPtMid;
-        //TH1D *hPhotonEnergyReal;
-        //TH1D *hPhotonEnergy;
 
         TH1D *hPionEta;
         TH1D *hRecPionEta;

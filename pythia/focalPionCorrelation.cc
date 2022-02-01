@@ -23,7 +23,7 @@ using namespace Pythia8;
 int main(int argc, char *argv[]) {
 
     if (argc==1) {
-        cout << "Usage : ./focalPionCorrelation output.root bUseLeading bDebugOn pythiaSettings.cmnd seed" << endl;
+        cout << "Usage : ./focalPionCorrelation output.root bUseLeading bDebugOn pythiaSettings.cmnd poolsize seed" << endl;
         return 0;
     }
 
@@ -34,7 +34,8 @@ int main(int argc, char *argv[]) {
     int bUseLeading = argc > 2 ? atol(argv[2]) : 0;
     int bDebugOn = argc > 3 ? atol(argv[3]) : 0;
     TString pythiaSettings = argc > 4 ? argv[4] : "PythiaHard.cmnd";
-    int seed = argc > 5 ? atol(argv[5]) : 0;
+    int poolsize = argc > 5 ? atol(argv[5]) : 10;
+    int seed = argc > 6 ? atol(argv[6]) : 0;
 
     TFile *fOut = new TFile(outFileName, "RECREATE");
 
@@ -59,8 +60,14 @@ int main(int argc, char *argv[]) {
     TClonesArray *arrPi0Real = new TClonesArray("TLorentzVector", 1500);
     TClonesArray *arrPi0Peak = new TClonesArray("TLorentzVector", 1500);
     TClonesArray *arrPi0Side = new TClonesArray("TLorentzVector", 1500);
-    TClonesArray *arrPi0PeakMixed = new TClonesArray("TLorentzVector", 1500);
-    TClonesArray *arrPi0SideMixed = new TClonesArray("TLorentzVector", 1500);
+
+    std::vector<TClonesArray*> arrPi0PeakMixed(poolsize);
+    std::vector<TClonesArray*> arrPi0SideMixed(poolsize);
+
+    for (int ipool = 0; ipool < poolsize; ipool++) {
+        arrPi0PeakMixed[ipool] = new TClonesArray("TLorentzVector", 1500);
+        arrPi0SideMixed[ipool] = new TClonesArray("TLorentzVector", 1500);
+    }
 
     fOut->cd();
 
@@ -120,26 +127,32 @@ int main(int argc, char *argv[]) {
         }
 
         // Mixed event : take triggers from this event, associated from previous
-        if (iEvent > 0) {
-            std::vector<int> listTriggPeakMixed, listTriggSideMixed, listAssocPeakMixed, listAssocSideMixed;
-            int binsWithTriggPeakMixed[NTRIGGBINS+1] = {0}, binsWithTriggSideMixed[NTRIGGBINS+1] = {0};
-            fCorr->GetTriggAssocLists(arrPi0PeakMixed, listTriggPeakMixed, listAssocPeakMixed, binsWithTriggPeakMixed, bUseLeading);
-            fCorr->GetTriggAssocLists(arrPi0SideMixed, listTriggSideMixed, listAssocSideMixed, binsWithTriggSideMixed, bUseLeading);
-            fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0PeakMixed, listAssocPeakMixed, fHistos->hCorrMassMassMixed, 0, 0);
-            fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0SideMixed, listAssocSideMixed, fHistos->hCorrSideSideMixed, 0, 0);
-            fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0SideMixed, listAssocSideMixed, fHistos->hCorrMassSideMixed, 0, 0);
-            fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0PeakMixed, listAssocPeakMixed, fHistos->hCorrSideMassMixed, 0, 0);
+        if (iEvent >= poolsize) {
+            for (int ipool = 0; ipool < poolsize; ipool++) {
+                std::vector<int> listTriggPeakMixed, listTriggSideMixed, listAssocPeakMixed, listAssocSideMixed;
+                int binsWithTriggPeakMixed[NTRIGGBINS+1] = {0}, binsWithTriggSideMixed[NTRIGGBINS+1] = {0};
+                fCorr->GetTriggAssocLists(arrPi0PeakMixed[ipool], listTriggPeakMixed, listAssocPeakMixed, binsWithTriggPeakMixed, bUseLeading);
+                fCorr->GetTriggAssocLists(arrPi0SideMixed[ipool], listTriggSideMixed, listAssocSideMixed, binsWithTriggSideMixed, bUseLeading);
+                fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0PeakMixed[ipool], listAssocPeakMixed, fHistos->hCorrMassMassMixed, 0, 0);
+                fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0SideMixed[ipool], listAssocSideMixed, fHistos->hCorrSideSideMixed, 0, 0);
+                fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0SideMixed[ipool], listAssocSideMixed, fHistos->hCorrMassSideMixed, 0, 0);
+                fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0PeakMixed[ipool], listAssocPeakMixed, fHistos->hCorrSideMassMixed, 0, 0);
+
+            }
+            // Remove the first from the pool and add new array to the pool
+            arrPi0PeakMixed.erase(arrPi0PeakMixed.begin());
+            arrPi0PeakMixed.push_back((TClonesArray*)arrPi0Peak->Clone());
+            arrPi0SideMixed.erase(arrPi0SideMixed.begin());
+            arrPi0SideMixed.push_back((TClonesArray*)arrPi0Side->Clone());
+        } else { // Create pools"
+            arrPi0PeakMixed[iEvent] = (TClonesArray*)arrPi0Peak->Clone();
+            arrPi0SideMixed[iEvent] = (TClonesArray*)arrPi0Side->Clone();
         }
 
         arrPhotonFor->Clear("C");
         arrPi0Real->Clear("C");
         arrPi0Peak->Clear("C");
         arrPi0Side->Clear("C");
-        arrPi0PeakMixed->Clear("C");
-        arrPi0SideMixed->Clear("C");
-
-        fCorr->ReconstructPions(arrPhotonFor, arrPi0PeakMixed, 1);
-        fCorr->ReconstructPions(arrPhotonFor, arrPi0SideMixed, 0);
     }
 
     fOut->Write("", TObject::kOverwrite);

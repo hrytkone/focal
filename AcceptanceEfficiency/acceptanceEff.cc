@@ -20,8 +20,8 @@
 using namespace Pythia8;
 
 const double detEta[NDET][2] = {
-    {3.2, 5.8},
-	{2.6, 4.0}
+    {3.2, 5.8}, // FoCal
+    {2.6, 4.0}  // STAR
 };
 
 int main(int argc, char *argv[]) {

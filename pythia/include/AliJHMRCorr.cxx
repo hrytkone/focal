@@ -69,7 +69,7 @@ void AliJHMRCorr::GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector
             if (iTrigg >= 0) listTrigg.push_back(i);
             if (iAssoc >= 0) listAssoc.push_back(i);
         }
-        if (iTrigg > 0) binsWithTrigg[iTrigg]++;
+        if (iTrigg >= 0) binsWithTrigg[iTrigg]++;
     }
 }
 

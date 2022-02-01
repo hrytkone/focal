@@ -25,18 +25,18 @@ class AliJHMRPythiaCatalyst {
 
 	public:
 
-		AliJHMRPythiaCatalyst (Event &inevent, AliJHMRHist *inhistos) : 
+		AliJHMRPythiaCatalyst (Event &inevent, AliJHMRHist *inhistos) :
 			event(inevent),
 			histos(inhistos){
 				unif = new TRandom3();
 				fInputListHadron = new TClonesArray("AliJBaseTrack", 1500);
 				fInputListPi0 = new TClonesArray("AliJBaseTrack", 1500);
-				fInputListPhoton = new TClonesArray("AliJBaseTrack", 1500);								
+				fInputListPhoton = new TClonesArray("AliJBaseTrack", 1500);
 			}
 
 		void InitializeEvent(){
-			fInputListHadron->Clear("C");			
-			fInputListPi0->Clear("C");			
+			fInputListHadron->Clear("C");
+			fInputListPi0->Clear("C");
 			fInputListPhoton->Clear("C");
 			UniqueID=0;
 		}
@@ -49,7 +49,7 @@ class AliJHMRPythiaCatalyst {
 		int UniqueID;
 		TLorentzVector lvParticle;
 		TClonesArray *fInputListHadron;
-		TClonesArray *fInputListPi0;	
+		TClonesArray *fInputListPi0;
 		TClonesArray *fInputListPhoton;
 
 		Event &event;
@@ -57,4 +57,3 @@ class AliJHMRPythiaCatalyst {
 };
 
 #endif
-

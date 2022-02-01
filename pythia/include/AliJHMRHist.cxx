@@ -17,8 +17,6 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet) {
     hCounter = new TH1D("hCounter", "hCounter", 10, 0, 10);
     hRealTriggCounter = new TH1D("hRealTriggCounter", "hRealtriggCounter", 10, 0, 10);
 
-    hMultiplicityBBC = new TH1D("hMultiplicityBBC", "hMultiplicityBBC", NINCETABIN, 0., 150.); hMultiplicityBBC->Sumw2();
-
     for (int i = 0; i <= NINCPTBIN; i++) logBinsX[i] = limMin*exp(i*logBW);
 
     hPionPt = new TH1D("hPionPt", "hPionPt", NINCPTBIN, logBinsX); hPionPt->Sumw2();
@@ -57,51 +55,75 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet) {
 
             dirMasses->cd();
             hPi0MassAssocPeak[i][j] = new TH1D(Form("hPi0MassAssocPeak[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
-                                        Form("hPi0MassAssocPeak[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), 360, 0.0, 720.0);
+                                               Form("hPi0MassAssocPeak[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), 360, 0.0, 720.0);
             hPi0MassAssocPeak[i][j]->Sumw2();
             hPi0MassAssocSide[i][j] = new TH1D(Form("hPi0MassAssocSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
-                                        Form("hPi0MassAssocSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), 360, 0.0, 720.0);
+                                               Form("hPi0MassAssocSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), 360, 0.0, 720.0);
             hPi0MassAssocSide[i][j]->Sumw2();
 
             dirCorrMid->cd();
-            hCorrMid[i][j] = new TH2D(Form("hCorrMid[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), Form("hCorrMid[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
-                                    nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinTracker, -2.*etaTrackerRange, 2.*etaTrackerRange);
+            hCorrMid[i][j] = new TH2D(Form("hCorrMid[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                      Form("hCorrMid[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                      nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinTracker, -2.*etaTrackerRange, 2.*etaTrackerRange);
             hCorrMid[i][j]->Sumw2();
 
             dirCorrFor->cd();
-            hCorrFor[i][j] = new TH2D(Form("hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), Form("hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
-                                    nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
+            hCorrFor[i][j] = new TH2D(Form("hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                      Form("hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                      nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
             hCorrFor[i][j]->Sumw2();
 
             dirCorrChargedMid->cd();
-            hCorrChargedMid[i][j] = new TH2D(Form("hCorrChargedMid[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), Form("hCorrChargedMid[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
-                                    nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinTracker, -2.*etaTrackerRange, 2.*etaTrackerRange);
+            hCorrChargedMid[i][j] = new TH2D(Form("hCorrChargedMid[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                             Form("hCorrChargedMid[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                             nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBinTracker, -2.*etaTrackerRange, 2.*etaTrackerRange);
             hCorrChargedMid[i][j]->Sumw2();
 
             dirCorrChargedFor->cd();
-            hCorrChargedFor[i][j] = new TH2D(Form("hCorrChargedFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), Form("hCorrChargedFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
-                                    nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
+            hCorrChargedFor[i][j] = new TH2D(Form("hCorrChargedFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                             Form("hCorrChargedFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                             nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
             hCorrChargedFor[i][j]->Sumw2();
 
             dirCorrMassMass->cd();
-            hCorrMassMass[i][j] = new TH2D(Form("hCorrMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), Form("hCorrMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
-                                    nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
+            hCorrMassMass[i][j] = new TH2D(Form("hCorrMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                           Form("hCorrMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                           nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
             hCorrMassMass[i][j]->Sumw2();
+            hCorrMassMassMixed[i][j] = new TH2D(Form("hCorrMassMassMixed[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                                Form("hCorrMassMassMixed[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                                nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
+            hCorrMassMassMixed[i][j]->Sumw2();
 
             dirCorrMassSide->cd();
-            hCorrMassSide[i][j] = new TH2D(Form("hCorrMassSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), Form("hCorrMassSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
-                                    nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
+            hCorrMassSide[i][j] = new TH2D(Form("hCorrMassSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                           Form("hCorrMassSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                           nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
             hCorrMassSide[i][j]->Sumw2();
+            hCorrMassSideMixed[i][j] = new TH2D(Form("hCorrMassSideMixed[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                                Form("hCorrMassSideMixed[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                                nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
+            hCorrMassSideMixed[i][j]->Sumw2();
 
             dirCorrSideMass->cd();
-            hCorrSideMass[i][j] = new TH2D(Form("hCorrSideMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), Form("hCorrSideMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
-                                    nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
+            hCorrSideMass[i][j] = new TH2D(Form("hCorrSideMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                           Form("hCorrSideMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                           nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
             hCorrSideMass[i][j]->Sumw2();
+            hCorrSideMassMixed[i][j] = new TH2D(Form("hCorrSideMassMixed[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                                Form("hCorrSideMassMixed[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                                nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
+            hCorrSideMassMixed[i][j]->Sumw2();
 
             dirCorrSideSide->cd();
-            hCorrSideSide[i][j] = new TH2D(Form("hCorrSideSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp), Form("hCorrSideSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
-                                    nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
+            hCorrSideSide[i][j] = new TH2D(Form("hCorrSideSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                           Form("hCorrSideSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                           nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
             hCorrSideSide[i][j]->Sumw2();
+            hCorrSideSideMixed[i][j] = new TH2D(Form("hCorrSideSideMixed[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                                Form("hCorrSideSideMixed[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                                nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
+            hCorrSideSideMixed[i][j]->Sumw2();
 
         }
     }

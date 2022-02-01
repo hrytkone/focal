@@ -49,14 +49,3 @@ TClonesArray * AliJHMRPythiaCatalyst::GetParticleList(particleType itype)
 			return 0;
 	}
 }
-
-void AliJHMRPythiaCatalyst::FillMultiplicityBBC() {
-
-    int mult = 0;
-	for (int partIdx = 0; partIdx < event.size(); partIdx++) {
-		double trEta = event[partIdx].eta();
-		if ( trEta < 3.3 || trEta > 5.0 ) continue;
-        if ( event[partIdx].isFinal() && event[partIdx].isCharged() ) mult++;
-	}
-    histos->hMultiplicityBBC->Fill(mult);
-}

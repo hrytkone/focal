@@ -59,6 +59,8 @@ int main(int argc, char *argv[]) {
     TClonesArray *arrPi0Real = new TClonesArray("TLorentzVector", 1500);
     TClonesArray *arrPi0Peak = new TClonesArray("TLorentzVector", 1500);
     TClonesArray *arrPi0Side = new TClonesArray("TLorentzVector", 1500);
+    TClonesArray *arrPi0PeakMixed = new TClonesArray("TLorentzVector", 1500);
+    TClonesArray *arrPi0SideMixed = new TClonesArray("TLorentzVector", 1500);
 
     fOut->cd();
 
@@ -75,7 +77,6 @@ int main(int argc, char *argv[]) {
         if ( !pythia.next() ) continue;
 
         fCatalyst->InitializeEvent();
-        fCatalyst->FillMultiplicityBBC();
         fCatalyst->GetParticles(kJSTAR);
         //fCatalyst->GetParticles(kJFull);
         arrPhotonFor = fCatalyst->GetParticleList(kJDecayPhoton);
@@ -118,10 +119,27 @@ int main(int argc, char *argv[]) {
             fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, fHistos->hCorrSideMass, 0, 1);
         }
 
+        // Mixed event : take triggers from this event, associated from previous
+        if (iEvent > 0) {
+            std::vector<int> listTriggPeakMixed, listTriggSideMixed, listAssocPeakMixed, listAssocSideMixed;
+            int binsWithTriggPeakMixed[NTRIGGBINS+1] = {0}, binsWithTriggSideMixed[NTRIGGBINS+1] = {0};
+            fCorr->GetTriggAssocLists(arrPi0PeakMixed, listTriggPeakMixed, listAssocPeakMixed, binsWithTriggPeakMixed, bUseLeading);
+            fCorr->GetTriggAssocLists(arrPi0SideMixed, listTriggSideMixed, listAssocSideMixed, binsWithTriggSideMixed, bUseLeading);
+            fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0PeakMixed, listAssocPeakMixed, fHistos->hCorrMassMassMixed, 0, 0);
+            fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0SideMixed, listAssocSideMixed, fHistos->hCorrSideSideMixed, 0, 0);
+            fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0SideMixed, listAssocSideMixed, fHistos->hCorrMassSideMixed, 0, 0);
+            fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0PeakMixed, listAssocPeakMixed, fHistos->hCorrSideMassMixed, 0, 0);
+        }
+
         arrPhotonFor->Clear("C");
         arrPi0Real->Clear("C");
         arrPi0Peak->Clear("C");
         arrPi0Side->Clear("C");
+        arrPi0PeakMixed->Clear("C");
+        arrPi0SideMixed->Clear("C");
+
+        fCorr->ReconstructPions(arrPhotonFor, arrPi0PeakMixed, 1);
+        fCorr->ReconstructPions(arrPhotonFor, arrPi0SideMixed, 0);
     }
 
     fOut->Write("", TObject::kOverwrite);

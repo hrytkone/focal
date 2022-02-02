@@ -2,6 +2,7 @@
 #define ALIJHMRCONST_H
 
 #include "TMath.h"
+#include "TString.h"
 
 #define NDET 4
 #define NTRIGGBINS 3
@@ -14,6 +15,7 @@ enum particleType { kJHadron, kJPi0, kJDecayPhoton, kJRecPi0 };
 enum detector { kJFoCal, kJSTAR, kJTracker, kJFull };
 
 extern const double detEta[NDET][2];
+extern const TString accFunc[NDET];
 
 extern double triggPt[NTRIGGBINS+1];
 extern double assocPt[NASSOCBINS+1];

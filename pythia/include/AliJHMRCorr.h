@@ -27,10 +27,11 @@ class AliJHMRCorr {
 
 public:
 
-    AliJHMRCorr(AliJHMRHist *inhistos) :
+    AliJHMRCorr(AliJHMRHist *inhistos, detector det) :
         histos(inhistos) {
             fPhotonEfficiency = new TF1("fPhotonEfficiency", "TMath::Exp(-3.20093/x)"); // Parameters from fit to efficiency (PhotonEfficiency.C)
-            fPhotonAcceptanceEfficiency = new TF1("fPhotonAcceptanceEfficiency", "TMath::Exp(-0.117082/(x + 0.0832931))"); // Parameters from fit (CheckMissingPionsRatio.C)
+            fPhotonAcceptanceEfficiency = new TF1("fPhotonAcceptanceEfficiency", accFunc[det].Data()); // Parameters from fit (CheckMissingPionsRatio.C)
+            std::cout << "Using acceptance function " << accFunc[det].Data() << std::endl;
             fRand = new TRandom3();
         }
 

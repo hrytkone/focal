@@ -37,6 +37,8 @@ int main(int argc, char *argv[]) {
     int poolsize = argc > 5 ? atol(argv[5]) : 10;
     int seed = argc > 6 ? atol(argv[6]) : 0;
 
+    detector det = kJSTAR;
+
     TFile *fOut = new TFile(outFileName, "RECREATE");
 
     Pythia pythia;
@@ -50,11 +52,10 @@ int main(int argc, char *argv[]) {
     int nEvents = pythia.mode("Main:numberOfEvents");
 
     AliJHMRHist *fHistos = new AliJHMRHist();
-    fHistos->CreateHistos(fOut, kJSTAR);
-    //fHistos->CreateHistos(fOut, kJFull);
+    fHistos->CreateHistos(fOut, det);
 
     AliJHMRPythiaCatalyst *fCatalyst = new AliJHMRPythiaCatalyst(pythia.event, fHistos);
-    AliJHMRCorr *fCorr = new AliJHMRCorr(fHistos);
+    AliJHMRCorr *fCorr = new AliJHMRCorr(fHistos, det);
 
     TClonesArray *arrPhotonFor = new TClonesArray("TLorentzVector", 1500);
     TClonesArray *arrPi0Real = new TClonesArray("TLorentzVector", 1500);
@@ -84,8 +85,7 @@ int main(int argc, char *argv[]) {
         if ( !pythia.next() ) continue;
 
         fCatalyst->InitializeEvent();
-        fCatalyst->GetParticles(kJSTAR);
-        //fCatalyst->GetParticles(kJFull);
+        fCatalyst->GetParticles(det);
         arrPhotonFor = fCatalyst->GetParticleList(kJDecayPhoton);
         arrPi0Real = fCatalyst->GetParticleList(kJPi0);
 

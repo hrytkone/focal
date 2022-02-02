@@ -7,6 +7,13 @@ const double detEta[NDET][2] = {
 	{-1000., 1000.}
 };
 
+const TString accFunc[NDET] = {
+    "TMath::Exp(-0.117082/(x + 0.0832931))", // UPDATE THIS
+    "TMath::Exp(-0.123048/(x + 0.0874463))",
+    "TMath::Exp(-0.117082/(x + 0.0832931))", // NOT CORRECT, CHECK CORRECT ONE
+    "1."
+};
+
 double triggPt[NTRIGGBINS+1] = {1.0, 2.0, 2.5, 3.0};
 double assocPt[NASSOCBINS+1] = {0.5, 1.0, 1.5, 2.0, 2.5};
 

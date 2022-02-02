@@ -10,7 +10,7 @@ Beams:eCM = 200.
 ! 3) Setting for the hard-process generation
 HardQCD:all = on
 PromptPhoton:all = on
-PhaseSpace:pTHatMin = 5s.
+PhaseSpace:pTHatMin = 10.
 
 ! 4) Setting for the event generation process in the Pythia8 library
 PartonLevel:MPI = on

@@ -45,9 +45,16 @@ int main(int argc, char *argv[]) {
     double logBW = (log(limMax) - log(limMin))/NINCPTBIN;
     for (int i = 0; i <= NINCPTBIN; i++) logBinsX[i] = limMin*exp(i*logBW);
 
+    double etaRange = detEta[idet][1] - detEta[idet][0];
+    double etaBinWidth = 0.025;
+    int nEtaBin = int(etaRange/etaBinWidth) + 1;
+
     TH1D *hPionPtFor = new TH1D("hPionPtFor", "hPionPtFor", NINCPTBIN, logBinsX); hPionPtFor->Sumw2();
     TH1D *hPionPtDetected = new TH1D("hPionPtDetected", "hPionPtDetected", NINCPTBIN, logBinsX); hPionPtDetected->Sumw2();
     TH1D *hPionPtRatio;// = new TH1D("hPionPtRatio", "hPionPtRatio", NINCPTBIN, logBinsX); hPionPtRatio->Sumw2();
+    TH2D *hPionEtaPtFor = new TH2D("hPionEtaPtFor", "hPionEtaPtFor", nEtaBin, detEta[idet][0], detEta[idet][1], NINCPTBIN, logBinsX);
+    TH2D *hPionEtaPtDetected = new TH2D("hPionEtaPtForDetected", "hPionEtaPtForDetected", nEtaBin, detEta[idet][0], detEta[idet][1], NINCPTBIN, logBinsX);
+    TH2D *hPionEtaPtRatio;
 
     Pythia pythia;
 
@@ -74,6 +81,7 @@ int main(int argc, char *argv[]) {
 
     		if ( pythia.event[partIdx].id() == 111 ) {
                 hPionPtFor->Fill(pythia.event[partIdx].pT());
+                hPionEtaPtFor->Fill(pythia.event[partIdx].eta(), pythia.event[partIdx].pT());
 
                 int idDaughter1 = pythia.event[partIdx].daughter1();
                 int idDaughter2 = pythia.event[partIdx].daughter2();
@@ -89,8 +97,10 @@ int main(int argc, char *argv[]) {
                     continue;
                 } else {
                     if ( pythia.event[idDaughter1].id()==22 && pythia.event[idDaughter2].id()==22 ) {
-                        if ( pythia.event[idDaughter1].eta() > detEta[idet][0] && pythia.event[idDaughter2].eta() < detEta[idet][1] )
+                        if ( pythia.event[idDaughter1].eta() > detEta[idet][0] && pythia.event[idDaughter2].eta() < detEta[idet][1] ) {
                             hPionPtDetected->Fill(pythia.event[partIdx].pT());
+                            hPionEtaPtDetected->Fill(pythia.event[partIdx].eta(), pythia.event[partIdx].pT());
+                        }
                     }
                     //else {
                     //    std::cout << "Daughters no photons but " << pythia.event[idDaughter1].id() << " and " << pythia.event[idDaughter2].id() << ", skip" << std::endl;
@@ -102,6 +112,9 @@ int main(int argc, char *argv[]) {
 
     hPionPtRatio = (TH1D*)hPionPtDetected->Clone("hPionPtRatio");
     hPionPtRatio->Divide(hPionPtFor);
+
+    hPionEtaPtRatio = (TH2D*)hPionEtaPtDetected->Clone("hPionEtaPtRatio");
+    hPionEtaPtRatio->Divide(hPionEtaPtFor);
 
     fOut->Write("", TObject::kOverwrite);
     fOut->Close();

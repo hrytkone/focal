@@ -5,6 +5,7 @@ pythia/output/*
 pythia/outputfiles/
 pythia/*.log
 pythia/macros/STAR-real-pi0-corr
+STAR-data
 *.zip
 *.pdf
 *.o

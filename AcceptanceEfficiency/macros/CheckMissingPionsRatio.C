@@ -11,6 +11,7 @@ void CheckMissingPionsRatio(TString sInputName = "input.root")
     // ------------------
     TH1D *hPionPtFor = (TH1D*)fIn->Get("hPionPtFor");
     TH1D *hPionPtForDetected = (TH1D*)fIn->Get("hPionPtDetected");
+    TH2D *hPionEtaPtRatio = (TH2D*)fIn->Get("hPionEtaPtRatio");
 
     // ---------------
     // |   Legends   |
@@ -43,6 +44,10 @@ void CheckMissingPionsRatio(TString sInputName = "input.root")
     cRatio->SetLogx();
     hRatio->Draw();
     fFit->Draw("SAME");
+
+    TCanvas *cRatio2D = new TCanvas("cRatio2D", "cRatio2D", 600, 600);
+    cRatio2D->SetLogy();
+    hPionEtaPtRatio->Draw("COLZ");
 }
 
 double Fit(double *x, double *p)

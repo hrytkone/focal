@@ -11,8 +11,8 @@ const double assocPt[nAssocBins+1] = {0.5, 1.0, 1.5, 2.0, 2.5};
 const int nset = 2;
 const int mColor[nset] = {2,1};
 const TString infiles[nset] = {
-    "/mnt/STAR-sim/output_pAu.root",
-    "/mnt/STAR-sim/output_pp.root"
+    "/home/heimarry/Simulations/focal/STAR-data/output_pAu.root",
+    "/home/heimarry/Simulations/focal/STAR-data/output_pp.root"
 };
 
 

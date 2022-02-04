@@ -15,12 +15,12 @@ void AnalyseCorrelations(TString sInputName = "output.root")
 
     gStyle->SetOptStat(0);
     gStyle->SetOptFit();
-    gStyle->SetStatY(0.85);                
-    gStyle->SetStatX(0.85);                
-    gStyle->SetStatW(0.2);                
-    gStyle->SetStatH(0.1);                
-    
-    TFile *fIn = TFile::Open(sInputName);   
+    gStyle->SetStatY(0.85);
+    gStyle->SetStatX(0.85);
+    gStyle->SetStatW(0.2);
+    gStyle->SetStatH(0.1);
+
+    TFile *fIn = TFile::Open(sInputName);
 
     // ------------------
     // |   Histograms   |
@@ -45,7 +45,7 @@ void AnalyseCorrelations(TString sInputName = "output.root")
     for (int it = 0; it < nTriggBins; it++) {
         double tlow = triggPt[it];
         double tupp = triggPt[it+1];
-        
+
         hMassTrigg[it] = (TH1D*)fIn->Get(Form("Masses/hPi0MassTrigg[%4.1f,%4.1f]",tlow,tupp));
         //hMassTrigg[it]->Scale(1./nEvent);
         //hMassTrigg[it]->Rebin();
@@ -55,13 +55,13 @@ void AnalyseCorrelations(TString sInputName = "output.root")
             double aupp = assocPt[ia+1];
 
             if (tlow < aupp) continue;
-            
+
             hMassAssocPeak[it][ia] = (TH1D*)fIn->Get(Form("Masses/hPi0MassAssocPeak[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
             //hMassAssocPeak[it][ia]->Scale(1./nEvent);
-            
+
             hMassAssocSide[it][ia] = (TH1D*)fIn->Get(Form("Masses/hPi0MassAssocSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
             //hMassAssocSide[it][ia]->Scale(1./nEvent);
-            
+
             hCorrReal[it][ia] = (TH2D*)fIn->Get(Form("CorrFor/hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrReal[it][ia]->Rebin2D(4);
             hCorrMassMass[it][ia] = (TH2D*)fIn->Get(Form("CorrMassMass/hCorrMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrMassMass[it][ia]->Rebin2D(4);
             hCorrMassSide[it][ia] = (TH2D*)fIn->Get(Form("CorrMassSide/hCorrMassSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrMassSide[it][ia]->Rebin2D(4);
@@ -74,10 +74,10 @@ void AnalyseCorrelations(TString sInputName = "output.root")
     // |   Legends   |
     // ---------------
     TLegend *leg1 = new TLegend(0.58, 0.66, 0.78, 0.82);
-    leg1->SetFillStyle(0); leg1->SetBorderSize(0); leg1->SetTextSize(0.04); 
+    leg1->SetFillStyle(0); leg1->SetBorderSize(0); leg1->SetTextSize(0.04);
 
     TLegend *leg2 = new TLegend(0.58, 0.7, 0.78, 0.82);
-    leg2->SetFillStyle(0); leg2->SetBorderSize(0); leg2->SetTextSize(0.04); 
+    leg2->SetFillStyle(0); leg2->SetBorderSize(0); leg2->SetTextSize(0.04);
 
     // ----------------
     // |   Analysis   |
@@ -91,37 +91,37 @@ void AnalyseCorrelations(TString sInputName = "output.root")
     TF1 *fPeakColored[nTriggBins];
     TF1 *fLeftSidebandColored[nTriggBins];
     TF1 *fRightSidebandColored[nTriggBins];
-    
+
     double parTrigg[8];
     TCanvas *cMassTrigg[nTriggBins];
     for (int it = 0; it < nTriggBins; it++) {
-        
+
         fFitTrigg[it] = new TF1("fFitTrigg", FitFunction, 20, 300, 8);
         fFitTrigg[it]->SetParameters(-1., 1., 1., 100., 100., 135., 10., 15.);
         fFitTrigg[it]->SetParLimits(5, 132, 138);
         fFitTrigg[it]->SetParLimits(6, 1., 15.);
         fFitTrigg[it]->SetParLimits(7, 2., 20.);
         fFitTrigg[it]->SetNpx(1000);
-        
+
         fPeakTrigg[it] = new TF1("fPeakTrigg", FitPeak, 20, 300, 5);
         fPeakTrigg[it]->SetLineColor(kBlue);
         fPeakTrigg[it]->SetNpx(1000);
-        
+
         fBgTrigg[it] = new TF1("fBgTrigg", FitBackground, 20, 300, 4);
         fBgTrigg[it]->SetLineColor(kBlack);
         fBgTrigg[it]->SetLineStyle(kDashed);
         fBgTrigg[it]->SetNpx(1000);
-        
+
         hMassTrigg[it]->Fit("fFitTrigg", "Q0R+");
         fFitTrigg[it]->GetParameters(parTrigg);
         fBgTrigg[it]->SetParameters(parTrigg);
-        fPeakTrigg[it]->SetParameters(&parTrigg[3]); 
+        fPeakTrigg[it]->SetParameters(&parTrigg[3]);
 
         cMassTrigg[it] = new TCanvas(Form("cMassTrigg%d", it), Form("cMassTrigg%d", it), 600, 600);
         hMassTrigg[it]->SetTitle(Form("Trigger invariant mass, %.1f < p_{T,t} < %.1f GeV/c; M_{#gamma#gamma} (MeV/c^{2}); counts", triggPt[it], triggPt[it+1]));
         hMassTrigg[it]->GetXaxis()->SetRangeUser(0., 300.);
         hMassTrigg[it]->GetYaxis()->SetMaxDigits(3);
-        
+
         fPeakColored[it] = (TF1*)fFitTrigg[it]->Clone("fPeakColored");
         fPeakColored[it]->SetFillColor(kBlue-10);
         fPeakColored[it]->GetXaxis()->SetRangeUser(110., 160.);
@@ -134,7 +134,7 @@ void AnalyseCorrelations(TString sInputName = "output.root")
         fRightSidebandColored[it]->SetFillColor(kRed-10);
         fRightSidebandColored[it]->GetXaxis()->SetRangeUser(210., 280.);
         fRightSidebandColored[it]->SetFillStyle(1001);
-        
+
         hMassTrigg[it]->Draw("HIST");
         fPeakColored[it]->Draw("SAME");
         fLeftSidebandColored[it]->Draw("SAME");
@@ -147,8 +147,8 @@ void AnalyseCorrelations(TString sInputName = "output.root")
 
     TF1 *fFitAssoc[nTriggBins][nAssocBins];
     TF1 *fPeakAssoc[nTriggBins][nAssocBins];
-    TF1 *fBgAssoc[nTriggBins][nAssocBins]; 
-    
+    TF1 *fBgAssoc[nTriggBins][nAssocBins];
+
     TF1 *fPeakColoredAssoc[nTriggBins][nAssocBins];
     TF1 *fLeftSidebandColoredAssoc[nTriggBins][nAssocBins];
     TF1 *fRightSidebandColoredAssoc[nTriggBins][nAssocBins];
@@ -161,9 +161,9 @@ void AnalyseCorrelations(TString sInputName = "output.root")
             double tupp = triggPt[it+1];
             double alow = assocPt[ia];
             double aupp = assocPt[ia+1];
- 
+
             if (tlow < aupp) continue;
-            
+
             fFitAssoc[it][ia] = new TF1("fFitAssoc", FitFunction, 10, 300, 8);
             fFitAssoc[it][ia]->SetParameters(0., 0., 0., 0., 0., 135., 30., 50.);
             fFitAssoc[it][ia]->SetParLimits(5, 132, 138);
@@ -185,12 +185,12 @@ void AnalyseCorrelations(TString sInputName = "output.root")
             fFitAssoc[it][ia]->GetParameters(parAssoc);
             fBgAssoc[it][ia]->SetParameters(parAssoc);
             fPeakAssoc[it][ia]->SetParameters(&parAssoc[3]);
-            
+
             cMassAssocPeak[it][ia] = new TCanvas(Form("cMassAssocPeak%d:%d",it,ia), Form("cMassAssocPeak%d:%d",it,ia), 600, 600);
             hMassAssocPeak[it][ia]->SetTitle(Form("%.1f < p_{T,t} < %.1f GeV/c, %.1f < p_{T,a} < %.1f GeV/c; M_{#gamma#gamma}; counts", tlow, tupp, alow, aupp));
             hMassAssocPeak[it][ia]->GetXaxis()->SetRangeUser(0., 300.);
             hMassAssocPeak[it][ia]->GetYaxis()->SetMaxDigits(3);
-            
+
             fPeakColoredAssoc[it][ia] = (TF1*)fFitAssoc[it][ia]->Clone("fPeakColoredAssoc");
             fPeakColoredAssoc[it][ia]->SetFillColor(kBlue-10);
             fPeakColoredAssoc[it][ia]->GetXaxis()->SetRangeUser(110., 160.);
@@ -203,7 +203,7 @@ void AnalyseCorrelations(TString sInputName = "output.root")
             fRightSidebandColoredAssoc[it][ia]->SetFillColor(kRed-10);
             fRightSidebandColoredAssoc[it][ia]->GetXaxis()->SetRangeUser(210., 280.);
             fRightSidebandColoredAssoc[it][ia]->SetFillStyle(1001);
-            
+
             hMassAssocPeak[it][ia]->Draw("HIST");
             fPeakColoredAssoc[it][ia]->Draw("SAME");
             fLeftSidebandColoredAssoc[it][ia]->Draw("SAME");
@@ -216,7 +216,7 @@ void AnalyseCorrelations(TString sInputName = "output.root")
     }
 
     // Integrate to get the normalisations
-    double st[nTriggBins], bt[nTriggBins], sumt[nTriggBins], alphat[nTriggBins], betat[nTriggBins], bsidet[nTriggBins]; 
+    double st[nTriggBins], bt[nTriggBins], sumt[nTriggBins], alphat[nTriggBins], betat[nTriggBins], bsidet[nTriggBins];
     double sa[nTriggBins][nAssocBins], ba[nTriggBins][nAssocBins], suma[nTriggBins][nAssocBins], alphaa[nTriggBins][nAssocBins], betaa[nTriggBins][nAssocBins], bsidea[nTriggBins][nAssocBins];
     double A[nTriggBins][nAssocBins], B[nTriggBins][nAssocBins];
 
@@ -228,15 +228,15 @@ void AnalyseCorrelations(TString sInputName = "output.root")
         bsidet[it] = fBgTrigg[it]->Integral(40, 80) + fBgTrigg[it]->Integral(210, 280);
         alphat[it] = st[it]/sumt[it];
         betat[it] = bt[it]/sumt[it];
-        
+
         for (int ia = 0; ia < nAssocBins; ia++) {
             double tlow = triggPt[it];
             double tupp = triggPt[it+1];
             double alow = assocPt[ia];
             double aupp = assocPt[ia+1];
- 
+
             if (tlow < aupp) continue;
-            
+
             suma[it][ia] = fFitAssoc[it][ia]->Integral(110, 160);
             sa[it][ia] = fPeakAssoc[it][ia]->Integral(110, 160);
             ba[it][ia] = fBgAssoc[it][ia]->Integral(110, 160);
@@ -246,13 +246,13 @@ void AnalyseCorrelations(TString sInputName = "output.root")
             A[it][ia] = bt[it]/bsidet[it];
             B[it][ia] = ba[it][ia]/bsidea[it][ia];
         }
-        
+
         std::cout << "\tbin [ " << triggPt[it] << " " << triggPt[it+1] << " ] : \treal=" << nRealTrigg[it] << "\treconst=" << st[it] << std::endl;
-        
+
     }
 
-    TCanvas *cCorrFuncs[nTriggBins][nAssocBins]; 
-    TCanvas *cCorr[nTriggBins][nAssocBins]; 
+    TCanvas *cCorrFuncs[nTriggBins][nAssocBins];
+    TCanvas *cCorr[nTriggBins][nAssocBins];
     TCanvas *cRatio[nTriggBins][nAssocBins];
     TH1D *hCorrRealProj[nTriggBins][nAssocBins];
     TH1D *hCorrMassMassProj[nTriggBins][nAssocBins];
@@ -261,23 +261,23 @@ void AnalyseCorrelations(TString sInputName = "output.root")
     TH1D *hCorrSideSideProj[nTriggBins][nAssocBins];
     TH1D *hCorr[nTriggBins][nAssocBins];
     TH1D *hRatio[nTriggBins][nAssocBins];
-    
-    // 2. Normalise correlation functions   
+
+    // 2. Normalise correlation functions
     for (int it = 0; it < nTriggBins; it++) {
-        for (int ia = 0; ia < nAssocBins; ia++) {        
+        for (int ia = 0; ia < nAssocBins; ia++) {
             double tlow = triggPt[it];
             double tupp = triggPt[it+1];
             double alow = assocPt[ia];
             double aupp = assocPt[ia+1];
- 
+
             if (tlow < aupp) continue;
-            
+
             double nPairReal = hCorrReal[it][ia]->GetEntries();
             double nPairMassMass = hCorrMassMass[it][ia]->GetEntries();
             double nPairMassSide = hCorrMassSide[it][ia]->GetEntries();
             double nPairSideMass = hCorrSideMass[it][ia]->GetEntries();
             double nPairSideSide = hCorrSideSide[it][ia]->GetEntries();
-            
+
             hCorrRealProj[it][ia] = hCorrReal[it][ia]->ProjectionX();
             //hCorrRealProj[it][ia]->Scale(1.0/nPairMassMass);
             hCorrRealProj[it][ia]->SetLineColor(kRed);
@@ -287,25 +287,25 @@ void AnalyseCorrelations(TString sInputName = "output.root")
             //hCorrMassMassProj[it][ia]->Scale(1/(alphat[it]*alphaa[it][ia]));
             hCorrMassMassProj[it][ia]->SetLineColor(kBlue);
             hCorrMassMassProj[it][ia]->SetTitle(Form("%.1f < p_{T,t} < %.1f GeV/c, %.1f < p_{T,a} < %.1f GeV/c; #Delta#phi; dN/d#Delta#phi", triggPt[it], triggPt[it+1], assocPt[ia], assocPt[ia+1]));
-            
+
             hCorrMassSideProj[it][ia] = hCorrMassSide[it][ia]->ProjectionX();
             //hCorrMassSideProj[it][ia]->Scale(1.0/nPairMassSide);
             //hCorrMassSideProj[it][ia]->Scale(betaa[it][ia]/(alphat[it]*alphaa[it][ia]));
             hCorrMassSideProj[it][ia]->Scale(B[it][ia]);
             hCorrMassSideProj[it][ia]->SetLineColor(kRed);
-            
+
             hCorrSideMassProj[it][ia] = hCorrSideMass[it][ia]->ProjectionX();
             //hCorrSideMassProj[it][ia]->Scale(1.0/nPairSideMass);
             //hCorrSideMassProj[it][ia]->Scale(betat[it]/(alphat[it]*alphaa[it][ia]));
             hCorrSideMassProj[it][ia]->Scale(A[it][ia]);
             hCorrSideMassProj[it][ia]->SetLineColor(kBlack);
-            
+
             hCorrSideSideProj[it][ia] = hCorrSideSide[it][ia]->ProjectionX();
             //hCorrSideSideProj[it][ia]->Scale(1.0/nPairSideSide);
             //hCorrSideSideProj[it][ia]->Scale((betat[it]*betaa[it][ia])/(alphat[it]*alphaa[it][ia]));
             hCorrSideSideProj[it][ia]->Scale((A[it][ia]*B[it][ia]));
             hCorrSideSideProj[it][ia]->SetLineColor(kGray);
-            
+
             if (it==0 && ia==0) {
                 leg1->AddEntry(hCorrMassMassProj[it][ia], "f_{mass,mass}", "l");
                 leg1->AddEntry(hCorrMassSideProj[it][ia], "f_{mass,side}", "l");
@@ -319,7 +319,7 @@ void AnalyseCorrelations(TString sInputName = "output.root")
             hCorrSideMassProj[it][ia]->Draw("HIST SAME");
             hCorrSideSideProj[it][ia]->Draw("HIST SAME");
             leg1->Draw("SAME");**/
-    
+
             // 3. Get the final correlation function with sideband correction
             cCorr[it][ia] = new TCanvas(Form("cCorr%d:%d",it,ia), Form("cCorr%d:%d",it,ia), 600, 600);
 
@@ -343,7 +343,7 @@ void AnalyseCorrelations(TString sInputName = "output.root")
             leg2->Draw("SAME");
 
             //cRatio[it][ia] = new TCanvas(Form("cRatio%d:%d",it,ia), Form("cRatio%d:%d",it,ia), 600, 600);
-            
+
             //hRatio[it][ia] = (TH1D*)hCorr[it][ia]->Clone(Form("hRatio%d:%d",it,ia));
             //hRatio[it][ia]->Divide(hCorrRealProj[it][ia]);
             //hRatio[it][ia]->GetYaxis()->SetRangeUser(0., 2.);
@@ -360,7 +360,7 @@ void AnalyseCorrelations(TString sInputName = "output.root")
 // -----------------
 
 double FitPeak(double *x, double *p)
-{   
+{
     double c1 = p[0];
     double c2 = p[1];
     double mu = p[2];

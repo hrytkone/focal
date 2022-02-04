@@ -21,15 +21,17 @@ TH2D *hCorrSideMass[nTriggBins][nAssocBins];
 TH2D *hCorrSideSide[nTriggBins][nAssocBins];
 
 // Output
-double alphat[nTriggBins];
-double betat[nTriggBins];
-double alphaa[nTriggBins][nAssocBins];
-double betaa[nTriggBins][nAssocBins];
-double A[nTriggBins][nAssocBins], B[nTriggBins][nAssocBins];
+double parTrigg[8];
+double parAssoc[9];
+
+double alpha[nTriggBins][nAssocBins];
+double beta[nTriggBins];
+double st[nTriggBins];
 
 TF1 *fFitTrigg[nTriggBins];
 TF1 *fPeakTrigg[nTriggBins];
 TF1 *fBgTrigg[nTriggBins];
+
 TF1 *fFitAssoc[nTriggBins][nAssocBins];
 TF1 *fPeakAssoc[nTriggBins][nAssocBins];
 TF1 *fBgAssoc[nTriggBins][nAssocBins];
@@ -44,17 +46,26 @@ TH1D *hCorr[nTriggBins][nAssocBins];
 TFile *fIn;
 TFile *fOut;
 
-TCanvas *cMassesTrigg[ndata];
-TCanvas *cMassesAssoc[ndata];
+TCanvas *cMassTrigg[nTriggBins];
+TCanvas *cMassAssocPeak[nTriggBins][nAssocBins];
+
+// For drawing purposes
+TF1 *fPeakColored[nTriggBins];
+TF1 *fLeftSidebandColored[nTriggBins];
+TF1 *fRightSidebandColored[nTriggBins];
+TF1 *fPeakColoredAssoc[nTriggBins][nAssocBins];
+TF1 *fLeftSidebandColoredAssoc[nTriggBins][nAssocBins];
+TF1 *fRightSidebandColoredAssoc[nTriggBins][nAssocBins];
 
 void processDataSTAR();
 
 void LoadInput();
 void DoAnalysis();
-void GetNormalisations();
+void FitMassPeaks();
+void GetScaleFactors();
 
 double FitPeak(double *x, double *p);
 double FitBackground(double *x, double *p);
 double FitFunction(double *x, double *p);
 
-void PlotMassHistos();
+void DrawMassHistos(TString dataname);

@@ -39,6 +39,7 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet) {
     dirCorrMassSide = output->mkdir("CorrMassSide");
     dirCorrSideMass = output->mkdir("CorrSideMass");
     dirCorrSideSide = output->mkdir("CorrSideSide");
+    dirTrueComponents = output->mkdir("TrueComponents");
 
     for (int i = 0; i < NTRIGGBINS; i++) {
         double tlow = triggPt[i];
@@ -125,6 +126,23 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet) {
                                                 nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
             hCorrSideSideMixed[i][j]->Sumw2();
 
+            dirTrueComponents->cd();
+            hCorrSignalSignal[i][j] = new TH2D(Form("hCorrSignalSignal[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                           Form("hCorrSignalSignal[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                           nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
+            hCorrSignalSignal[i][j]->Sumw2();
+            hCorrSignalBg[i][j] = new TH2D(Form("hCorrSignalBg[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                           Form("hCorrSignalBg[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                           nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
+            hCorrSignalBg[i][j]->Sumw2();
+            hCorrBgSignal[i][j] = new TH2D(Form("hCorrBglSignal[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                           Form("hCorrBglSignal[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                           nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
+            hCorrBgSignal[i][j]->Sumw2();
+            hCorrBgBg[i][j] = new TH2D(Form("hCorrBgBg[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                           Form("hCorrBgBg[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                           nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
+            hCorrBgBg[i][j]->Sumw2();
         }
     }
 }

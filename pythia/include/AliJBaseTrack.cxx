@@ -136,4 +136,4 @@ void AliJBaseTrack::Print(Option_t *option) const{
   cout<<"fTracEff="<<fTracEff <<endl;
 }
 
-//ClassImp(AliJBaseTrack)
+ClassImp(AliJBaseTrack)

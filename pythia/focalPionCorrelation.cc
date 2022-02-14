@@ -13,6 +13,7 @@
 #include "TF1.h"
 #include "TStopwatch.h"
 
+#include "include/AliJBaseTrack.h"
 #include "include/AliJHMRConst.h"
 #include "include/AliJHMRHist.h"
 #include "include/AliJHMRCorr.h"
@@ -37,7 +38,7 @@ int main(int argc, char *argv[]) {
     int poolsize = argc > 5 ? atol(argv[5]) : 10;
     int seed = argc > 6 ? atol(argv[6]) : 0;
 
-    detector det = kJSTAR;
+    detector det = kJFoCal;
 
     TFile *fOut = new TFile(outFileName, "RECREATE");
 
@@ -57,17 +58,17 @@ int main(int argc, char *argv[]) {
     AliJHMRPythiaCatalyst *fCatalyst = new AliJHMRPythiaCatalyst(pythia.event, fHistos);
     AliJHMRCorr *fCorr = new AliJHMRCorr(fHistos, det);
 
-    TClonesArray *arrPhotonFor = new TClonesArray("TLorentzVector", 1500);
-    TClonesArray *arrPi0Real = new TClonesArray("TLorentzVector", 1500);
-    TClonesArray *arrPi0Peak = new TClonesArray("TLorentzVector", 1500);
-    TClonesArray *arrPi0Side = new TClonesArray("TLorentzVector", 1500);
+    TClonesArray *arrPhotonFor = new TClonesArray("AliJBaseTrack", 1500);
+    TClonesArray *arrPi0Real = new TClonesArray("AliJBaseTrack", 1500);
+    TClonesArray *arrPi0Peak = new TClonesArray("AliJBaseTrack", 1500);
+    TClonesArray *arrPi0Side = new TClonesArray("AliJBaseTrack", 1500);
 
     std::vector<TClonesArray*> arrPi0PeakMixed(poolsize);
     std::vector<TClonesArray*> arrPi0SideMixed(poolsize);
 
     for (int ipool = 0; ipool < poolsize; ipool++) {
-        arrPi0PeakMixed[ipool] = new TClonesArray("TLorentzVector", 1500);
-        arrPi0SideMixed[ipool] = new TClonesArray("TLorentzVector", 1500);
+        arrPi0PeakMixed[ipool] = new TClonesArray("AliJBaseTrack", 1500);
+        arrPi0SideMixed[ipool] = new TClonesArray("AliJBaseTrack", 1500);
     }
 
     fOut->cd();
@@ -125,6 +126,9 @@ int main(int argc, char *argv[]) {
             fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0Side, listAssocSide, fHistos->hCorrMassSide, 1, 0);
             fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, fHistos->hCorrSideMass, 0, 1);
         }
+
+        // Construct & save true correlation components f_SS, f_SB, f_BS, f_BB
+        fCorr->ConstructTrueCorrComponents(arrPi0Peak, listTriggPeak, listAssocPeak, 0);
 
         // Mixed event : take triggers from this event, associated from previous
         if (iEvent >= poolsize) {

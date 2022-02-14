@@ -1,8 +1,10 @@
 double Fit(double *x, double *p);
+void SetStyle(Bool_t graypalette);
 
 void CheckMissingPionsRatio(TString sInputName = "input.root")
 {
     gStyle->SetOptStat(0);
+    SetStyle(0);
 
     TFile *fIn = TFile::Open(sInputName);
 
@@ -46,11 +48,60 @@ void CheckMissingPionsRatio(TString sInputName = "input.root")
     fFit->Draw("SAME");
 
     TCanvas *cRatio2D = new TCanvas("cRatio2D", "cRatio2D", 600, 600);
+    cRatio2D->cd(0);
     cRatio2D->SetLogy();
+    hPionEtaPtRatio->SetTitle("; #eta; p_{T} (GeV)");
+    hPionEtaPtRatio->GetYaxis()->SetTitleOffset(1.2);
+    hPionEtaPtRatio->GetXaxis()->SetTitleOffset(0.6);
     hPionEtaPtRatio->Draw("COLZ");
+    gStyle->SetPalette(255,0);
+    gPad->SetGridy(); gPad->SetGridx();
+    gPad->RedrawAxis("f");
 }
 
 double Fit(double *x, double *p)
 {
     return TMath::Exp(p[0]/(x[0] + p[1]));
+}
+
+void SetStyle(Bool_t graypalette)
+{
+    cout << "Setting style!" << endl;
+
+    //gStyle->Reset("Plain");
+    //gStyle->SetOptTitle(0);
+    gStyle->SetOptStat(0);
+    gStyle->SetLineScalePS(1);
+    //if(graypalette) gStyle->SetPalette(8,0);
+    //else gStyle->SetPalette(1);
+    gStyle->SetCanvasColor(10);
+    gStyle->SetCanvasBorderMode(0);
+    gStyle->SetFrameLineWidth(1);
+    gStyle->SetFrameFillColor(kWhite);
+    gStyle->SetPadColor(10);
+    gStyle->SetPadTickX(0);
+    gStyle->SetPadTickY(0);
+    gStyle->SetPadBottomMargin(0.15);
+    gStyle->SetPadLeftMargin(0.15);
+    gStyle->SetHistLineWidth(1);
+    //gStyle->SetHistLineColor(kRed);
+    gStyle->SetFuncWidth(2);
+    //gStyle->SetFuncColor(kGreen);
+    gStyle->SetLineWidth(1);
+    gStyle->SetLabelSize(0.035,"xyz");
+    gStyle->SetLabelOffset(0.01,"y");
+    gStyle->SetLabelOffset(0.01,"x");
+    gStyle->SetLabelColor(kBlack,"xyz");
+    //gStyle->SetTitleSize(0.035,"xyz");
+    //gStyle->SetTitleOffset(1.25,"y");
+    //gStyle->SetTitleOffset(1.2,"x");
+    //gStyle->SetTitleFillColor(kWhite);
+    gStyle->SetTextSizePixels(26);
+    gStyle->SetTextFont(42);
+    //  gStyle->SetTickLength(0.04,"X");  gStyle->SetTickLength(0.04,"Y");
+
+    gStyle->SetLegendBorderSize(0);
+    gStyle->SetLegendFillColor(kWhite);
+    //  gStyle->SetFillColor(kWhite);
+    gStyle->SetLegendFont(42);
 }

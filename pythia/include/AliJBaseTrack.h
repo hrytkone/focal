@@ -103,7 +103,7 @@ class AliJBaseTrack : public TLorentzVector {
         Int_t         fMCIndex;           //!   //index of corresp. MC track
         Double_t      fWeight;            //!   //particle weight
 
-        //ClassDef(AliJBaseTrack,2)
+        ClassDef(AliJBaseTrack,2)
 };
 
 #endif

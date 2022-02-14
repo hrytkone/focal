@@ -1,6 +1,7 @@
 #ifndef ALIJHMRCORR_H
 #define ALIJHMRCORR_H
 
+#include "AliJBaseTrack.h"
 #include "AliJHMRConst.h"
 #include "AliJHMRHist.h"
 
@@ -12,7 +13,6 @@
 #include <Pythia8/Pythia.h>
 
 #include <TString.h>
-#include <TLorentzVector.h>
 #include <TClonesArray.h>
 #include <TRandom3.h>
 #include <TF1.h>
@@ -44,12 +44,13 @@ public:
     double PhotonEnergySmearing(double px, double py, double pz);
     void SmearEnergies(TClonesArray * arrParticles);
     bool IsPhotonRemoved(double ePhoton);
-    TLorentzVector GetPhotonSumVector(TClonesArray *arrayPhoton, int iPhoton1, int iPhoton2);
+    AliJBaseTrack GetPhotonSumVector(TClonesArray *arrayPhoton, int iPhoton1, int iPhoton2);
     int GetLeadingTriggerIndex(TClonesArray *arrPi0);
     int GetLargerTrigg(TClonesArray *arrPi0Peak, std::vector<int> listTriggPeak, TClonesArray *arrPi0Side, std::vector<int> listTriggSide);
 
     void DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vector<int> listAssoc, TH2D *hCorr[NTRIGGBINS][NASSOCBINS], bool bUseWeight);
     void DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> listTrigg, TClonesArray *arrPi0Assoc, std::vector<int> listAssoc, TH2D *hCorr[NTRIGGBINS][NASSOCBINS], bool bUseWeightTrigg, bool bUseWeightAssoc);
+    void ConstructTrueCorrComponents(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vector<int> listAssoc, bool bUseWeight);
     void ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0Candidates, bool bMass);
     void GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector<int>& listTrigg, std::vector<int>& listAssoc, int *binsWithTrigg, bool bUseLeading);
 

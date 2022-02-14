@@ -30,6 +30,17 @@ void AliJHMRPythiaCatalyst::GetParticles(detector idet) {
 
 		if ( event[partIdx].isFinal() && event[partIdx].id() == 22 ) {
 			track.SetParticleType(kJDecayPhoton);
+
+            // In the case of photons tag those that are from pi0 decay
+            //      track label 1 = decay product
+            //      track label 0 = not from decay
+            int motherId = event[partIdx].mother1();
+            if (event[motherId].id() == 111) {
+                track.SetLabel(1);
+            } else {
+                track.SetLabel(0);
+            }
+
 			new((*fInputListPhoton)[fInputListPhoton->GetEntriesFast()]) AliJBaseTrack(track);
 		}
 	}

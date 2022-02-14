@@ -15,7 +15,10 @@
 #include "TStopwatch.h"
 
 #define NINCPTBIN 150
+#define NETABIN 13
 #define NDET 2
+
+int GetEtaBin(double eta, int idet);
 
 using namespace Pythia8;
 
@@ -49,12 +52,19 @@ int main(int argc, char *argv[]) {
     double etaBinWidth = 0.025;
     int nEtaBin = int(etaRange/etaBinWidth) + 1;
 
-    TH1D *hPionPtFor = new TH1D("hPionPtFor", "hPionPtFor", NINCPTBIN, logBinsX); hPionPtFor->Sumw2();
-    TH1D *hPionPtDetected = new TH1D("hPionPtDetected", "hPionPtDetected", NINCPTBIN, logBinsX); hPionPtDetected->Sumw2();
-    TH1D *hPionPtRatio;// = new TH1D("hPionPtRatio", "hPionPtRatio", NINCPTBIN, logBinsX); hPionPtRatio->Sumw2();
-    TH2D *hPionEtaPtFor = new TH2D("hPionEtaPtFor", "hPionEtaPtFor", nEtaBin, detEta[idet][0], detEta[idet][1], NINCPTBIN, logBinsX);
-    TH2D *hPionEtaPtDetected = new TH2D("hPionEtaPtForDetected", "hPionEtaPtForDetected", nEtaBin, detEta[idet][0], detEta[idet][1], NINCPTBIN, logBinsX);
+    TH1D *hPionPtFor[NETABIN];
+    TH1D *hPionPtDetected[NETABIN];
+    TH1D *hPionPtRatio[NETABIN];
+    TH2D *hPionEtaPtFor;
+    TH2D *hPionEtaPtDetected;
     TH2D *hPionEtaPtRatio;
+
+    for (int ieta=0; ieta<NETABIN; ieta++) {
+        hPionPtFor[ieta] = new TH1D(Form("hPionPtFor_%d", ieta), "hPionPtFor", NINCPTBIN, logBinsX); hPionPtFor[ieta]->Sumw2();
+        hPionPtDetected[ieta] = new TH1D(Form("hPionPtDetected_%d", ieta), "hPionPtDetected", NINCPTBIN, logBinsX); hPionPtDetected[ieta]->Sumw2();
+    }
+    hPionEtaPtFor = new TH2D("hPionEtaPtFor", "hPionEtaPtFor", nEtaBin, detEta[idet][0], detEta[idet][1], NINCPTBIN, logBinsX);
+    hPionEtaPtDetected = new TH2D("hPionEtaPtForDetected", "hPionEtaPtForDetected", nEtaBin, detEta[idet][0], detEta[idet][1], NINCPTBIN, logBinsX);
 
     Pythia pythia;
 
@@ -80,7 +90,8 @@ int main(int argc, char *argv[]) {
     		if ( trEta < detEta[idet][0] || trEta > detEta[idet][1] ) continue;
 
     		if ( pythia.event[partIdx].id() == 111 ) {
-                hPionPtFor->Fill(pythia.event[partIdx].pT());
+                int ibin = GetEtaBin(pythia.event[partIdx].eta(), idet);
+                hPionPtFor[ibin]->Fill(pythia.event[partIdx].pT());
                 hPionEtaPtFor->Fill(pythia.event[partIdx].eta(), pythia.event[partIdx].pT());
 
                 int idDaughter1 = pythia.event[partIdx].daughter1();
@@ -98,7 +109,7 @@ int main(int argc, char *argv[]) {
                 } else {
                     if ( pythia.event[idDaughter1].id()==22 && pythia.event[idDaughter2].id()==22 ) {
                         if ( pythia.event[idDaughter1].eta() > detEta[idet][0] && pythia.event[idDaughter2].eta() < detEta[idet][1] ) {
-                            hPionPtDetected->Fill(pythia.event[partIdx].pT());
+                            hPionPtDetected[ibin]->Fill(pythia.event[partIdx].pT());
                             hPionEtaPtDetected->Fill(pythia.event[partIdx].eta(), pythia.event[partIdx].pT());
                         }
                     }
@@ -110,8 +121,10 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    hPionPtRatio = (TH1D*)hPionPtDetected->Clone("hPionPtRatio");
-    hPionPtRatio->Divide(hPionPtFor);
+    for (int ieta=0; ieta<NETABIN; ieta++) {
+        hPionPtRatio[ieta] = (TH1D*)hPionPtDetected[ieta]->Clone(Form("hPionPtRatio_%d", ieta));
+        hPionPtRatio[ieta]->Divide(hPionPtFor[ieta]);
+    }
 
     hPionEtaPtRatio = (TH2D*)hPionEtaPtDetected->Clone("hPionEtaPtRatio");
     hPionEtaPtRatio->Divide(hPionEtaPtFor);
@@ -124,4 +137,15 @@ int main(int argc, char *argv[]) {
     timer.Print();
 
     return 0;
+}
+
+int GetEtaBin(double eta, int idet)
+{
+    double step = (detEta[idet][1]-detEta[idet][0])/NETABIN;
+    double binEdge = detEta[idet][0];
+    for (int i=0; i<NETABIN; i++) {
+        if (eta>binEdge && eta<=binEdge+step) return i;
+        binEdge += step;
+    }
+    return -1;
 }

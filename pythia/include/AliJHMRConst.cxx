@@ -14,8 +14,13 @@ const TString accFunc[NDET] = {
     "1."
 };
 
-double triggPt[NTRIGGBINS+1] = {1.0, 2.0, 2.5, 3.0};
-double assocPt[NASSOCBINS+1] = {0.5, 1.0, 1.5, 2.0, 2.5};
+// STAR bins
+//double triggPt[NTRIGGBINS+1] = {1.0, 2.0, 2.5, 3.0};
+//double assocPt[NASSOCBINS+1] = {0.5, 1.0, 1.5, 2.0, 2.5};
+
+// FoCal bins
+double triggPt[NTRIGGBINS+1] = {4.0, 8.0, 20.0};
+double assocPt[NASSOCBINS+1] = {2.0, 3.0, 4.0};
 
 const double kJPi = TMath::Pi();
 const double kJTwoPi = 2 * TMath::Pi();

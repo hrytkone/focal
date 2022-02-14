@@ -12,6 +12,7 @@
 #include "TRandom3.h"
 #include "TF1.h"
 #include "TStopwatch.h"
+#include "TObjectTable.h"
 
 #include "include/AliJBaseTrack.h"
 #include "include/AliJHMRConst.h"
@@ -63,8 +64,8 @@ int main(int argc, char *argv[]) {
     TClonesArray *arrPi0Peak = new TClonesArray("AliJBaseTrack", 1500);
     TClonesArray *arrPi0Side = new TClonesArray("AliJBaseTrack", 1500);
 
-    std::vector<TClonesArray*> arrPi0PeakMixed(poolsize);
-    std::vector<TClonesArray*> arrPi0SideMixed(poolsize);
+    TClonesArray* arrPi0PeakMixed[poolsize];
+    TClonesArray* arrPi0SideMixed[poolsize];
 
     for (int ipool = 0; ipool < poolsize; ipool++) {
         arrPi0PeakMixed[ipool] = new TClonesArray("AliJBaseTrack", 1500);
@@ -144,13 +145,15 @@ int main(int argc, char *argv[]) {
 
             }
             // Remove the first from the pool and add new array to the pool
-            arrPi0PeakMixed.erase(arrPi0PeakMixed.begin());
-            arrPi0PeakMixed.push_back((TClonesArray*)arrPi0Peak->Clone());
-            arrPi0SideMixed.erase(arrPi0SideMixed.begin());
-            arrPi0SideMixed.push_back((TClonesArray*)arrPi0Side->Clone());
-        } else { // Create pools"
-            arrPi0PeakMixed[iEvent] = (TClonesArray*)arrPi0Peak->Clone();
-            arrPi0SideMixed[iEvent] = (TClonesArray*)arrPi0Side->Clone();
+            for (int ipool = 0; ipool < poolsize-1; ipool++) {
+                *arrPi0PeakMixed[ipool] = *arrPi0PeakMixed[ipool+1];
+                *arrPi0SideMixed[ipool] = *arrPi0SideMixed[ipool+1];
+            }
+            *arrPi0PeakMixed[poolsize-1] = *arrPi0Peak;
+            *arrPi0SideMixed[poolsize-1] = *arrPi0Side;
+        } else { // Create pools
+            *arrPi0PeakMixed[iEvent] = *arrPi0Peak;
+            *arrPi0SideMixed[iEvent] = *arrPi0Side;
         }
 
         arrPhotonFor->Clear("C");

@@ -19,8 +19,10 @@ INCS    += -I$(PYTHIA8)/include
 CXXFLAGS  += $(INCS)
 LDFLAGS += $L -ldl
 
-HDRSDICT = include/AliJHMRConst.h include/AliJBaseTrack.h include/AliJHMRHist.h include/AliJHMRCorr.h include/AliJHMRPythiaCatalyst.h
-           
+HDRSDICT = include/AliJHMRConst.h include/AliJBaseTrack.h include/AliJHMRHist.h \
+include/AliJHMRCorr.h include/AliJHMRPythiaCatalyst.h include/AliJHMRGeantCatalyst.h \
+include/AliJHMREvent.h include/AliJHMRCluster.h include/AliJHMRTrack.h
+
 HDRS	+= $(HDRSDICT)  nanoDict.h
 
 SRCS = $(HDRS:.h=.cxx)
@@ -30,7 +32,7 @@ all:            $(PROGRAM)
 
 $(PROGRAM):     $(OBJS) $(PROGRAM).cc
 		@echo "Linking $(PROGRAM) ..."
-		$(CXX)  -lPhysics -L$(PWD) $(PROGRAM).cc $(CXXFLAGS) $(OBJS) $(LDFLAGS) -o $(PROGRAM) 
+		$(CXX)  -lPhysics -L$(PWD) $(PROGRAM).cc $(CXXFLAGS) $(OBJS) $(LDFLAGS) -o $(PROGRAM)
 		@echo "finally done"
 
 %.cxx:

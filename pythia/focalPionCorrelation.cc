@@ -19,25 +19,28 @@
 #include "include/AliJHMRHist.h"
 #include "include/AliJHMRCorr.h"
 #include "include/AliJHMRPythiaCatalyst.h"
+#include "include/AliJHMRGeantCatalyst.h"
 
 using namespace Pythia8;
 
 int main(int argc, char *argv[]) {
 
     if (argc==1) {
-        cout << "Usage : ./focalPionCorrelation output.root bUseLeading bDebugOn pythiaSettings.cmnd poolsize seed" << endl;
+        cout << "Usage : ./focalPionCorrelation output.root bUseLeading bDebugOn pythiaSettings.cmnd poolsize bUseSim siminput seed" << endl;
         return 0;
     }
 
     TStopwatch timer;
     timer.Start();
 
-    TString outFileName = argc > 1 ? argv[1] : "output.root";
-    int bUseLeading = argc > 2 ? atol(argv[2]) : 0;
-    int bDebugOn = argc > 3 ? atol(argv[3]) : 0;
+    TString outFileName    = argc > 1 ? argv[1] : "output.root";
+    int bUseLeading        = argc > 2 ? atol(argv[2]) : 0;
+    int bDebugOn           = argc > 3 ? atol(argv[3]) : 0;
     TString pythiaSettings = argc > 4 ? argv[4] : "PythiaHard.cmnd";
-    int poolsize = argc > 5 ? atol(argv[5]) : 10;
-    int seed = argc > 6 ? atol(argv[6]) : 0;
+    int poolsize           = argc > 5 ? atol(argv[5]) : 10;
+    Int_t bUseSim          = argc > 6 ? atol(argv[6]) : 0;
+    TString siminput       = argc > 7 ? argv[7] : "input.root";
+    int seed               = argc > 8 ? atol(argv[8]) : 0;
 
     detector det = kJFoCal;
 
@@ -45,18 +48,12 @@ int main(int argc, char *argv[]) {
 
     Pythia pythia;
 
-    // Initialise pythia
-    pythia.readFile(pythiaSettings.Data());
-    pythia.readString("Random:setSeed = on");
-    pythia.readString(Form("Random:seed = %d", seed));
-    pythia.init();
-
-    int nEvents = pythia.mode("Main:numberOfEvents");
-
     AliJHMRHist *fHistos = new AliJHMRHist();
     fHistos->CreateHistos(fOut, det);
 
     AliJHMRPythiaCatalyst *fCatalyst = new AliJHMRPythiaCatalyst(pythia.event, fHistos);
+    AliJHMRGeantCatalyst *fCatalystG = new AliJHMRGeantCatalyst(siminput, fHistos);
+
     AliJHMRCorr *fCorr = new AliJHMRCorr(fHistos, det);
 
     TClonesArray *arrPhotonFor = new TClonesArray("AliJBaseTrack", 1500);
@@ -72,7 +69,20 @@ int main(int argc, char *argv[]) {
         arrPi0SideMixed[ipool] = new TClonesArray("AliJBaseTrack", 1500);
     }
 
-    fOut->cd();
+    int nEvents = 0;
+    if (bUseSim) {
+        if (!fCatalystG->LoadInput()) return 1;
+        nEvents = fCatalystG->GetNumberOfEvents();
+    } else {
+        // Initialise pythia
+        pythia.readFile(pythiaSettings.Data());
+        pythia.readString("Random:setSeed = on");
+        pythia.readString(Form("Random:seed = %d", seed));
+        pythia.init();
+        nEvents = pythia.mode("Main:numberOfEvents");
+    }
+
+    std::cout << "Number of events : " << nEvents << std::endl;
 
     //
     // Loop over events
@@ -84,14 +94,18 @@ int main(int argc, char *argv[]) {
         if (bDebugOn)
             std::cout << "\nEvent " << iEvent << std::endl;
 
-        if ( !pythia.next() ) continue;
-
-        fCatalyst->InitializeEvent();
-        fCatalyst->GetParticles(det);
-        arrPhotonFor = fCatalyst->GetParticleList(kJDecayPhoton);
-        arrPi0Real = fCatalyst->GetParticleList(kJPi0);
-
-        fCorr->SmearEnergies(arrPhotonFor);
+        if (bUseSim) { // Get stuff from detector simulation file
+            fCatalystG->GetEvent(iEvent);
+            arrPhotonFor = fCatalystG->GetClusters();
+            arrPi0Real   = fCatalystG->GetPi0True();
+        } else { // Get stuff from pythia
+            if ( !pythia.next() ) continue;
+            fCatalyst->InitializeEvent();
+            fCatalyst->GetParticles(det);
+            arrPhotonFor = fCatalyst->GetParticleList(kJDecayPhoton);
+            arrPi0Real   = fCatalyst->GetParticleList(kJPi0);
+            fCorr->SmearEnergies(arrPhotonFor);
+        }
 
         fHistos->FillPtEta(kJDecayPhoton, arrPhotonFor);
         fHistos->FillPtEta(kJPi0, arrPi0Real);
@@ -162,10 +176,11 @@ int main(int argc, char *argv[]) {
         arrPi0Side->Clear("C");
     }
 
+    fOut->cd();
     fOut->Write("", TObject::kOverwrite);
     fOut->Close();
 
-    pythia.stat();
+    if (!bUseSim) pythia.stat();
 
     timer.Print();
 

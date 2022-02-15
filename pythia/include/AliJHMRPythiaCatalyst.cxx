@@ -40,7 +40,6 @@ void AliJHMRPythiaCatalyst::GetParticles(detector idet) {
             } else {
                 track.SetLabel(0);
             }
-
 			new((*fInputListPhoton)[fInputListPhoton->GetEntriesFast()]) AliJBaseTrack(track);
 		}
 	}

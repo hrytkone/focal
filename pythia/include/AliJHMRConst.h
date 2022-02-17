@@ -5,14 +5,16 @@
 #include "TString.h"
 
 #define NDET 4
-#define NTRIGGBINS 2
-#define NASSOCBINS 2
+#define NTRIGGBINS 3
+#define NASSOCBINS 4
 #define NINCPTBIN 150
 #define NINCETABIN 150
 #define NPHOTONENERGYBIN 150
 
 enum particleType { kJHadron, kJPi0, kJDecayPhoton, kJRecPi0 };
 enum detector { kJFoCal, kJSTAR, kJTracker, kJFull };
+
+extern const double etacut;
 
 extern const double detEta[NDET][2];
 extern const TString accFunc[NDET];

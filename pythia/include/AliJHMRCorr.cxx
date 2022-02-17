@@ -34,13 +34,14 @@ int AliJHMRCorr::GetLargerTrigg(TClonesArray *arrPi0Peak, std::vector<int> listT
     return 0;
 }
 
-void AliJHMRCorr::ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0Candidates, bool bMass)
+void AliJHMRCorr::ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0Candidates, detector idet, bool bMass)
 {
     int nCandidate = 0;
     int nPhoton = arrPhoton->GetEntriesFast();
     for (int i = 1; i < nPhoton; i++) {
         for (int j = 0; j < i; j++) {
             AliJBaseTrack lvSum = GetPhotonSumVector(arrPhoton, i, j);
+            if (lvSum.Eta()<detEta[idet][0]+etacut && lvSum.Eta()>detEta[idet][1]-etacut) continue;
             double mass = 1000.*lvSum.M();
             bool bIsInWindow = bMass ? IsMassWindow(mass) : IsSideband(mass);
             if (bIsInWindow) new ((*arrPi0Candidates)[nCandidate++]) AliJBaseTrack(lvSum);
@@ -194,14 +195,15 @@ void AliJHMRCorr::ConstructTrueCorrComponents(TClonesArray *arrPi0, std::vector<
             double dphi = GetDeltaPhi(phiTrigg, phiAssoc);
             double deta = etaTrigg - etaAssoc;
 
-            if (lvTrigg->GetLabel() && lvAssoc->GetLabel())
+            if (lvTrigg->GetLabel()==1 && lvAssoc->GetLabel()==1)
                 histos->hCorrSignalSignal[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
-            if (lvTrigg->GetLabel() && !lvAssoc->GetLabel())
+            if (lvTrigg->GetLabel()==1 && !lvAssoc->GetLabel()==0)
                 histos->hCorrSignalBg[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
-            if (!lvTrigg->GetLabel() && lvAssoc->GetLabel())
+            if (!lvTrigg->GetLabel()==0 && lvAssoc->GetLabel()==1)
                 histos->hCorrBgSignal[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
-            if (!lvTrigg->GetLabel() && !lvAssoc->GetLabel())
-                histos->hCorrSignalSignal[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
+            if (!lvTrigg->GetLabel()==0 && !lvAssoc->GetLabel()==0) {
+                histos->hCorrBgBg[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
+            }
         }
     }
 }
@@ -307,12 +309,13 @@ void AliJHMRCorr::FillRealTriggers(TClonesArray *arrRealPi0, std::vector<int>& l
     }
 }
 
-void AliJHMRCorr::FillPionMasses(TClonesArray *arrPhoton, int binsWithTriggPeak[NTRIGGBINS], int binsWithTriggSide[NTRIGGBINS])
+void AliJHMRCorr::FillPionMasses(TClonesArray *arrPhoton, int binsWithTriggPeak[NTRIGGBINS], int binsWithTriggSide[NTRIGGBINS], detector idet)
 {
     int nPhoton = arrPhoton->GetEntriesFast();
     for (int i = 1; i < nPhoton; i++) {
         for (int j = 0; j < i; j++) {
             AliJBaseTrack lvSum = GetPhotonSumVector(arrPhoton, i, j);
+            if (lvSum.Eta()<detEta[idet][0]+etacut && lvSum.Eta()>detEta[idet][1]-etacut) continue;
             double mass = 1000.*lvSum.M();
             double pT = lvSum.Pt();
             int iTriggBin = GetBin(triggPt, NTRIGGBINS, pT);

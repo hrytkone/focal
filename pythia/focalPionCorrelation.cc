@@ -110,8 +110,8 @@ int main(int argc, char *argv[]) {
         fHistos->FillPtEta(kJDecayPhoton, arrPhotonFor);
         fHistos->FillPtEta(kJPi0, arrPi0Real);
 
-        fCorr->ReconstructPions(arrPhotonFor, arrPi0Peak, 1);
-        fCorr->ReconstructPions(arrPhotonFor, arrPi0Side, 0);
+        fCorr->ReconstructPions(arrPhotonFor, arrPi0Peak, det, 1);
+        fCorr->ReconstructPions(arrPhotonFor, arrPi0Side, det, 0);
 
         if (bDebugOn)
             std::cout << "Number of Pi0 (real) : " << arrPi0Real->GetEntriesFast()
@@ -124,7 +124,7 @@ int main(int argc, char *argv[]) {
         fCorr->GetTriggAssocLists(arrPi0Peak, listTriggPeak, listAssocPeak, binsWithTriggPeak, bUseLeading);
         fCorr->GetTriggAssocLists(arrPi0Side, listTriggSide, listAssocSide, binsWithTriggSide, bUseLeading);
 
-        fCorr->FillPionMasses(arrPhotonFor, binsWithTriggPeak, binsWithTriggSide);
+        fCorr->FillPionMasses(arrPhotonFor, binsWithTriggPeak, binsWithTriggSide, det);
         fCorr->FillRealTriggers(arrPi0Real, listTriggReal);
 
         fCorr->DoCorrelations(arrPi0Real, listTriggReal, listAssocReal, fHistos->hCorrFor, 0);

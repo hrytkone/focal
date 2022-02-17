@@ -135,8 +135,8 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet) {
                                            Form("hCorrSignalBg[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
                                            nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
             hCorrSignalBg[i][j]->Sumw2();
-            hCorrBgSignal[i][j] = new TH2D(Form("hCorrBglSignal[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
-                                           Form("hCorrBglSignal[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+            hCorrBgSignal[i][j] = new TH2D(Form("hCorrBgSignal[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                           Form("hCorrBgSignal[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
                                            nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
             hCorrBgSignal[i][j]->Sumw2();
             hCorrBgBg[i][j] = new TH2D(Form("hCorrBgBg[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),

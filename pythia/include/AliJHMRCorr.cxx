@@ -197,11 +197,11 @@ void AliJHMRCorr::ConstructTrueCorrComponents(TClonesArray *arrPi0, std::vector<
 
             if (lvTrigg->GetLabel()==1 && lvAssoc->GetLabel()==1)
                 histos->hCorrSignalSignal[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
-            if (lvTrigg->GetLabel()==1 && !lvAssoc->GetLabel()==0)
+            if (lvTrigg->GetLabel()==1 && lvAssoc->GetLabel()==0)
                 histos->hCorrSignalBg[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
-            if (!lvTrigg->GetLabel()==0 && lvAssoc->GetLabel()==1)
+            if (lvTrigg->GetLabel()==0 && lvAssoc->GetLabel()==1)
                 histos->hCorrBgSignal[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
-            if (!lvTrigg->GetLabel()==0 && !lvAssoc->GetLabel()==0) {
+            if (lvTrigg->GetLabel()==0 && lvAssoc->GetLabel()==0) {
                 histos->hCorrBgBg[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
             }
         }

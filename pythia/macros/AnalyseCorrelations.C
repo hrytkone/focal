@@ -3,26 +3,57 @@
 void AnalyseCorrelations()
 {
     processDataSTAR();
+    //processDataFoCal();
 }
 
 void processDataSTAR()
 {
-	TString fInName[ndata] = {
+	TString fInName[ndata_star] = {
         "/home/heimarry/Simulations/focal/STAR-data/output_pAu.root",
-        "/home/heimarry/Simulations/focal/STAR-data/output_pp.root"
+        "/home/heimarry/Simulations/focal-pythia-sim/star-pp_WRONG-TRUE-CORR-COMP.root"
 	};
 
-	TString fOutName[ndata] = {
+	TString fOutName[ndata_star] = {
         "analysis_STAR_pAu.root",
 		"analysis_STAR_pp.root"
 	};
 
-    TString dataname[ndata] = {
+    TString dataname[ndata_star] = {
         "STAR_pAu",
         "STAR_pp"
     };
 
-	for (int idata = 0; idata < ndata; idata++) {
+	for (int idata = 0; idata < ndata_star; idata++) {
+		fIn = TFile::Open(fInName[idata]);
+		fOut = TFile::Open(fOutName[idata], "RECREATE");
+
+		LoadInput();
+        FitMassPeaks();
+		GetScaleFactors();
+		DoAnalysis();
+        DrawMassHistos(dataname[idata]);
+		fOut->Write();
+
+		fIn->Close();
+		fOut->Close();
+	}
+}
+
+void processDataFoCal()
+{
+	TString fInName[ndata_focal] = {
+        "/home/heimarry/Simulations/focal-pythia-sim/focal-all.root"
+	};
+
+	TString fOutName[ndata_focal] = {
+		"analysis_FoCal_pp.root"
+	};
+
+    TString dataname[ndata_focal] = {
+        "FoCal_pp"
+    };
+
+	for (int idata = 0; idata < ndata_focal; idata++) {
 		fIn = TFile::Open(fInName[idata]);
 		fOut = TFile::Open(fOutName[idata], "RECREATE");
 
@@ -60,14 +91,16 @@ void LoadInput()
 
 	        if (tlow < aupp) continue;
 
-	        hMassAssocPeak[it][ia] = (TH1D*)fIn->Get(Form("Masses/hPi0MassAssocPeak[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hMassAssocPeak[it][ia]->Rebin();
-	        hMassAssocSide[it][ia] = (TH1D*)fIn->Get(Form("Masses/hPi0MassAssocSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hMassAssocSide[it][ia]->Rebin();
+	        hMassAssocPeak[it][ia] = (TH1D*)fIn->Get(Form("Masses/hPi0MassAssocPeak[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); //hMassAssocPeak[it][ia]->Rebin();
+	        hMassAssocSide[it][ia] = (TH1D*)fIn->Get(Form("Masses/hPi0MassAssocSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); //hMassAssocSide[it][ia]->Rebin();
 
 	        hCorrReal[it][ia]     = (TH2D*)fIn->Get(Form("CorrFor/hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrReal[it][ia]->Rebin2D(4);
 	        hCorrMassMass[it][ia] = (TH2D*)fIn->Get(Form("CorrMassMass/hCorrMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrMassMass[it][ia]->Rebin2D(4);
 	        hCorrMassSide[it][ia] = (TH2D*)fIn->Get(Form("CorrMassSide/hCorrMassSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrMassSide[it][ia]->Rebin2D(4);
 	        hCorrSideMass[it][ia] = (TH2D*)fIn->Get(Form("CorrSideMass/hCorrSideMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrSideMass[it][ia]->Rebin2D(4);
 	        hCorrSideSide[it][ia] = (TH2D*)fIn->Get(Form("CorrSideSide/hCorrSideSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrSideSide[it][ia]->Rebin2D(4);
+            hCorrMeas[it][ia]     = (TH2D*)hCorrMassMass[it][ia]->Clone(Form("hCorrMeas[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
+
 	    }
 	}
 }
@@ -84,19 +117,17 @@ void DoAnalysis()
             if (tlow < aupp) continue;
 
             hCorrRealProj[it][ia] = hCorrReal[it][ia]->ProjectionX();
-            hCorrRealProj[it][ia]->Scale(1.0/hCorrRealProj[it][ia]->GetEntries());
             hCorrRealProj[it][ia]->Scale(1.0/nRealTrigg[it], "width");
 
             hCorrMassMassProj[it][ia] = hCorrMassMass[it][ia]->ProjectionX();
-            hCorrMassMassProj[it][ia]->Scale(1.0/hCorrMassMassProj[it][ia]->GetEntries());
+
             hCorrMassSideProj[it][ia] = hCorrMassSide[it][ia]->ProjectionX();
-            hCorrMassSideProj[it][ia]->Scale(1.0/hCorrMassSideProj[it][ia]->GetEntries());
             hCorrMassSideProj[it][ia]->Scale(alpha[it][ia]);
+
             hCorrSideMassProj[it][ia] = hCorrSideMass[it][ia]->ProjectionX();
-            hCorrSideMassProj[it][ia]->Scale(1.0/hCorrSideMassProj[it][ia]->GetEntries());
             hCorrSideMassProj[it][ia]->Scale(beta[it]);
+
             hCorrSideSideProj[it][ia] = hCorrSideSide[it][ia]->ProjectionX();
-            hCorrSideSideProj[it][ia]->Scale(1.0/hCorrSideSideProj[it][ia]->GetEntries());
             hCorrSideSideProj[it][ia]->Scale(alpha[it][ia]*beta[it]);
 
             hCorr[it][ia] = (TH1D*)hCorrMassMassProj[it][ia]->Clone(Form("hCorrFinal[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
@@ -104,6 +135,9 @@ void DoAnalysis()
             hCorr[it][ia]->Add(hCorrSideMassProj[it][ia], -1);
             hCorr[it][ia]->Add(hCorrSideSideProj[it][ia]);
             hCorr[it][ia]->Scale(1.0/st[it], "width");
+
+            hCorrMeasProj[it][ia] = hCorrMeas[it][ia]->ProjectionX();
+            hCorrMeasProj[it][ia]->Scale(1.0/st[it], "width");
         }
     }
 
@@ -113,7 +147,8 @@ void FitMassPeaks()
 {
     for (int it = 0; it < nTriggBins; it++) {
         fFitTrigg[it] = new TF1(Form("fFitTrigg%d", it), FitFunction, 20, 300, 6);
-        fFitTrigg[it]->SetParameters(0., 0., 0., 135., 10., 15.);
+        fFitTrigg[it]->SetParameters(1., 1., 1., 135., 10., 15.);
+        fFitTrigg[it]->SetParLimits(3, 132., 137.);
         fFitTrigg[it]->SetNpx(1000);
 
         fPeakTrigg[it] = new TF1(Form("fPeakTrigg%d", it), FitPeak, 20, 300, 5);
@@ -139,7 +174,8 @@ void FitMassPeaks()
             if (tlow < aupp) continue;
 
             fFitAssoc[it][ia] = new TF1(Form("fFitAssoc%d-%d", it, ia), FitFunction, 10, 300, 6);
-            fFitAssoc[it][ia]->SetParameters(0., 0., 0., 135., 30., 50.);
+            fFitAssoc[it][ia]->SetParameters(1., 1., 1., 135., 30., 50.);
+            fFitAssoc[it][ia]->SetParLimits(3, 132., 137.);
             fFitAssoc[it][ia]->SetNpx(1000);
 
             fPeakAssoc[it][ia] = new TF1(Form("fPeakAssoc%d-%d", it, ia), FitPeak, 10, 300, 5);

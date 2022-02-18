@@ -173,19 +173,19 @@ void FitMassPeaks()
 
             if (tlow < aupp) continue;
 
-            fFitAssoc[it][ia] = new TF1(Form("fFitAssoc%d-%d", it, ia), FitFunction, 10, 300, 6);
-            fFitAssoc[it][ia]->SetParameters(1., 1., 1., 135., 30., 50.);
-            fFitAssoc[it][ia]->SetParLimits(3, 132., 137.);
-            fFitAssoc[it][ia]->SetNpx(1000);
+            fFitAssocPeak[it][ia] = new TF1(Form("fFitAssoc%d-%d", it, ia), FitFunction, 10, 300, 6);
+            fFitAssocPeak[it][ia]->SetParameters(1., 1., 1., 135., 30., 50.);
+            fFitAssocPeak[it][ia]->SetParLimits(3, 132., 137.);
+            fFitAssocPeak[it][ia]->SetNpx(1000);
 
-            fPeakAssoc[it][ia] = new TF1(Form("fPeakAssoc%d-%d", it, ia), FitPeak, 10, 300, 5);
-            fPeakAssoc[it][ia]->SetLineColor(kBlue);
-            fPeakAssoc[it][ia]->SetNpx(1000);
+            fPeakAssocPeak[it][ia] = new TF1(Form("fPeakAssoc%d-%d", it, ia), FitPeak, 10, 300, 5);
+            fPeakAssocPeak[it][ia]->SetLineColor(kBlue);
+            fPeakAssocPeak[it][ia]->SetNpx(1000);
 
-            fBgAssoc[it][ia]= new TF1(Form("fBgAssoc%d-%d", it, ia), FitBackground, 10, 300, 3);
-            fBgAssoc[it][ia]->SetLineColor(kBlack);
-            fBgAssoc[it][ia]->SetLineStyle(kDashed);
-            fBgAssoc[it][ia]->SetNpx(1000);
+            fBgAssocPeak[it][ia]= new TF1(Form("fBgAssoc%d-%d", it, ia), FitBackground, 10, 300, 3);
+            fBgAssocPeak[it][ia]->SetLineColor(kBlack);
+            fBgAssocPeak[it][ia]->SetLineStyle(kDashed);
+            fBgAssocPeak[it][ia]->SetNpx(1000);
 
             hMassAssocPeak[it][ia]->Fit(Form("fFitAssoc%d-%d", it, ia), "QNL0R+");
             fFitAssoc[it][ia]->GetParameters(parAssoc);

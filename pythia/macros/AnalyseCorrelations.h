@@ -1,11 +1,11 @@
 const int ndata_star = 2;
 const int ndata_focal = 1;
 const int nTriggBins = 2;
-const int nAssocBins = 3;
-const double triggPt[nTriggBins+1] = {2.0, 2.5, 3.0};
-const double assocPt[nAssocBins+1] = {1.0, 1.5, 2.0, 2.5};
-//const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
-//const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
+const int nAssocBins = 2;
+//const double triggPt[nTriggBins+1] = {2.0, 2.5, 3.0};
+//const double assocPt[nAssocBins+1] = {1.0, 1.5, 2.0, 2.5};
+const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
+const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
 
 // Input
 int nEvent;
@@ -26,19 +26,26 @@ TH2D *hCorrSideSide[nTriggBins][nAssocBins];
 
 // Output
 double parTrigg[8];
-double parAssoc[9];
+double parAssocPeak[9];
+double parAssocSide[9];
+double fitConstantVal[nTriggBins] = {0};
 
 double alpha[nTriggBins][nAssocBins];
-double beta[nTriggBins];
+double beta[nTriggBins][nAssocBins];
+double yamma[nTriggBins][nAssocBins];
 double st[nTriggBins];
 
 TF1 *fFitTrigg[nTriggBins];
 TF1 *fPeakTrigg[nTriggBins];
 TF1 *fBgTrigg[nTriggBins];
 
-TF1 *fFitAssoc[nTriggBins][nAssocBins];
-TF1 *fPeakAssoc[nTriggBins][nAssocBins];
-TF1 *fBgAssoc[nTriggBins][nAssocBins];
+TF1 *fFitAssocPeak[nTriggBins][nAssocBins];
+TF1 *fPeakAssocPeak[nTriggBins][nAssocBins];
+TF1 *fBgAssocPeak[nTriggBins][nAssocBins];
+
+TF1 *fFitAssocSide[nTriggBins][nAssocBins];
+TF1 *fPeakAssocSide[nTriggBins][nAssocBins];
+TF1 *fBgAssocSide[nTriggBins][nAssocBins];
 
 TH1D *hCorrRealProj[nTriggBins][nAssocBins];
 TH1D *hCorrMeasProj[nTriggBins][nAssocBins];
@@ -53,14 +60,18 @@ TFile *fOut;
 
 TCanvas *cMassTrigg[nTriggBins];
 TCanvas *cMassAssocPeak[nTriggBins][nAssocBins];
+TCanvas *cMassAssocSide[nTriggBins][nAssocBins];
 
 // For drawing purposes
 TF1 *fPeakColored[nTriggBins];
 TF1 *fLeftSidebandColored[nTriggBins];
 TF1 *fRightSidebandColored[nTriggBins];
-TF1 *fPeakColoredAssoc[nTriggBins][nAssocBins];
-TF1 *fLeftSidebandColoredAssoc[nTriggBins][nAssocBins];
-TF1 *fRightSidebandColoredAssoc[nTriggBins][nAssocBins];
+TF1 *fPeakColoredAssocPeak[nTriggBins][nAssocBins];
+TF1 *fLeftSidebandColoredAssocPeak[nTriggBins][nAssocBins];
+TF1 *fRightSidebandColoredAssocPeak[nTriggBins][nAssocBins];
+TF1 *fPeakColoredAssocSide[nTriggBins][nAssocBins];
+TF1 *fLeftSidebandColoredAssocSide[nTriggBins][nAssocBins];
+TF1 *fRightSidebandColoredAssocSide[nTriggBins][nAssocBins];
 
 void processDataSTAR();
 void processDataFoCal();

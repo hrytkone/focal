@@ -62,6 +62,7 @@ class AliJBaseTrack : public TLorentzVector {
         Bool_t        IsInAssocBin()    const { return fAssocID>=0; }
         Double_t      GetWeight()       const { return fWeight;}
         Int_t         GetMCIndex()      const { return fMCIndex;}
+        Int_t         GetMotherID()     const { return fMotherID;}
 
         void SetID      (const int id){fID=id;}
         void SetLabel   (const Int_t label ){ fLabel=label; }
@@ -77,6 +78,7 @@ class AliJBaseTrack : public TLorentzVector {
 
         void SetWeight(Double_t weight) { fWeight = weight;}
         void SetMCIndex(Int_t idx) {      fMCIndex = idx;}
+        void SetMotherID(Int_t idx) {     fMotherID = idx;}
 
         void SetPrimary(Bool_t b=kTRUE){ SetFlag(kPrimary,b);}
         Bool_t IsPrimary(){return IsTrue(kPrimary);}
@@ -102,6 +104,7 @@ class AliJBaseTrack : public TLorentzVector {
         Double32_t    fTracEff;           //!   //track efficiency
         Int_t         fMCIndex;           //!   //index of corresp. MC track
         Double_t      fWeight;            //!   //particle weight
+        Int_t         fMotherID;          //!   //particle motherID
 
         ClassDef(AliJBaseTrack,2)
 };

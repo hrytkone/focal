@@ -1,18 +1,19 @@
-const int nTriggBins = 2;
-const int nAssocBins = 2;
-const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
-const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
+const int nTriggBins = 3;
+const int nAssocBins = 4;
+const double triggPt[nTriggBins+1] = {2.0, 4.0, 8.0, 20.0};
+const double assocPt[nAssocBins+1] = {1.0, 1.5, 2.0, 3.0, 4.0};
 
 TFile *fin;
 TH2D *hCorrMixed[nTriggBins][nAssocBins];
 TCanvas *canvas[nTriggBins][nAssocBins];
+TCanvas *canvas_px[nTriggBins][nAssocBins];
 
 void LoadData(TString input);
 
 void PlotMixedEvent(TString input="input.root")
 {
-    gStyle->SetOptStat(0);
-    
+    //gStyle->SetOptStat(0);
+
     LoadData(input);
     for (int itrigg = 0; itrigg < nTriggBins; itrigg++) {
         double tlow = triggPt[itrigg];
@@ -25,6 +26,10 @@ void PlotMixedEvent(TString input="input.root")
 
 			canvas[itrigg][iassoc] = new TCanvas(Form("c_%d_%d", itrigg, iassoc), "", 600, 600);
             hCorrMixed[itrigg][iassoc]->Draw("LEGO2Z");
+
+			canvas_px[itrigg][iassoc] = new TCanvas(Form("cpx_%d_%d", itrigg, iassoc), "", 600, 600);
+            hCorrMixed[itrigg][iassoc]->ProjectionX()->Draw("P");
+
 		}
 	}
 }

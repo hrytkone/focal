@@ -19,8 +19,8 @@ const TString accFunc[NDET] = {
 //double assocPt[NASSOCBINS+1] = {0.5, 1.0, 1.5, 2.0, 2.5};
 
 // FoCal bins
-double triggPt[NTRIGGBINS+1] = {2.0, 4.0, 8.0, 20.0};
-double assocPt[NASSOCBINS+1] = {1.0, 1.5, 2.0, 3.0, 4.0};
+double triggPt[NTRIGGBINS+1] = {4.0, 8.0, 20.0};
+double assocPt[NASSOCBINS+1] = {2.0, 3.0, 4.0};
 
 const double etacut = 0.2;
 

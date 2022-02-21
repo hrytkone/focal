@@ -41,7 +41,8 @@ AliJBaseTrack::AliJBaseTrack():
     fAssocID(-1),
     fTracEff(-1),
     fMCIndex(-9999),
-    fWeight(1.0)
+    fWeight(1.0),
+    fMotherID(-9999)
 {
   // constructor
 }
@@ -59,7 +60,8 @@ AliJBaseTrack::AliJBaseTrack(float px,float py, float pz, float e, Int_t id, Sho
     fAssocID(-1),
     fTracEff(-1),
     fMCIndex(-9999),
-    fWeight(1.0)
+    fWeight(1.0),
+    fMotherID(-9999)
 {
   // constructor
 }
@@ -77,7 +79,8 @@ AliJBaseTrack::AliJBaseTrack(const AliJBaseTrack& a):
     fAssocID( a.fAssocID ),
     fTracEff( a.fTracEff ),
     fMCIndex( a.fMCIndex ),
-    fWeight ( a.fWeight  )
+    fWeight ( a.fWeight  ),
+    fMotherID( a.fMotherID )
 {
   //copy constructor
 }
@@ -95,7 +98,8 @@ AliJBaseTrack::AliJBaseTrack(const TLorentzVector& a):
     fAssocID(-1),
     fTracEff(-1),
     fMCIndex(-9999),
-    fWeight(1.0)
+    fWeight(1.0),
+    fMotherID(-9999)
 {
   //copy constructor
 }
@@ -114,7 +118,8 @@ AliJBaseTrack& AliJBaseTrack::operator=(const AliJBaseTrack& trk){
     fAssocID   = trk.fAssocID;
     fTracEff   = trk.fTracEff;
     fMCIndex   = trk.fMCIndex;
-    fWeight       = trk.fWeight;
+    fWeight    = trk.fWeight;
+    fMotherID  = trk.fMotherID;
   }
   return *this;
 }

@@ -6,21 +6,21 @@ void ConfigHistos();
 void DrawFiliPad();
 
 const int nTriggBins = 2;
-const int nAssocBins = 3;
-double triggPt[nTriggBins+1] = {2.0, 2.5, 3.0};
-double assocPt[nAssocBins+1] = {1.0, 1.5, 2.0, 2.5};
-//double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
-//double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
+const int nAssocBins = 2;
+//double triggPt[nTriggBins+1] = {2.0, 2.5, 3.0};
+//double assocPt[nAssocBins+1] = {1.0, 1.5, 2.0, 2.5};
+const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
+const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
 
 const int nset = 1;
-TString infiles[nset] = {
-    "analysis_STAR_pp.root"//,
-	//"analysis_STAR_pAu.root"
-};
-
 //TString infiles[nset] = {
-//    "analysis_FoCal_pp.root"
+//    "analysis_STAR_pp.root"//,
+//	//"analysis_STAR_pAu.root"
 //};
+
+TString infiles[nset] = {
+    "analysis_FoCal_pp.root"
+};
 
 TString legHeader[nset] = {
     "p-p"//,

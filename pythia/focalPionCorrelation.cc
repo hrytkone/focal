@@ -110,12 +110,13 @@ int main(int argc, char *argv[]) {
         fHistos->FillPtEta(kJDecayPhoton, arrPhotonFor);
         fHistos->FillPtEta(kJPi0, arrPi0Real);
 
-        fCorr->ReconstructPions(arrPhotonFor, arrPi0Peak, det, 1);
+        int nTrueFromPeak = fCorr->ReconstructPions(arrPhotonFor, arrPi0Peak, det, 1);
         fCorr->ReconstructPions(arrPhotonFor, arrPi0Side, det, 0);
 
         if (bDebugOn)
             std::cout << "Number of Pi0 (real) : " << arrPi0Real->GetEntriesFast()
                       << "\t (rec, peak) : " << arrPi0Peak->GetEntriesFast()
+                      << "\t (rec, peak) true : " << nTrueFromPeak
                       << "\t gamma : " << arrPhotonFor->GetEntriesFast() << std::endl;
 
         std::vector<int> listTriggReal, listAssocReal, listTriggPeak, listTriggSide, listAssocPeak, listAssocSide;

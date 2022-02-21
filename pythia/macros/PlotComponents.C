@@ -1,7 +1,7 @@
 void PlotComponents(TString sInputName = "output.root")
 {
 
-    gStyle->SetOptStat(0);
+    //gStyle->SetOptStat(0);
 
     TFile *fIn = TFile::Open(sInputName);
 
@@ -20,25 +20,25 @@ void PlotComponents(TString sInputName = "output.root")
     //std::cout << "Real (rec) triggers : " << nRealRecTrigg << std::endl;
     //std::cout << "Real (fake) triggers : " << nFakeRecTrigg << std::endl;
 
-    TH2D* hCorrMeasured = (TH2D*)fIn->Get(Form("CorrMassMass/hCorrMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",4.,8.,3.,4.));
-    hCorrMeasured->Rebin2D(4);
+    TH2D* hCorrMeasured = (TH2D*)fIn->Get(Form("CorrMassMass/hCorrMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",2.,4.,1.5,2.));
+    //hCorrMeasured->Rebin2D(4);
     hCorrMeasured->SetLineColor(kBlack);
     hCorrMeasured->GetYaxis()->SetMaxDigits(3);
 
-    TH2D* hCorrSS = (TH2D*)fIn->Get(Form("TrueComponents/hCorrSignalSignal[%4.1f,%4.1f][%4.1f,%4.1f]",4.,8.,3.,4.));
-    hCorrSS->Rebin2D(4);
+    TH2D* hCorrSS = (TH2D*)fIn->Get(Form("TrueComponents/hCorrSignalSignal[%4.1f,%4.1f][%4.1f,%4.1f]",2.,4.,1.5,2.));
+    //hCorrSS->Rebin2D(4);
     hCorrSS->GetYaxis()->SetMaxDigits(3);
 
-    TH2D* hCorrSB = (TH2D*)fIn->Get(Form("TrueComponents/hCorrSignalBg[%4.1f,%4.1f][%4.1f,%4.1f]",4.,8.,3.,4.));
-    hCorrSB->Rebin2D(4);
+    TH2D* hCorrSB = (TH2D*)fIn->Get(Form("TrueComponents/hCorrSignalBg[%4.1f,%4.1f][%4.1f,%4.1f]",2.,4.,1.5,2.));
+    //hCorrSB->Rebin2D(4);
     hCorrSB->GetYaxis()->SetMaxDigits(3);
 
-    TH2D* hCorrBS = (TH2D*)fIn->Get(Form("TrueComponents/hCorrBglSignal[%4.1f,%4.1f][%4.1f,%4.1f]",4.,8.,3.,4.));
-    hCorrBS->Rebin2D(4);
+    TH2D* hCorrBS = (TH2D*)fIn->Get(Form("TrueComponents/hCorrBgSignal[%4.1f,%4.1f][%4.1f,%4.1f]",2.,4.,1.5,2.));
+    //hCorrBS->Rebin2D(4);
     hCorrBS->GetYaxis()->SetMaxDigits(3);
 
-    TH2D* hCorrBB = (TH2D*)fIn->Get(Form("TrueComponents/hCorrBgBg[%4.1f,%4.1f][%4.1f,%4.1f]",4.,8.,3.,4.));
-    hCorrBB->Rebin2D(4);
+    TH2D* hCorrBB = (TH2D*)fIn->Get(Form("TrueComponents/hCorrBgBg[%4.1f,%4.1f][%4.1f,%4.1f]",2.,4.,1.5,2.));
+    //hCorrBB->Rebin2D(4);
     hCorrBB->GetYaxis()->SetMaxDigits(3);
 
     // ---------------
@@ -102,8 +102,8 @@ void PlotComponents(TString sInputName = "output.root")
     leg1->AddEntry(hCorrBBProj, "f_{BB}", "l");
 
     hCorrMeasuredProj->Draw("HIST");
-    hCorrBSProj->Draw("HIST SAME");
     hCorrSSProj->Draw("HIST SAME");
+    hCorrBSProj->Draw("HIST SAME");
     hCorrSBProj->Draw("HIST SAME");
     hCorrBBProj->Draw("HIST SAME");
     leg1->Draw("SAME");

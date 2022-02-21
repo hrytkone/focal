@@ -13,8 +13,12 @@ void AliJHMRPythiaCatalyst::GetParticles(detector idet) {
 		lvParticle.SetPxPyPzE(event[partIdx].px(), event[partIdx].py(), event[partIdx].pz(), event[partIdx].e() );
 		lvParticle.SetUniqueID(UniqueID++);
 
+        Int_t motherId = event[partIdx].mother1();
+
 		AliJBaseTrack track( lvParticle );
-		track.SetID(event[partIdx].id());
+        track.SetID(event[partIdx].id());
+		track.SetMCIndex(partIdx);
+        track.SetMotherID(motherId);
 		track.SetCharge(event[partIdx].charge());
 		track.SetTrackEff(1.);
 
@@ -34,8 +38,7 @@ void AliJHMRPythiaCatalyst::GetParticles(detector idet) {
             // In the case of photons tag those that are from pi0 decay
             //      track label 1 = decay product
             //      track label 0 = not from decay
-            int motherId = event[partIdx].mother1();
-            if (event[motherId].id() == 111) {
+            if (event[motherId].id() == 111 && (event[motherId].eta() > detEta[idet][0] && event[motherId].eta() < detEta[idet][1])) {
                 track.SetLabel(1);
             } else {
                 track.SetLabel(0);

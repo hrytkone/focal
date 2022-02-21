@@ -1,7 +1,7 @@
-const int nTriggBins = 2;
-const int nAssocBins = 2;
-const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
-const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
+const int nTriggBins = 3;
+const int nAssocBins = 4;
+const double triggPt[nTriggBins+1] = {2.0, 4.0, 8.0, 20.0};
+const double assocPt[nAssocBins+1] = {1.0, 1.5, 2.0, 3.0, 4.0};
 
 TFile *fin;
 TH2D *hCorr[nTriggBins][nAssocBins];
@@ -11,7 +11,7 @@ void LoadData(TString input);
 
 void PlotCorr2D(TString input="input.root")
 {
-    gStyle->SetOptStat(0);
+    //gStyle->SetOptStat(0);
 
     LoadData(input);
     for (int itrigg = 0; itrigg < nTriggBins; itrigg++) {

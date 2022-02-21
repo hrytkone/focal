@@ -34,8 +34,9 @@ int AliJHMRCorr::GetLargerTrigg(TClonesArray *arrPi0Peak, std::vector<int> listT
     return 0;
 }
 
-void AliJHMRCorr::ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0Candidates, detector idet, bool bMass)
+int AliJHMRCorr::ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0Candidates, detector idet, bool bMass)
 {
+    int nTrue = 0;
     int nCandidate = 0;
     int nPhoton = arrPhoton->GetEntriesFast();
     for (int i = 1; i < nPhoton; i++) {
@@ -44,9 +45,13 @@ void AliJHMRCorr::ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0
             if (lvSum.Eta()<detEta[idet][0]+etacut && lvSum.Eta()>detEta[idet][1]-etacut) continue;
             double mass = 1000.*lvSum.M();
             bool bIsInWindow = bMass ? IsMassWindow(mass) : IsSideband(mass);
-            if (bIsInWindow) new ((*arrPi0Candidates)[nCandidate++]) AliJBaseTrack(lvSum);
+            if (bIsInWindow) {
+                new ((*arrPi0Candidates)[nCandidate++]) AliJBaseTrack(lvSum);
+                if (lvSum.GetLabel()==1) nTrue++;
+            }
         }
     }
+    return nTrue;
 }
 
 void AliJHMRCorr::GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector<int>& listTrigg, std::vector<int>& listAssoc, int *binsWithTrigg, bool bUseLeading)
@@ -255,6 +260,7 @@ void AliJHMRCorr::SmearEnergies(TClonesArray * arrParticles)
 }
 
 // To count in single photon efficiency
+
 bool AliJHMRCorr::IsPhotonRemoved(double ePhoton)
 {
     double photonEff = fPhotonEfficiency->Eval(ePhoton);
@@ -270,8 +276,9 @@ AliJBaseTrack AliJHMRCorr::GetPhotonSumVector(TClonesArray *arrPhoton, int iPhot
     AliJBaseTrack lvSum;
     lvSum = ((*lv1) + (*lv2));
 
-    // Tag pi0 candidate with 1 if both photons in the pair are from pi0 decay
-    if (lv1->GetLabel()==1 && lv1->GetLabel()==1)
+    // Tag pi0 candidate with 1 if both photons in the pair are from same pi0 decay
+    if (lv1->GetLabel()==1 && lv1->GetLabel()==1
+        && lv1->GetMotherID()==lv2->GetMotherID())
         lvSum.SetLabel(1);
     else
         lvSum.SetLabel(0);

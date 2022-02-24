@@ -2,6 +2,7 @@
 #define ALIJHMRHIST_H
 
 #include "AliJHMRConst.h"
+#include "AliJBaseTrack.h"
 
 #include <iostream>
 #include <fstream>

@@ -49,4 +49,6 @@ extern const double incEtaRange;
 //extern const int nPhotonEnergyBin = 150;
 extern double limPhotonEnergyMin, limPhotonEnergyMax;
 
+extern double pi0eff;
+
 #endif

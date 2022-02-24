@@ -42,7 +42,7 @@ int AliJHMRCorr::ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0C
     for (int i = 1; i < nPhoton; i++) {
         for (int j = 0; j < i; j++) {
             AliJBaseTrack lvSum = GetPhotonSumVector(arrPhoton, i, j);
-            if (lvSum.Eta()<detEta[idet][0]+etacut && lvSum.Eta()>detEta[idet][1]-etacut) continue;
+            if (lvSum.Eta()<detEta[idet][0]+etacut || lvSum.Eta()>detEta[idet][1]-etacut) continue;
             double mass = 1000.*lvSum.M();
             bool bIsInWindow = bMass ? IsMassWindow(mass) : IsSideband(mass);
             if (bIsInWindow) {
@@ -98,7 +98,8 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrig
         int nAssoc = listAssoc.size();
         if (nAssoc < 1) continue;
 
-        if (bUseWeight) wTrigg = 1./fPhotonAcceptanceEfficiency->Eval(ptTrigg);
+        //if (bUseWeight) wTrigg = 1./fPhotonAcceptanceEfficiency->Eval(ptTrigg);
+        if (bUseWeight) wTrigg = 1./pi0eff;
 
         for (int ia = 0; ia < nAssoc; ia++) {
             int iAssoc = listAssoc[ia];
@@ -111,7 +112,8 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrig
 
             if (triggPt[iTriggBin] < assocPt[iAssocBin+1]) continue;
 
-            if (bUseWeight) wAssoc = 1./fPhotonAcceptanceEfficiency->Eval(ptAssoc);
+            //if (bUseWeight) wAssoc = 1./fPhotonAcceptanceEfficiency->Eval(ptAssoc);
+            if (bUseWeight) wAssoc = 1./pi0eff;
 
             double dphi = GetDeltaPhi(phiTrigg, phiAssoc);
             double deta = etaTrigg - etaAssoc;
@@ -140,7 +142,8 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> lis
         int nAssoc = listAssoc.size();
         if (nAssoc < 1) continue;
 
-        if (bUseWeightTrigg) wTrigg = 1./fPhotonAcceptanceEfficiency->Eval(ptTrigg);
+        //if (bUseWeightTrigg) wTrigg = 1./fPhotonAcceptanceEfficiency->Eval(ptTrigg);
+        if (bUseWeightTrigg) wTrigg = 1./pi0eff;
 
         for (int ia = 0; ia < nAssoc; ia++) {
             int iAssoc = listAssoc[ia];
@@ -153,7 +156,8 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> lis
 
             if (triggPt[iTriggBin] < assocPt[iAssocBin+1]) continue;
 
-            if (bUseWeightAssoc) wAssoc = 1./fPhotonAcceptanceEfficiency->Eval(ptAssoc);
+            //if (bUseWeightAssoc) wAssoc = 1./fPhotonAcceptanceEfficiency->Eval(ptAssoc);
+            if (bUseWeightAssoc) wAssoc = 1./pi0eff;
 
             double dphi = GetDeltaPhi(phiTrigg, phiAssoc);
             double deta = etaTrigg - etaAssoc;
@@ -182,7 +186,8 @@ void AliJHMRCorr::ConstructTrueCorrComponents(TClonesArray *arrPi0, std::vector<
         int nAssoc = listAssoc.size();
         if (nAssoc < 1) continue;
 
-        if (bUseWeight) wTrigg = 1./fPhotonAcceptanceEfficiency->Eval(ptTrigg);
+        //if (bUseWeight) wTrigg = 1./fPhotonAcceptanceEfficiency->Eval(ptTrigg);
+        if (bUseWeight) wTrigg = 1./pi0eff;
 
         for (int ia = 0; ia < nAssoc; ia++) {
             int iAssoc = listAssoc[ia];
@@ -195,7 +200,8 @@ void AliJHMRCorr::ConstructTrueCorrComponents(TClonesArray *arrPi0, std::vector<
 
             if (triggPt[iTriggBin] < assocPt[iAssocBin+1]) continue;
 
-            if (bUseWeight) wAssoc = 1./fPhotonAcceptanceEfficiency->Eval(ptAssoc);
+            //if (bUseWeight) wAssoc = 1./fPhotonAcceptanceEfficiency->Eval(ptAssoc);
+            if (bUseWeight) wAssoc = 1./pi0eff;
 
             double dphi = GetDeltaPhi(phiTrigg, phiAssoc);
             double deta = etaTrigg - etaAssoc;
@@ -322,7 +328,7 @@ void AliJHMRCorr::FillPionMasses(TClonesArray *arrPhoton, int binsWithTriggPeak[
     for (int i = 1; i < nPhoton; i++) {
         for (int j = 0; j < i; j++) {
             AliJBaseTrack lvSum = GetPhotonSumVector(arrPhoton, i, j);
-            if (lvSum.Eta()<detEta[idet][0]+etacut && lvSum.Eta()>detEta[idet][1]-etacut) continue;
+            if (lvSum.Eta()<detEta[idet][0]+etacut || lvSum.Eta()>detEta[idet][1]-etacut) continue;
             double mass = 1000.*lvSum.M();
             double pT = lvSum.Pt();
             int iTriggBin = GetBin(triggPt, NTRIGGBINS, pT);

@@ -46,3 +46,5 @@ const double logBW = (log(limMax) - log(limMin))/NINCPTBIN;
 
 const double incEtaRange = 20.0;
 double limPhotonEnergyMin = 0., limPhotonEnergyMax = 1500.;
+
+double pi0eff = 0.9795;

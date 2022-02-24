@@ -26,7 +26,7 @@ using namespace Pythia8;
 int main(int argc, char *argv[]) {
 
     if (argc==1) {
-        cout << "Usage : ./focalPionCorrelation output.root bUseLeading bDebugOn pythiaSettings.cmnd poolsize bUseSim siminput seed" << endl;
+        cout << "Usage : ./focalPionCorrelation output.root bUseLeading bDebugOn pythiaSettings.cmnd poolsize seed bUseSim siminput" << endl;
         return 0;
     }
 
@@ -38,10 +38,20 @@ int main(int argc, char *argv[]) {
     int bDebugOn           = argc > 3 ? atol(argv[3]) : 0;
     TString pythiaSettings = argc > 4 ? argv[4] : "PythiaHard.cmnd";
     int poolsize           = argc > 5 ? atol(argv[5]) : 10;
-    Int_t bUseSim          = argc > 6 ? atol(argv[6]) : 0;
-    TString siminput       = argc > 7 ? argv[7] : "input.root";
-    int seed               = argc > 8 ? atol(argv[8]) : 0;
+    int seed               = argc > 6 ? atol(argv[6]) : 0;
+    Int_t bUseSim          = argc > 7 ? atol(argv[7]) : 0;
+    TString siminput       = argc > 8 ? argv[8] : "input.root";
 
+    std::cout << "Simulation parameters : " << std::endl;
+    std::cout << "\tOutput         : \t" << outFileName << std::endl;
+    std::cout << "\tUse leading    : \t" << bUseLeading << std::endl;
+    std::cout << "\tDebug          : \t" << bDebugOn << std::endl;
+    std::cout << "\tPythia config  : \t" << pythiaSettings << std::endl;
+    std::cout << "\tPool size      : \t" << poolsize << std::endl;
+    std::cout << "\tSeed           : \t" << seed << std::endl;
+    std::cout << "\tUse sim input  : \t" << bUseSim << std::endl;
+    std::cout << "\tSim input file : \t" << siminput << std::endl;
+    
     detector det = kJFoCal;
 
     TFile *fOut = new TFile(outFileName, "RECREATE");
@@ -107,12 +117,13 @@ int main(int argc, char *argv[]) {
             fCorr->SmearEnergies(arrPhotonFor);
         }
 
-        fHistos->FillPtEta(kJDecayPhoton, arrPhotonFor);
-        fHistos->FillPtEta(kJPi0, arrPi0Real);
-
         int nTrueFromPeak = fCorr->ReconstructPions(arrPhotonFor, arrPi0Peak, det, 1);
         fCorr->ReconstructPions(arrPhotonFor, arrPi0Side, det, 0);
 
+        fHistos->FillPtEta(kJDecayPhoton, arrPhotonFor);
+        fHistos->FillPtEta(kJPi0, arrPi0Real);
+        fHistos->FillPtEta(kJRecPi0, arrPi0Peak);
+        
         if (bDebugOn)
             std::cout << "Number of Pi0 (real) : " << arrPi0Real->GetEntriesFast()
                       << "\t (rec, peak) : " << arrPi0Peak->GetEntriesFast()
@@ -153,10 +164,10 @@ int main(int argc, char *argv[]) {
                 int binsWithTriggPeakMixed[NTRIGGBINS+1] = {0}, binsWithTriggSideMixed[NTRIGGBINS+1] = {0};
                 fCorr->GetTriggAssocLists(arrPi0PeakMixed[ipool], listTriggPeakMixed, listAssocPeakMixed, binsWithTriggPeakMixed, bUseLeading);
                 fCorr->GetTriggAssocLists(arrPi0SideMixed[ipool], listTriggSideMixed, listAssocSideMixed, binsWithTriggSideMixed, bUseLeading);
-                fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0PeakMixed[ipool], listAssocPeakMixed, fHistos->hCorrMassMassMixed, 0, 0);
+                fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0PeakMixed[ipool], listAssocPeakMixed, fHistos->hCorrMassMassMixed, 1, 1);
                 fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0SideMixed[ipool], listAssocSideMixed, fHistos->hCorrSideSideMixed, 0, 0);
-                fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0SideMixed[ipool], listAssocSideMixed, fHistos->hCorrMassSideMixed, 0, 0);
-                fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0PeakMixed[ipool], listAssocPeakMixed, fHistos->hCorrSideMassMixed, 0, 0);
+                fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0SideMixed[ipool], listAssocSideMixed, fHistos->hCorrMassSideMixed, 1, 0);
+                fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0PeakMixed[ipool], listAssocPeakMixed, fHistos->hCorrSideMassMixed, 0, 1);
 
             }
             // Remove the first from the pool and add new array to the pool

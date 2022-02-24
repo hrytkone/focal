@@ -151,9 +151,10 @@ void AliJHMRHist::FillPtEta(particleType itype, TClonesArray * arrParticles)
 {
     int nent = arrParticles->GetEntriesFast();
     for (int ient = 0; ient < nent; ient++) {
-        TLorentzVector *lv = (TLorentzVector*)arrParticles->At(ient);
+        AliJBaseTrack *lv = (AliJBaseTrack*)arrParticles->At(ient);
         double pT = lv->Pt();
         double eta = lv->Eta();
+        int isPion = lv->GetLabel();
         if (itype==kJHadron) {
             hChargedHadronPt->Fill(pT);
             hChargedHadronEta->Fill(eta);
@@ -170,8 +171,10 @@ void AliJHMRHist::FillPtEta(particleType itype, TClonesArray * arrParticles)
         }
 
         if (itype==kJRecPi0) {
-            hRecPionPt->Fill(pT);
-            hRecPionEta->Fill(eta);
+            if (isPion) { 
+                hRecPionPt->Fill(pT);
+                hRecPionEta->Fill(eta);
+            }
         }
     }
 }

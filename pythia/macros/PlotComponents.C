@@ -1,7 +1,12 @@
+const double triggMin = 4.;
+const double triggMax = 8.;
+const double assocMin = 3.;
+const double assocMax = 4.;
+
 void PlotComponents(TString sInputName = "output.root")
 {
 
-    //gStyle->SetOptStat(0);
+    gStyle->SetOptStat(0);
 
     TFile *fIn = TFile::Open(sInputName);
 
@@ -20,25 +25,25 @@ void PlotComponents(TString sInputName = "output.root")
     //std::cout << "Real (rec) triggers : " << nRealRecTrigg << std::endl;
     //std::cout << "Real (fake) triggers : " << nFakeRecTrigg << std::endl;
 
-    TH2D* hCorrMeasured = (TH2D*)fIn->Get(Form("CorrMassMass/hCorrMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",2.,4.,1.5,2.));
-    //hCorrMeasured->Rebin2D(4);
+    TH2D* hCorrMeasured = (TH2D*)fIn->Get(Form("CorrMassMass/hCorrMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",triggMin,triggMax,assocMin,assocMax));
+    hCorrMeasured->Rebin2D(4);
     hCorrMeasured->SetLineColor(kBlack);
     hCorrMeasured->GetYaxis()->SetMaxDigits(3);
 
-    TH2D* hCorrSS = (TH2D*)fIn->Get(Form("TrueComponents/hCorrSignalSignal[%4.1f,%4.1f][%4.1f,%4.1f]",2.,4.,1.5,2.));
-    //hCorrSS->Rebin2D(4);
+    TH2D* hCorrSS = (TH2D*)fIn->Get(Form("TrueComponents/hCorrSignalSignal[%4.1f,%4.1f][%4.1f,%4.1f]",triggMin,triggMax,assocMin,assocMax));
+    hCorrSS->Rebin2D(4);
     hCorrSS->GetYaxis()->SetMaxDigits(3);
 
-    TH2D* hCorrSB = (TH2D*)fIn->Get(Form("TrueComponents/hCorrSignalBg[%4.1f,%4.1f][%4.1f,%4.1f]",2.,4.,1.5,2.));
-    //hCorrSB->Rebin2D(4);
+    TH2D* hCorrSB = (TH2D*)fIn->Get(Form("TrueComponents/hCorrSignalBg[%4.1f,%4.1f][%4.1f,%4.1f]",triggMin,triggMax,assocMin,assocMax));
+    hCorrSB->Rebin2D(4);
     hCorrSB->GetYaxis()->SetMaxDigits(3);
 
-    TH2D* hCorrBS = (TH2D*)fIn->Get(Form("TrueComponents/hCorrBgSignal[%4.1f,%4.1f][%4.1f,%4.1f]",2.,4.,1.5,2.));
-    //hCorrBS->Rebin2D(4);
+    TH2D* hCorrBS = (TH2D*)fIn->Get(Form("TrueComponents/hCorrBgSignal[%4.1f,%4.1f][%4.1f,%4.1f]",triggMin,triggMax,assocMin,assocMax));
+    hCorrBS->Rebin2D(4);
     hCorrBS->GetYaxis()->SetMaxDigits(3);
 
-    TH2D* hCorrBB = (TH2D*)fIn->Get(Form("TrueComponents/hCorrBgBg[%4.1f,%4.1f][%4.1f,%4.1f]",2.,4.,1.5,2.));
-    //hCorrBB->Rebin2D(4);
+    TH2D* hCorrBB = (TH2D*)fIn->Get(Form("TrueComponents/hCorrBgBg[%4.1f,%4.1f][%4.1f,%4.1f]",triggMin,triggMax,assocMin,assocMax));
+    hCorrBB->Rebin2D(4);
     hCorrBB->GetYaxis()->SetMaxDigits(3);
 
     // ---------------
@@ -59,12 +64,17 @@ void PlotComponents(TString sInputName = "output.root")
     hCorrMeasuredProj->GetYaxis()->SetTitleOffset(1.);
     //hCorrMeasuredProj->GetYaxis()->SetRangeUser(0.00001, 0.6);
     hCorrMeasuredProj->SetLineColor(kGray);
+    hCorrMeasuredProj->SetMarkerColor(kGray);
+    hCorrMeasuredProj->SetMarkerStyle(20);
+    hCorrMeasuredProj->SetMarkerSize(0.5);
     hCorrMeasuredProj->SetLineWidth(2);
 
     TH1D* hCorrSSProj = hCorrSS->ProjectionX();
     hCorrSSProj->SetMarkerStyle(7);
     hCorrSSProj->SetMarkerColor(kBlack);
     hCorrSSProj->SetLineColor(kBlack);
+    hCorrSSProj->SetMarkerStyle(20);
+    hCorrSSProj->SetMarkerSize(0.5);
     hCorrSSProj->SetLineWidth(2);
     hCorrSSProj->SetLineStyle(1);
     //hCorrSSProj->Scale(1./nRealRecTrigg);
@@ -75,6 +85,8 @@ void PlotComponents(TString sInputName = "output.root")
     //hCorrSBProj->Scale(1./nRealRecTrigg);
     hCorrSBProj->SetMarkerColor(kBlue);
     hCorrSBProj->SetLineColor(kBlue);
+    hCorrSBProj->SetMarkerStyle(20);
+    hCorrSBProj->SetMarkerSize(0.5);
     hCorrSBProj->SetLineWidth(2);
     hCorrSBProj->SetLineStyle(2);
 
@@ -83,6 +95,8 @@ void PlotComponents(TString sInputName = "output.root")
     //hCorrBSProj->Scale(1./nFakeRecTrigg);
     hCorrBSProj->SetMarkerColor(kRed);
     hCorrBSProj->SetLineColor(kRed);
+    hCorrBSProj->SetMarkerStyle(20);
+    hCorrBSProj->SetMarkerSize(0.5);
     hCorrBSProj->SetTitle("; #Delta#phi; Counts");
     hCorrBSProj->SetLineWidth(2);
     hCorrBSProj->SetLineStyle(2);
@@ -92,6 +106,8 @@ void PlotComponents(TString sInputName = "output.root")
     //hCorrBBProj->Scale(1./nFakeRecTrigg);
     hCorrBBProj->SetMarkerColor(8);
     hCorrBBProj->SetLineColor(8);
+    hCorrBBProj->SetMarkerStyle(20);
+    hCorrBBProj->SetMarkerSize(0.5);
     hCorrBBProj->SetLineWidth(2);
     hCorrBBProj->SetLineStyle(2);
 

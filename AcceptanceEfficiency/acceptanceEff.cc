@@ -14,7 +14,8 @@
 #include "TF1.h"
 #include "TStopwatch.h"
 
-#define NINCPTBIN 150
+//#define NINCPTBIN 150
+#define NINCPTBIN 100
 #define NETABIN 13
 #define NDET 2
 

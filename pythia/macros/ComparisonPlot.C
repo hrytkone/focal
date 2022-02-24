@@ -57,9 +57,9 @@ void LoadData()
 
     	        if (tlow < aupp) continue;
 
-                hCorrReal[iset][itrigg][iassoc]  = (TH1D*)fin[iset]->Get(Form("hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp)); hCorrReal[iset][itrigg][iassoc]->Rebin(2);
-                hCorrFinal[iset][itrigg][iassoc] = (TH1D*)fin[iset]->Get(Form("hCorrFinal[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrFinal[iset][itrigg][iassoc]->Rebin(2);
-				hCorrMeas[iset][itrigg][iassoc]  = (TH1D*)fin[iset]->Get(Form("hCorrMeas[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp)); hCorrMeas[iset][itrigg][iassoc]->Rebin(2);
+                hCorrReal[iset][itrigg][iassoc]  = (TH1D*)fin[iset]->Get(Form("hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp)); hCorrReal[iset][itrigg][iassoc]->Rebin(4);
+                hCorrFinal[iset][itrigg][iassoc] = (TH1D*)fin[iset]->Get(Form("hCorrFinal[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrFinal[iset][itrigg][iassoc]->Rebin(4);
+				hCorrMeas[iset][itrigg][iassoc]  = (TH1D*)fin[iset]->Get(Form("hCorrMeas[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp)); hCorrMeas[iset][itrigg][iassoc]->Rebin(4);
 
                 // Calculate ratios
                 hRatio[iset][itrigg][iassoc] = (TH1D*)hCorrReal[iset][itrigg][iassoc]->Clone(Form("hRatio[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp));

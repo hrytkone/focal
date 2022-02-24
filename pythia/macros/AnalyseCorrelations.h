@@ -34,6 +34,7 @@ double alpha[nTriggBins][nAssocBins];
 double beta[nTriggBins][nAssocBins];
 double yamma[nTriggBins][nAssocBins];
 double st[nTriggBins];
+double stfit[nTriggBins];
 
 TF1 *fFitTrigg[nTriggBins];
 TF1 *fPeakTrigg[nTriggBins];

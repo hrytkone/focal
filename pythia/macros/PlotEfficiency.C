@@ -1,8 +1,7 @@
-const int netabins = 13;
-
+double Fit(double *x, double *p);
 void SetStyle(Bool_t graypalette);
 
-void PlotEffEtaBins(TString sInputName = "input.root")
+void PlotEfficiency(TString sInputName = "input.root")
 {
     gStyle->SetOptStat(0);
     SetStyle(0);
@@ -12,54 +11,61 @@ void PlotEffEtaBins(TString sInputName = "input.root")
     // ------------------
     // |   Histograms   |
     // ------------------
-    TH1D *hPionPtDetected[netabins];
-    TH1D *hPionPtFor[netabins];
-    TH1D *hRatio[netabins];
-    for (int i=0; i<netabins; i++) {
-        hPionPtDetected[i] = (TH1D*)fIn->Get(Form("hPionPtDetected_%d", i));
-        hPionPtDetected[i]->Rebin(5);
-        hPionPtFor[i] = (TH1D*)fIn->Get(Form("hPionPtFor_%d", i));
-        hPionPtFor[i]->Rebin(5);
-        hRatio[i] = (TH1D*)hPionPtDetected[i]->Clone(Form("hRatio_%d", i));
-        hRatio[i]->Divide(hPionPtFor[i]);
-    }
+    TH1D *hPionPtTrue = (TH1D*)fIn->Get("hPionPt");
+    hPionPtTrue->Rebin();
+    TH1D *hPionPtRec = (TH1D*)fIn->Get("hRecPionPt");
+    hPionPtRec->Rebin();
 
     // ---------------
     // |   Legends   |
     // ---------------
-    TLegend *leg1 = new TLegend(0.28, 0.25, 0.48, 0.45);
+    TLegend *leg1 = new TLegend(0.3, 0.25, 0.6, 0.42);
     leg1->SetFillStyle(0); leg1->SetBorderSize(0); leg1->SetTextSize(0.035);
-    leg1->SetHeader("#eta bins (bin width = 0.2)");
-    leg1->AddEntry(hRatio[0], "[3.2, 3.4]", "pe");
-    leg1->AddEntry(hRatio[0], "#upoint#upoint#upoint", "");
-    leg1->AddEntry(hRatio[netabins-1], "[5.6, 5.8]", "pe");
 
     // ----------------
     // |   Analysis   |
     // ----------------
-    hRatio[0]->SetTitle(" ; p_{T} (GeV); Pair efficiency");
-    hRatio[0]->GetYaxis()->SetTitleOffset(1.);
-    hRatio[0]->GetYaxis()->SetRangeUser(0., 1.1);
-    //hRatio[0]->GetXaxis()->SetRangeUser(0., 12.);
+    TH1D* hRatio = (TH1D*)hPionPtRec->Clone("hRatio");
+    hRatio->Divide(hPionPtTrue);
+    hRatio->SetTitle("; p_{T} (GeV); Efficiency");
+    hRatio->GetYaxis()->SetTitleOffset(1.);
+    hRatio->SetMarkerStyle(20);
+    hRatio->SetMarkerColor(kBlack);
+    hRatio->SetMarkerSize(0.5);
+    hRatio->GetYaxis()->SetRangeUser(0., 1.19);
+    hRatio->GetXaxis()->SetRangeUser(0.1, 12);
+
+    TF1 *fFit = new TF1("fFit", Fit, 2., 12., 1);
+    fFit->SetParameter(0, 0.98);
+    double par, parErr;
+    hRatio->Fit("fFit","RQ0");
+    par = fFit->GetParameter(0);
+    parErr = fFit->GetParError(0);
+
+    std::cout << "Fit function : constant" << std::endl;
+    std::cout << "\ta = " << par << " +- " << parErr << std::endl;
+
+    leg1->AddEntry(hRatio, "PYTHIA8 simulation", "ep");
+    leg1->AddEntry(fFit, Form("Fit constant : %0.04f #pm %0.04f", par, parErr), "l");
 
     TCanvas *cRatio = new TCanvas("cRatio", "cRatio", 600, 600);
-    cRatio->SetLogx();
-    for (int i=0; i<netabins; i++) {
-        hRatio[i]->SetMarkerSize(0.5);
-        hRatio[i]->SetMarkerStyle(20);
-        if (i==0)
-            hRatio[i]->Draw("PLC PMC");
-        else
-            hRatio[i]->Draw("PLC PMC SAME");
-    }
+    hRatio->Draw("P");
+    fFit->Draw("SAME");
     leg1->Draw("SAME");
+
+}
+
+double Fit(double *x, double *p)
+{
+    //return TMath::Exp(p[0]/(x[0] + p[1]));
+    //return p[0]*x[0] + p[1];
+    return p[0];
 }
 
 void SetStyle(Bool_t graypalette)
 {
     cout << "Setting style!" << endl;
 
-    gStyle->SetPalette(kCool);
     //gStyle->Reset("Plain");
     //gStyle->SetOptTitle(0);
     gStyle->SetOptStat(0);

@@ -50,7 +50,10 @@ void LoadData(TString input)
             if (tlow < aupp) continue;
 
 			hCorrMixed[itrigg][iassoc] = (TH2D*)fin->Get(Form("CorrMassMass/hCorrMassMassMixed[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
-            hCorrMixed[itrigg][iassoc]->Rebin2D(8);
+            hCorrMixed[itrigg][iassoc]->Rebin2D(8,4);
+            cout << "bin width" << endl;
+            cout << "\tdelta phi : " << hCorrMixed[itrigg][iassoc]->GetXaxis()->GetBinWidth(0) << endl;
+            cout << "\tdelta eta : " << hCorrMixed[itrigg][iassoc]->GetYaxis()->GetBinWidth(0) << endl;
 		}
 	}
 }

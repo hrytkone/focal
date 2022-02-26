@@ -29,7 +29,7 @@ void processDataSTAR()
 
 		LoadInput();
         FitMassPeaks();
-		GetScaleFactors();
+		GetScaleFactorsVersion1();
 		DoAnalysis();
         DrawMassHistos(dataname[idata]);
 		fOut->Write();
@@ -42,7 +42,7 @@ void processDataSTAR()
 void processDataFoCal()
 {
 	TString fInName[ndata_focal] = {
-        "/home/heimarry/Simulations/focal-pythia-sim/focal-pp_no-weight.root"
+        "/home/heimarry/Simulations/focal-pythia-sim/focal-pp_binning.root"
 	};
 
 	TString fOutName[ndata_focal] = {
@@ -59,7 +59,7 @@ void processDataFoCal()
 
 		LoadInput();
         FitMassPeaks();
-		GetScaleFactors();
+		GetScaleFactorsVersion1();
 		DoAnalysis();
         DrawMassHistos(dataname[idata]);
 		fOut->Write();
@@ -97,11 +97,11 @@ void LoadInput()
 	        hMassAssocSide[it][ia] = (TH1D*)fIn->Get(Form("Masses/hPi0MassAssocSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); //hMassAssocSide[it][ia]->Rebin();
             hMassAssocSide[it][ia]->Scale(1., "width");
 
-	        hCorrReal[it][ia]     = (TH2D*)fIn->Get(Form("CorrFor/hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrReal[it][ia]->Rebin2D(4);
-	        hCorrMassMass[it][ia] = (TH2D*)fIn->Get(Form("CorrMassMass/hCorrMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrMassMass[it][ia]->Rebin2D(4);
-            hCorrMassSide[it][ia] = (TH2D*)fIn->Get(Form("CorrMassSide/hCorrMassSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrMassSide[it][ia]->Rebin2D(4);
-	        hCorrSideMass[it][ia] = (TH2D*)fIn->Get(Form("CorrSideMass/hCorrSideMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrSideMass[it][ia]->Rebin2D(4);
-	        hCorrSideSide[it][ia] = (TH2D*)fIn->Get(Form("CorrSideSide/hCorrSideSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrSideSide[it][ia]->Rebin2D(4);
+	        hCorrReal[it][ia]     = (TH2D*)fIn->Get(Form("CorrFor/hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));           //hCorrReal[it][ia]->Rebin2D(4);
+	        hCorrMassMass[it][ia] = (TH2D*)fIn->Get(Form("CorrMassMass/hCorrMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); //hCorrMassMass[it][ia]->Rebin2D(4);
+            hCorrMassSide[it][ia] = (TH2D*)fIn->Get(Form("CorrMassSide/hCorrMassSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); //hCorrMassSide[it][ia]->Rebin2D(4);
+	        hCorrSideMass[it][ia] = (TH2D*)fIn->Get(Form("CorrSideMass/hCorrSideMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); //hCorrSideMass[it][ia]->Rebin2D(4);
+	        hCorrSideSide[it][ia] = (TH2D*)fIn->Get(Form("CorrSideSide/hCorrSideSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); //hCorrSideSide[it][ia]->Rebin2D(4);
             hCorrMeas[it][ia]     = (TH2D*)hCorrMassMass[it][ia]->Clone(Form("hCorrMeas[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
 
 	    }
@@ -120,7 +120,8 @@ void DoAnalysis()
             if (tlow < aupp) continue;
 
             hCorrRealProj[it][ia] = hCorrReal[it][ia]->ProjectionX();
-            //hCorrRealProj[it][ia]->Scale(1.0/nRealTrigg[it], "width");
+            hCorrRealProj[it][ia]->Scale(1.0/nRealTrigg[it], "width");
+            //hCorrRealProj[it][ia]->Scale(1.0/hCorrRealProj[it][ia]->GetEntries(), "width");
 
             hCorrMassMassProj[it][ia] = hCorrMassMass[it][ia]->ProjectionX();
 
@@ -137,10 +138,12 @@ void DoAnalysis()
             hCorr[it][ia]->Add(hCorrMassSideProj[it][ia], -1);
             hCorr[it][ia]->Add(hCorrSideMassProj[it][ia], -1);
             hCorr[it][ia]->Add(hCorrSideSideProj[it][ia]);
-            //hCorr[it][ia]->Scale(1.0/st[it], "width");
+            hCorr[it][ia]->Scale(1.0/(pi0eff*st[it]), "width");
+            //hCorr[it][ia]->Scale(1.0/hCorr[it][ia]->GetEntries(), "width");
 
             hCorrMeasProj[it][ia] = hCorrMeas[it][ia]->ProjectionX();
-            //hCorrMeasProj[it][ia]->Scale(1.0/fFitTrigg[it]->Integral(110, 160), "width");
+            hCorrMeasProj[it][ia]->Scale(1.0/fFitTrigg[it]->Integral(110, 160), "width");
+            //hCorrMeasProj[it][ia]->Scale(1.0/hCorrMeasProj[it][ia]->GetEntries(), "width");
         }
     }
 
@@ -163,7 +166,8 @@ void FitMassPeaks()
         fBgTrigg[it]->SetLineStyle(kDashed);
         fBgTrigg[it]->SetNpx(1000);
 
-        hMassTrigg[it]->Fit(Form("fFitTrigg%d", it), "QNRW+");
+        //hMassTrigg[it]->Fit(Form("fFitTrigg%d", it), "QNRW+");
+        hMassTrigg[it]->Fit(Form("fFitTrigg%d", it), "NRW+");
         fitConstantVal[it] = fFitTrigg[it]->GetParameter(3);
         fFitTrigg[it]->GetParameters(parTrigg);
         fBgTrigg[it]->SetParameters(parTrigg);
@@ -224,7 +228,7 @@ void FitMassPeaks()
     }
 }
 
-void GetScaleFactors()
+void GetScaleFactorsVersion1()
 {
     for (int it = 0; it < nTriggBins; it++) {
         st[it] = fPeakTrigg[it]->Integral(110, 160);
@@ -235,6 +239,31 @@ void GetScaleFactors()
             double tlow = triggPt[it];
             double tupp = triggPt[it+1];
             double alow = assocPt[ia];
+            double aupp = assocPt[ia+1];
+
+            if (tlow < aupp) continue;
+            alpha[it][ia] = fBgAssocPeak[it][ia]->Integral(110, 160)/(fBgAssocPeak[it][ia]->Integral(40, 80) + fBgAssocPeak[it][ia]->Integral(210, 280));
+            beta[it][ia]  = fBgTrigg[it]->Integral(110, 160)/(fBgTrigg[it]->Integral(40, 80) + fBgTrigg[it]->Integral(210, 280));
+            yamma[it][ia] = alpha[it][ia]*beta[it][ia];
+            std::cout << "\t\tbin [ "  << assocPt[ia] << " " << assocPt[ia+1] << " ] : "
+                      << "\talpha=" << alpha[it][ia]
+                      << "\tbeta="  << beta[it][ia]
+                      << "\tgamma=" << yamma[it][ia] << std::endl;
+        }
+    }
+}
+
+void GetScaleFactorsVersion2()
+{
+    for (int it = 0; it < nTriggBins; it++) {
+        st[it] = fPeakTrigg[it]->Integral(110, 160);
+        //st[it]    = hMassTrigg[it]->Integral(hMassTrigg[it]->GetXaxis()->FindBin(110), hMassTrigg[it]->GetXaxis()->FindBin(160)) - fBgTrigg[it]->Integral(110, 160);
+        std::cout << "\n\tbin [ " << triggPt[it] << " " << triggPt[it+1] << " ] : \treal=" << nRealTrigg[it] << "\treconst=" << st[it] << "\trec=" << stfit[it] << "\trec/real=" << st[it]/nRealTrigg[it] << std::endl;
+        std::cout << "bg : " << fBgTrigg[it]->Integral(110, 160) << std::endl;
+        for (int ia = 0; ia < nAssocBins; ia++) {
+            double tlow = triggPt[it];
+            double tupp = triggPt[it+1];
+            double alow = assocPt[ia];reconst=70402.1
             double aupp = assocPt[ia+1];
 
             if (tlow < aupp) continue;

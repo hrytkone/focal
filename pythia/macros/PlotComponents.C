@@ -1,7 +1,7 @@
 const double triggMin = 4.;
 const double triggMax = 8.;
-const double assocMin = 3.;
-const double assocMax = 4.;
+const double assocMin = 2.;
+const double assocMax = 3.;
 
 void PlotComponents(TString sInputName = "output.root")
 {
@@ -26,24 +26,24 @@ void PlotComponents(TString sInputName = "output.root")
     //std::cout << "Real (fake) triggers : " << nFakeRecTrigg << std::endl;
 
     TH2D* hCorrMeasured = (TH2D*)fIn->Get(Form("CorrMassMass/hCorrMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",triggMin,triggMax,assocMin,assocMax));
-    hCorrMeasured->Rebin2D(4);
+    hCorrMeasured->Rebin2D();
     hCorrMeasured->SetLineColor(kBlack);
     hCorrMeasured->GetYaxis()->SetMaxDigits(3);
 
     TH2D* hCorrSS = (TH2D*)fIn->Get(Form("TrueComponents/hCorrSignalSignal[%4.1f,%4.1f][%4.1f,%4.1f]",triggMin,triggMax,assocMin,assocMax));
-    hCorrSS->Rebin2D(4);
+    hCorrSS->Rebin2D();
     hCorrSS->GetYaxis()->SetMaxDigits(3);
 
     TH2D* hCorrSB = (TH2D*)fIn->Get(Form("TrueComponents/hCorrSignalBg[%4.1f,%4.1f][%4.1f,%4.1f]",triggMin,triggMax,assocMin,assocMax));
-    hCorrSB->Rebin2D(4);
+    hCorrSB->Rebin2D();
     hCorrSB->GetYaxis()->SetMaxDigits(3);
 
     TH2D* hCorrBS = (TH2D*)fIn->Get(Form("TrueComponents/hCorrBgSignal[%4.1f,%4.1f][%4.1f,%4.1f]",triggMin,triggMax,assocMin,assocMax));
-    hCorrBS->Rebin2D(4);
+    hCorrBS->Rebin2D();
     hCorrBS->GetYaxis()->SetMaxDigits(3);
 
     TH2D* hCorrBB = (TH2D*)fIn->Get(Form("TrueComponents/hCorrBgBg[%4.1f,%4.1f][%4.1f,%4.1f]",triggMin,triggMax,assocMin,assocMax));
-    hCorrBB->Rebin2D(4);
+    hCorrBB->Rebin2D();
     hCorrBB->GetYaxis()->SetMaxDigits(3);
 
     // ---------------
@@ -63,8 +63,8 @@ void PlotComponents(TString sInputName = "output.root")
     hCorrMeasuredProj->SetTitle("; #Delta#phi; Counts");
     hCorrMeasuredProj->GetYaxis()->SetTitleOffset(1.);
     //hCorrMeasuredProj->GetYaxis()->SetRangeUser(0.00001, 0.6);
-    hCorrMeasuredProj->SetLineColor(kGray);
-    hCorrMeasuredProj->SetMarkerColor(kGray);
+    hCorrMeasuredProj->SetLineColor(kRed);
+    hCorrMeasuredProj->SetMarkerColor(kRed);
     hCorrMeasuredProj->SetMarkerStyle(20);
     hCorrMeasuredProj->SetMarkerSize(0.5);
     hCorrMeasuredProj->SetLineWidth(2);
@@ -83,8 +83,8 @@ void PlotComponents(TString sInputName = "output.root")
     TH1D* hCorrSBProj = hCorrSB->ProjectionX();
     hCorrSBProj->SetMarkerStyle(7);
     //hCorrSBProj->Scale(1./nRealRecTrigg);
-    hCorrSBProj->SetMarkerColor(kBlue);
-    hCorrSBProj->SetLineColor(kBlue);
+    hCorrSBProj->SetMarkerColor(kMagenta-7);
+    hCorrSBProj->SetLineColor(kMagenta-7);
     hCorrSBProj->SetMarkerStyle(20);
     hCorrSBProj->SetMarkerSize(0.5);
     hCorrSBProj->SetLineWidth(2);
@@ -93,8 +93,8 @@ void PlotComponents(TString sInputName = "output.root")
     TH1D* hCorrBSProj = hCorrBS->ProjectionX();
     hCorrBSProj->SetMarkerStyle(7);
     //hCorrBSProj->Scale(1./nFakeRecTrigg);
-    hCorrBSProj->SetMarkerColor(kRed);
-    hCorrBSProj->SetLineColor(kRed);
+    hCorrBSProj->SetMarkerColor(kCyan+1);
+    hCorrBSProj->SetLineColor(kCyan+1);
     hCorrBSProj->SetMarkerStyle(20);
     hCorrBSProj->SetMarkerSize(0.5);
     hCorrBSProj->SetTitle("; #Delta#phi; Counts");
@@ -104,18 +104,18 @@ void PlotComponents(TString sInputName = "output.root")
     TH1D* hCorrBBProj = hCorrBB->ProjectionX();
     hCorrBBProj->SetMarkerStyle(7);
     //hCorrBBProj->Scale(1./nFakeRecTrigg);
-    hCorrBBProj->SetMarkerColor(8);
-    hCorrBBProj->SetLineColor(8);
+    hCorrBBProj->SetMarkerColor(kBlue-7);
+    hCorrBBProj->SetLineColor(kBlue-7);
     hCorrBBProj->SetMarkerStyle(20);
     hCorrBBProj->SetMarkerSize(0.5);
     hCorrBBProj->SetLineWidth(2);
     hCorrBBProj->SetLineStyle(2);
 
-    leg1->AddEntry(hCorrMeasuredProj, "f_{mass,mass}", "l");
-    leg1->AddEntry(hCorrSSProj, "f_{SS}", "l");
-    leg1->AddEntry(hCorrSBProj, "f_{SB}", "l");
-    leg1->AddEntry(hCorrBSProj, "f_{BS}", "l");
-    leg1->AddEntry(hCorrBBProj, "f_{BB}", "l");
+    leg1->AddEntry(hCorrMeasuredProj, "f_{measured}", "l");
+    leg1->AddEntry(hCorrSSProj, "f_{signal,signal}", "l");
+    leg1->AddEntry(hCorrSBProj, "f_{signal,bg}", "l");
+    leg1->AddEntry(hCorrBSProj, "f_{bg,signal}", "l");
+    leg1->AddEntry(hCorrBBProj, "f_{bg,bg}", "l");
 
     hCorrMeasuredProj->Draw("HIST");
     hCorrSSProj->Draw("HIST SAME");
@@ -135,6 +135,8 @@ void PlotComponents(TString sInputName = "output.root")
 
     TCanvas *cSSperMeas = new TCanvas("cMeasperSS", "cSSperMeas", 600, 600);
     TH1D *hSSperMeas = (TH1D*)hCorrSSProj->Clone("hSSperMeas");
+    hSSperMeas->Rebin();
+    hCorrMeasuredProj->Rebin();
     hSSperMeas->SetLineStyle(1);
     hSSperMeas->SetLineColor(kBlack);
     hSSperMeas->SetMarkerColor(kRed);

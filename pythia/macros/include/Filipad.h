@@ -14,7 +14,7 @@ public:
     sizeCanvas   = 600*inRelSize;
 
     MarginLeft   = 0.21;
-    MarginBottom = 0.1; 
+    MarginBottom = 0.1;
     MarginRight  = 0.05;
     MarginTop    = 0.09;
     ID           = inID;
@@ -25,7 +25,7 @@ public:
     int inID0 = inID-1;
     sdxCanvas    = inXOffset*(inID0%ichop)+10;
     sdyCanvas    = inYOffset*(inID0-inID0%ichop)/ichop+10;
-    //cout <<"sdxCanvas= "<<  sdxCanvas <<" sdyCanvas="<< sdyCanvas <<endl; 
+    //cout <<"sdxCanvas= "<<  sdxCanvas <<" sdyCanvas="<< sdyCanvas <<endl;
     space        = 0;
   }
 
@@ -37,10 +37,10 @@ public:
   }
 
 
-  TPad* GetPad(int padID){ return (TPad*) toppad->cd(padID);}//coordinates 0,0 = upper left 
+  TPad* GetPad(int padID){ return (TPad*) toppad->cd(padID);}//coordinates 0,0 = upper left
 
   //-------------------------------------------------------------------------------------
-  void Draw(){ 
+  void Draw(){
 
     char name[200];
     // cout<<"Draw"<<endl;
@@ -59,19 +59,18 @@ public:
     //sprintf(name, Form("UPad%d",ID) ); //some dummy name
     pp = new TPad( Form("UPad%d",ID),Form("UPad%d",ID),0, 0 + ratio + space  , 1, 1, 0); //create pad
 
-    pp->SetNumber(1);   //assign a number to it. Possible to access it via :  toppad->cd(ih);  
+    pp->SetNumber(1);   //assign a number to it. Possible to access it via :  toppad->cd(ih);
     pp->SetTopMargin(MarginTop/(1-ratio)); pp->SetBottomMargin(0.0015);//our pads will have no margin
     pp->SetLeftMargin(MarginLeft);pp->SetRightMargin(MarginRight);
     pp->Draw();
 
     //sprintf(name, Form("LPad%d",ID) ); //some dummy name
     pp = new TPad(Form("LPad%d",ID),Form("LPad%d",ID),0, 0, 1, ratio ,0); //create pad
-    pp->SetNumber(2);   //assign a number to it. Possible to access it via :  toppad->cd(ih); 
+    pp->SetNumber(2);   //assign a number to it. Possible to access it via :  toppad->cd(ih);
     pp->SetTopMargin(0.0015); pp->SetBottomMargin(MarginBottom/ratio);//our pads will have no margin
     pp->SetLeftMargin(MarginLeft);pp->SetRightMargin(MarginRight);
     pp->Draw();
   }
-
 
   //-------------------------------------------------------------------------------------
   void Hset(TH1* hid, TString xtit="", TString ytit="",
@@ -112,8 +111,8 @@ public:
   void SetMarginTop(float x){ MarginTop = x;}
   void SetMarginBottom(float x){ MarginBottom = x;}
 
-  void HSetX(double x0, double x1, TString xtitle, int logx=0, int gridx=0 ){ 
-    fX0=x0;fX1=x1;fXTitle=xtitle; 
+  void HSetX(double x0, double x1, TString xtitle, int logx=0, int gridx=0 ){
+    fX0=x0;fX1=x1;fXTitle=xtitle;
     fLogx=logx;fGridx=gridx;
   }
   void HSet1(double y0, double y1,TString ytitle, int logy=0 ,int gridy=0 ){
@@ -140,17 +139,14 @@ public:
     hfr->Draw();
   }
 
-
-
-
-  //  M A I N     C A N V A S 
+  //  M A I N     C A N V A S
   int   ID;
-  float aspektCanvas;      //size and positioning of the main canvas   
+  float aspektCanvas;      //size and positioning of the main canvas
   int   sizeCanvas;
-  int   sdxCanvas; 
+  int   sdxCanvas;
   int   sdyCanvas;
 
-  float MarginLeft; //Margins around the latice of nx times ny pads 
+  float MarginLeft; //Margins around the latice of nx times ny pads
   float MarginBottom;
   float MarginRight;
   float MarginTop;

@@ -227,6 +227,14 @@ int AliJHMRCorr::GetBin(double arr[], int nArr, double val)
     return -1;
 }
 
+// since phi-acceptance is peridic
+//double AliJHMRCorr::GetDeltaPhi(double phi1, double phi2)
+//{
+//    // dphi
+//    double res = atan2(sin(phi1-phi2), cos(phi1-phi2));
+//    return res > -1.413717 ? res : 6.283185+res ; // -9/20*pi : 2*pi
+//}
+
 double AliJHMRCorr::GetDeltaPhi(double phiTrigg, double phiAssoc)
 {
     double dphi = phiTrigg - phiAssoc;
@@ -266,7 +274,6 @@ void AliJHMRCorr::SmearEnergies(TClonesArray * arrParticles)
 }
 
 // To count in single photon efficiency
-
 bool AliJHMRCorr::IsPhotonRemoved(double ePhoton)
 {
     double photonEff = fPhotonEfficiency->Eval(ePhoton);

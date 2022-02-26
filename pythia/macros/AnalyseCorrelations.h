@@ -7,6 +7,9 @@ const int nAssocBins = 2;
 const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
 const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
 
+const double pi0eff = 1./0.988;
+//const double pi0eff = 1.;
+
 // Input
 int nEvent;
 int nRealTrigg[nTriggBins];
@@ -80,7 +83,8 @@ void processDataFoCal();
 void LoadInput();
 void DoAnalysis();
 void FitMassPeaks();
-void GetScaleFactors();
+void GetScaleFactorsVersion1();
+void GetScaleFactorsVersion2();
 
 double FitPeak(double *x, double *p);
 double FitBackground(double *x, double *p);

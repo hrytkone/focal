@@ -8,8 +8,8 @@ void AliJHMRPythiaCatalyst::GetParticles(detector idet) {
 	for (int partIdx = 0; partIdx < event.size(); partIdx++) {
 
 		double trEta = event[partIdx].eta();
-        double etaMin = detEta[idet][0]; 
-        double etaMax = detEta[idet][1]; 
+        double etaMin = detEta[idet][0];
+        double etaMax = detEta[idet][1];
 		if( trEta < etaMin || trEta > etaMax ) continue;
 
 		lvParticle.SetPxPyPzE(event[partIdx].px(), event[partIdx].py(), event[partIdx].pz(), event[partIdx].e() );
@@ -21,9 +21,10 @@ void AliJHMRPythiaCatalyst::GetParticles(detector idet) {
         track.SetID(event[partIdx].id());
 		track.SetMCIndex(partIdx);
         track.SetMotherID(motherId);
+        track.SetMotherType(event[motherId].id());
 		track.SetCharge(event[partIdx].charge());
 		track.SetTrackEff(1.);
-        
+
         if ( event[partIdx].isFinal() && event[partIdx].id() == 22 ) {
 			track.SetParticleType(kJDecayPhoton);
 
@@ -40,7 +41,7 @@ void AliJHMRPythiaCatalyst::GetParticles(detector idet) {
 
         // Use smaller acceptance than for gammas to suppress the effect from missing gamma pairs
 		if ( trEta < etaMin+etacut || trEta > etaMax-etacut ) continue;
-		
+
         if ( event[partIdx].isFinal() && event[partIdx].isCharged() && event[partIdx].isHadron() ) {
 			track.SetParticleType(kJHadron);
 			new((*fInputListHadron)[fInputListHadron->GetEntriesFast()]) AliJBaseTrack(track);
@@ -51,7 +52,7 @@ void AliJHMRPythiaCatalyst::GetParticles(detector idet) {
 			new((*fInputListPi0)[fInputListPi0->GetEntriesFast()]) AliJBaseTrack(track);
 		}
 
-		
+
 	}
 }
 

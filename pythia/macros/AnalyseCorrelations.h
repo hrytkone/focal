@@ -8,7 +8,11 @@ const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
 const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
 
 const double pi0eff = 1./0.988;
+const double pi0br = 1./0.98823;
 //const double pi0eff = 1.;
+
+const double massWindowMin = 120.;
+const double massWindowMax = 150.;
 
 // Input
 int nEvent;
@@ -32,6 +36,13 @@ double parTrigg[8];
 double parAssocPeak[9];
 double parAssocSide[9];
 double fitConstantVal[nTriggBins] = {0};
+
+double triggMean[nTriggBins] = {0};
+double assocMeanPeak[nTriggBins][nAssocBins] = {0};
+double assocMeanSide[nTriggBins][nAssocBins] = {0};
+double triggSigma[nTriggBins] = {0};
+double assocSigmaPeak[nTriggBins][nAssocBins] = {0};
+double assocSigmaSide[nTriggBins][nAssocBins] = {0};
 
 double alpha[nTriggBins][nAssocBins];
 double beta[nTriggBins][nAssocBins];
@@ -68,11 +79,14 @@ TCanvas *cMassAssocSide[nTriggBins][nAssocBins];
 
 // For drawing purposes
 TF1 *fPeakColored[nTriggBins];
+TF1 *fBgColored[nTriggBins];
 TF1 *fLeftSidebandColored[nTriggBins];
 TF1 *fRightSidebandColored[nTriggBins];
 TF1 *fPeakColoredAssocPeak[nTriggBins][nAssocBins];
 TF1 *fLeftSidebandColoredAssocPeak[nTriggBins][nAssocBins];
 TF1 *fRightSidebandColoredAssocPeak[nTriggBins][nAssocBins];
+TF1 *fBgColoredAssocPeak[nTriggBins][nAssocBins];
+TF1 *fBgColoredAssocSide[nTriggBins][nAssocBins];
 TF1 *fPeakColoredAssocSide[nTriggBins][nAssocBins];
 TF1 *fLeftSidebandColoredAssocSide[nTriggBins][nAssocBins];
 TF1 *fRightSidebandColoredAssocSide[nTriggBins][nAssocBins];

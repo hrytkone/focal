@@ -12,7 +12,7 @@ bool AliJHMRCorr::IsDetAcceptance(double eta, detector labelDet)
 
 bool AliJHMRCorr::IsMassWindow(double mass)
 {
-    return (mass > 110. && mass < 160.) ? true : false;
+    return (mass > massWindowMin && mass < massWindowMax) ? true : false;
 }
 
 bool AliJHMRCorr::IsSideband(double mass)
@@ -120,7 +120,6 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrig
             hCorr[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
         }
     }
-
 }
 
 void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> listTrigg, TClonesArray *arrPi0Assoc, std::vector<int> listAssoc, TH2D *hCorr[NTRIGGBINS][NASSOCBINS], bool bUseWeightTrigg, bool bUseWeightAssoc)
@@ -228,10 +227,10 @@ int AliJHMRCorr::GetBin(double arr[], int nArr, double val)
 }
 
 // since phi-acceptance is peridic
-//double AliJHMRCorr::GetDeltaPhi(double phi1, double phi2)
+//double AliJHMRCorr::GetDeltaPhi(double phiTrigg, double phiAssoc)
 //{
 //    // dphi
-//    double res = atan2(sin(phi1-phi2), cos(phi1-phi2));
+//    double res = atan2(sin(phiTrigg-phiAssoc), cos(phiTrigg-phiAssoc));
 //    return res > -1.413717 ? res : 6.283185+res ; // -9/20*pi : 2*pi
 //}
 

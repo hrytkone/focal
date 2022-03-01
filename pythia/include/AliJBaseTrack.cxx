@@ -42,7 +42,8 @@ AliJBaseTrack::AliJBaseTrack():
     fTracEff(-1),
     fMCIndex(-9999),
     fWeight(1.0),
-    fMotherID(-9999)
+    fMotherID(-9999),
+    fMotherType(-9999)
 {
   // constructor
 }
@@ -61,7 +62,8 @@ AliJBaseTrack::AliJBaseTrack(float px,float py, float pz, float e, Int_t id, Sho
     fTracEff(-1),
     fMCIndex(-9999),
     fWeight(1.0),
-    fMotherID(-9999)
+    fMotherID(-9999),
+    fMotherType(-9999)
 {
   // constructor
 }
@@ -80,7 +82,8 @@ AliJBaseTrack::AliJBaseTrack(const AliJBaseTrack& a):
     fTracEff( a.fTracEff ),
     fMCIndex( a.fMCIndex ),
     fWeight ( a.fWeight  ),
-    fMotherID( a.fMotherID )
+    fMotherID( a.fMotherID ),
+    fMotherType( a.fMotherType )
 {
   //copy constructor
 }
@@ -99,7 +102,8 @@ AliJBaseTrack::AliJBaseTrack(const TLorentzVector& a):
     fTracEff(-1),
     fMCIndex(-9999),
     fWeight(1.0),
-    fMotherID(-9999)
+    fMotherID(-9999),
+    fMotherType(-9999)
 {
   //copy constructor
 }
@@ -113,13 +117,14 @@ AliJBaseTrack& AliJBaseTrack::operator=(const AliJBaseTrack& trk){
     fParticleType = trk.fParticleType;
     fCharge       = trk.fCharge;
     fStatus       = trk.fStatus;
-    fFlags     = trk.fFlags;
-    fTriggID   = trk.fTriggID;
-    fAssocID   = trk.fAssocID;
-    fTracEff   = trk.fTracEff;
-    fMCIndex   = trk.fMCIndex;
-    fWeight    = trk.fWeight;
-    fMotherID  = trk.fMotherID;
+    fFlags       = trk.fFlags;
+    fTriggID     = trk.fTriggID;
+    fAssocID     = trk.fAssocID;
+    fTracEff     = trk.fTracEff;
+    fMCIndex     = trk.fMCIndex;
+    fWeight      = trk.fWeight;
+    fMotherID    = trk.fMotherID;
+    fMotherType  = trk.fMotherType;
   }
   return *this;
 }

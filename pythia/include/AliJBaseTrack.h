@@ -63,6 +63,7 @@ class AliJBaseTrack : public TLorentzVector {
         Double_t      GetWeight()       const { return fWeight;}
         Int_t         GetMCIndex()      const { return fMCIndex;}
         Int_t         GetMotherID()     const { return fMotherID;}
+        Int_t         GetMotherType()   const { return fMotherType;}
 
         void SetID      (const int id){fID=id;}
         void SetLabel   (const Int_t label ){ fLabel=label; }
@@ -79,6 +80,7 @@ class AliJBaseTrack : public TLorentzVector {
         void SetWeight(Double_t weight) { fWeight = weight;}
         void SetMCIndex(Int_t idx) {      fMCIndex = idx;}
         void SetMotherID(Int_t idx) {     fMotherID = idx;}
+        void SetMotherType(Int_t idx) {     fMotherType = idx;}
 
         void SetPrimary(Bool_t b=kTRUE){ SetFlag(kPrimary,b);}
         Bool_t IsPrimary(){return IsTrue(kPrimary);}
@@ -105,6 +107,7 @@ class AliJBaseTrack : public TLorentzVector {
         Int_t         fMCIndex;           //!   //index of corresp. MC track
         Double_t      fWeight;            //!   //particle weight
         Int_t         fMotherID;          //!   //particle motherID
+        Int_t         fMotherType;        //!   //mother particle type
 
         ClassDef(AliJBaseTrack,2)
 };

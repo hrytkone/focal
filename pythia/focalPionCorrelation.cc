@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
     std::cout << "\tSeed           : \t" << seed << std::endl;
     std::cout << "\tUse sim input  : \t" << bUseSim << std::endl;
     std::cout << "\tSim input file : \t" << siminput << std::endl;
-    
+
     detector det = kJFoCal;
 
     TFile *fOut = new TFile(outFileName, "RECREATE");
@@ -123,7 +123,7 @@ int main(int argc, char *argv[]) {
         fHistos->FillPtEta(kJDecayPhoton, arrPhotonFor);
         fHistos->FillPtEta(kJPi0, arrPi0Real);
         fHistos->FillPtEta(kJRecPi0, arrPi0Peak);
-        
+
         if (bDebugOn)
             std::cout << "Number of Pi0 (real) : " << arrPi0Real->GetEntriesFast()
                       << "\t (rec, peak) : " << arrPi0Peak->GetEntriesFast()

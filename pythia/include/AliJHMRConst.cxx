@@ -22,6 +22,9 @@ const TString accFunc[NDET] = {
 double triggPt[NTRIGGBINS+1] = {4.0, 8.0, 20.0};
 double assocPt[NASSOCBINS+1] = {2.0, 3.0, 4.0};
 
+extern const double massWindowMin = 110.;
+extern const double massWindowMax = 160.;
+
 const double etacut = 0.2;
 
 const double kJPi = TMath::Pi();

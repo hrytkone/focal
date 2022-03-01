@@ -14,6 +14,9 @@
 enum particleType { kJHadron, kJPi0, kJDecayPhoton, kJRecPi0 };
 enum detector { kJFoCal, kJSTAR, kJTracker, kJFull };
 
+extern const double massWindowMin;
+extern const double massWindowMax;
+
 extern const double etacut;
 
 extern const double detEta[NDET][2];

@@ -44,6 +44,7 @@ public:
     double PhotonEnergySmearing(double px, double py, double pz);
     void SmearEnergies(TClonesArray * arrParticles);
     bool IsPhotonRemoved(double ePhoton);
+    double AsymmetryCut(TClonesArray *arrPhoton, int iPhoton1, int iPhoton2);
     AliJBaseTrack GetPhotonSumVector(TClonesArray *arrayPhoton, int iPhoton1, int iPhoton2);
     int GetLeadingTriggerIndex(TClonesArray *arrPi0);
     int GetLargerTrigg(TClonesArray *arrPi0Peak, std::vector<int> listTriggPeak, TClonesArray *arrPi0Side, std::vector<int> listTriggSide);

@@ -41,6 +41,9 @@ int AliJHMRCorr::ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0C
     int nPhoton = arrPhoton->GetEntriesFast();
     for (int i = 1; i < nPhoton; i++) {
         for (int j = 0; j < i; j++) {
+
+            if (AsymmetryCut(arrPhoton, i, j)>0.7) continue;
+
             AliJBaseTrack lvSum = GetPhotonSumVector(arrPhoton, i, j);
             if (lvSum.Eta()<detEta[idet][0]+etacut || lvSum.Eta()>detEta[idet][1]-etacut) continue;
             double mass = 1000.*lvSum.M();
@@ -280,6 +283,13 @@ bool AliJHMRCorr::IsPhotonRemoved(double ePhoton)
     return false;
 }
 
+double AliJHMRCorr::AsymmetryCut(TClonesArray *arrPhoton, int iPhoton1, int iPhoton2)
+{
+    AliJBaseTrack *lv1 = (AliJBaseTrack*)arrPhoton->At(iPhoton1);
+    AliJBaseTrack *lv2 = (AliJBaseTrack*)arrPhoton->At(iPhoton2);
+    return TMath::Abs(lv1->E() - lv2->E())/(lv1->E() + lv2->E());
+}
+
 AliJBaseTrack AliJHMRCorr::GetPhotonSumVector(TClonesArray *arrPhoton, int iPhoton1, int iPhoton2)
 {
     AliJBaseTrack *lv1 = (AliJBaseTrack*)arrPhoton->At(iPhoton1);
@@ -333,6 +343,9 @@ void AliJHMRCorr::FillPionMasses(TClonesArray *arrPhoton, int binsWithTriggPeak[
     int nPhoton = arrPhoton->GetEntriesFast();
     for (int i = 1; i < nPhoton; i++) {
         for (int j = 0; j < i; j++) {
+
+            if (AsymmetryCut(arrPhoton, i, j)>0.7) continue;
+
             AliJBaseTrack lvSum = GetPhotonSumVector(arrPhoton, i, j);
             if (lvSum.Eta()<detEta[idet][0]+etacut || lvSum.Eta()>detEta[idet][1]-etacut) continue;
             double mass = 1000.*lvSum.M();

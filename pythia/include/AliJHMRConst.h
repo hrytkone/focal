@@ -53,5 +53,7 @@ extern const double incEtaRange;
 extern double limPhotonEnergyMin, limPhotonEnergyMax;
 
 extern double pi0eff;
+extern double bgeffTrigg[NTRIGGBINS];
+extern double bgeffAssoc[NTRIGGBINS][NASSOCBINS];
 
 #endif

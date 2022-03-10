@@ -9,4 +9,5 @@ STAR-data
 *.zip
 *.pdf
 *.o
+Clusterizer/*.log
 nanoDict*

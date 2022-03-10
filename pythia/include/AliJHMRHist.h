@@ -67,6 +67,9 @@ class AliJHMRHist {
         TH1D *hPi0MassAssocPeak[NTRIGGBINS][NASSOCBINS];
         TH1D *hPi0MassAssocSide[NTRIGGBINS][NASSOCBINS];
 
+        TH1D *hEnergyAsymTrue;
+        TH1D *hEnergyAsymRec;
+
         TDirectory *dirMasses;
         TDirectory *dirCorrMid;
         TDirectory *dirCorrFor;

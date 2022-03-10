@@ -51,3 +51,6 @@ const double incEtaRange = 20.0;
 double limPhotonEnergyMin = 0., limPhotonEnergyMax = 1500.;
 
 double pi0eff = 0.9795;
+double bgeffTrigg[NTRIGGBINS] = {0.821586, 0.888725};
+double bgeffAssoc[NTRIGGBINS][NASSOCBINS] = {{0.414371, 0.309646},
+                                             {0.473806, 0.438502}};

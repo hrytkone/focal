@@ -43,8 +43,8 @@ void processDataSTAR()
 void processDataFoCal()
 {
 	TString fInName[ndata_focal] = {
-        //"/home/heimarry/Simulations/focal-pythia-sim/focal-pp_const-weight.root"
-        "/home/heimarry/Simulations/focal-pythia-sim/focal-pp_test-mass-window.root"
+        "/home/heimarry/Simulations/focal-pythia-sim/focal-pp_const-weight.root"
+        //"/home/heimarry/Simulations/focal-pythia-sim/focal-pp_test-asym.root"
         //"/home/heimarry/Simulations/focal-pythia-sim/2022-02-26_pp-FoCAl_check-delta-phi/output.root"
 	};
 
@@ -239,7 +239,8 @@ void GetScaleFactorsVersion1()
         //st[it] = fPeakTrigg[it]->Integral(massWindowMin, massWindowMax);
         //st[it]    = hMassTrigg[it]->Integral(hMassTrigg[it]->GetXaxis()->FindBin(massWindowMin), hMassTrigg[it]->GetXaxis()->FindBin(massWindowMax)) - fBgTrigg[it]->Integral(massWindowMin, massWindowMax);
         std::cout << "\n\tbin [ " << triggPt[it] << " " << triggPt[it+1] << " ] : \treal=" << nRealTrigg[it] << "\treconst=" << st[it] << "\trec=" << stfit[it] << "\trec/real=" << st[it]/nRealTrigg[it] << std::endl;
-        std::cout << "bg : " << fBgTrigg[it]->Integral(massWindowMin, massWindowMax) << std::endl;
+        std::cout << "\tS/(S+B) : " << fPeakTrigg[it]->Integral(massWindowMin, massWindowMax)/fFitTrigg[it]->Integral(massWindowMin, massWindowMax) << std::endl;
+        //std::cout << "bg : " << fBgTrigg[it]->Integral(massWindowMin, massWindowMax) << std::endl;
         for (int ia = 0; ia < nAssocBins; ia++) {
             double tlow = triggPt[it];
             double tupp = triggPt[it+1];
@@ -254,6 +255,7 @@ void GetScaleFactorsVersion1()
                       << "\talpha=" << alpha[it][ia]
                       << "\tbeta="  << beta[it][ia]
                       << "\tgamma=" << yamma[it][ia] << std::endl;
+            std::cout << "\t\tS/(S+B) : " << fPeakAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/fFitAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax) << std::endl;
         }
     }
 }
@@ -263,8 +265,7 @@ void GetScaleFactorsVersion2()
     for (int it = 0; it < nTriggBins; it++) {
         st[it] = fPeakTrigg[it]->Integral(massWindowMin, massWindowMax);
         //st[it]    = hMassTrigg[it]->Integral(hMassTrigg[it]->GetXaxis()->FindBin(massWindowMin), hMassTrigg[it]->GetXaxis()->FindBin(massWindowMax)) - fBgTrigg[it]->Integral(massWindowMin, massWindowMax);
-        std::cout << "\n\tbin [ " << triggPt[it] << " " << triggPt[it+1] << " ] : \treal=" << nRealTrigg[it] << "\treconst=" << st[it] << "\trec=" << stfit[it] << "\trec/real=" << st[it]/nRealTrigg[it] << std::endl;
-        std::cout << "bg : " << fBgTrigg[it]->Integral(massWindowMin, massWindowMax) << std::endl;
+        std::cout << "\n\tbin [ " << triggPt[it] << " " << triggPt[it+1] << " ] : \treal=" << nRealTrigg[it] << "\treconst=" << st[it] << "\trec/real=" << st[it]/nRealTrigg[it] << std::endl;
         for (int ia = 0; ia < nAssocBins; ia++) {
             double tlow = triggPt[it];
             double tupp = triggPt[it+1];

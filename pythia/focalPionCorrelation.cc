@@ -67,9 +67,9 @@ int main(int argc, char *argv[]) {
     AliJHMRCorr *fCorr = new AliJHMRCorr(fHistos, det);
 
     TClonesArray *arrPhotonFor = new TClonesArray("AliJBaseTrack", 1500);
-    TClonesArray *arrPi0Real = new TClonesArray("AliJBaseTrack", 1500);
-    TClonesArray *arrPi0Peak = new TClonesArray("AliJBaseTrack", 1500);
-    TClonesArray *arrPi0Side = new TClonesArray("AliJBaseTrack", 1500);
+    TClonesArray *arrPi0Real   = new TClonesArray("AliJBaseTrack", 1500);
+    TClonesArray *arrPi0Peak   = new TClonesArray("AliJBaseTrack", 1500);
+    TClonesArray *arrPi0Side   = new TClonesArray("AliJBaseTrack", 1500);
 
     TClonesArray* arrPi0PeakMixed[poolsize];
     TClonesArray* arrPi0SideMixed[poolsize];
@@ -138,9 +138,11 @@ int main(int argc, char *argv[]) {
 
         fCorr->FillPionMasses(arrPhotonFor, binsWithTriggPeak, binsWithTriggSide, det);
         fCorr->FillRealTriggers(arrPi0Real, listTriggReal);
+        fCorr->FillAsymmetry(arrPhotonFor, det);
 
         fCorr->DoCorrelations(arrPi0Real, listTriggReal, listAssocReal, fHistos->hCorrFor, 0);
         fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, listAssocPeak, fHistos->hCorrMassMass, 1);
+        //fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, listAssocPeak, fHistos->hCorrMassMass, 0);
         fCorr->DoCorrelations(arrPi0Side, listTriggSide, listAssocSide, fHistos->hCorrSideSide, 0);
         if (bUseLeading) {
             int isPeakTriggLarger = fCorr->GetLargerTrigg(arrPi0Peak, listTriggPeak, arrPi0Side, listTriggSide);

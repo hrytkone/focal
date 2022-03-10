@@ -1,7 +1,7 @@
 PROGRAM       = focalPionCorrelation
 
 version       = JTKT
-CXX           = g++
+CXX           = /usr/bin/c++
 CXXFLAGS      = -O -Wall -g -Wno-deprecated -D$(version)
 LD            = g++
 LDFLAGS       = -O

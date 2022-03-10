@@ -40,11 +40,12 @@ int AliJHMRCorr::ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0C
     int nCandidate = 0;
     int nPhoton = arrPhoton->GetEntriesFast();
     for (int i = 1; i < nPhoton; i++) {
+        AliJBaseTrack *lv1 = (AliJBaseTrack*)arrPhoton->At(i);
+        if (IsPhotonRemoved(lv1->E())) continue;
         for (int j = 0; j < i; j++) {
-
-            if (AsymmetryCut(arrPhoton, i, j)>0.7) continue;
-
-            AliJBaseTrack lvSum = GetPhotonSumVector(arrPhoton, i, j);
+            AliJBaseTrack *lv2 = (AliJBaseTrack*)arrPhoton->At(j);
+            if (IsPhotonRemoved(lv2->E())) continue;
+            AliJBaseTrack lvSum = GetPhotonSumVector(arrPhoton, lv1, lv2);
             if (lvSum.Eta()<detEta[idet][0]+etacut || lvSum.Eta()>detEta[idet][1]-etacut) continue;
             double mass = 1000.*lvSum.M();
             bool bIsInWindow = bMass ? IsMassWindow(mass) : IsSideband(mass);
@@ -102,7 +103,8 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrig
         if (nAssoc < 1) continue;
 
         //if (bUseWeight) wTrigg = 1./fPhotonAcceptanceEfficiency->Eval(ptTrigg);
-        if (bUseWeight) wTrigg = 1./pi0eff;
+        //if (bUseWeight) wTrigg = 1./pi0eff;
+        if (bUseWeight) wTrigg = (1./pi0eff)*(1./bgeffTrigg[it]);
 
         for (int ia = 0; ia < nAssoc; ia++) {
             int iAssoc = listAssoc[ia];
@@ -116,7 +118,8 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrig
             if (triggPt[iTriggBin] < assocPt[iAssocBin+1]) continue;
 
             //if (bUseWeight) wAssoc = 1./fPhotonAcceptanceEfficiency->Eval(ptAssoc);
-            if (bUseWeight) wAssoc = 1./pi0eff;
+            //if (bUseWeight) wAssoc = 1./pi0eff;
+            if (bUseWeight) wAssoc = (1./pi0eff)*(1./bgeffAssoc[it][ia]);
 
             double dphi = GetDeltaPhi(phiTrigg, phiAssoc);
             double deta = etaTrigg - etaAssoc;
@@ -145,7 +148,8 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> lis
         if (nAssoc < 1) continue;
 
         //if (bUseWeightTrigg) wTrigg = 1./fPhotonAcceptanceEfficiency->Eval(ptTrigg);
-        if (bUseWeightTrigg) wTrigg = 1./pi0eff;
+        //if (bUseWeightTrigg) wTrigg = 1./pi0eff;
+        if (bUseWeightTrigg) wTrigg = (1./pi0eff)*(1./bgeffTrigg[it]);
 
         for (int ia = 0; ia < nAssoc; ia++) {
             int iAssoc = listAssoc[ia];
@@ -159,7 +163,8 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> lis
             if (triggPt[iTriggBin] < assocPt[iAssocBin+1]) continue;
 
             //if (bUseWeightAssoc) wAssoc = 1./fPhotonAcceptanceEfficiency->Eval(ptAssoc);
-            if (bUseWeightAssoc) wAssoc = 1./pi0eff;
+            //if (bUseWeightAssoc) wAssoc = 1./pi0eff;
+            if (bUseWeightAssoc) wAssoc = (1./pi0eff)*(1./bgeffAssoc[it][ia]);
 
             double dphi = GetDeltaPhi(phiTrigg, phiAssoc);
             double deta = etaTrigg - etaAssoc;
@@ -283,18 +288,25 @@ bool AliJHMRCorr::IsPhotonRemoved(double ePhoton)
     return false;
 }
 
-double AliJHMRCorr::AsymmetryCut(TClonesArray *arrPhoton, int iPhoton1, int iPhoton2)
+// Cuts to energy & pT
+bool AliJHMRCorr::IsPhotonRemoved(TClonesArray *arrPhoton, AliJBaseTrack *lv1, AliJBaseTrack *lv2)
 {
-    AliJBaseTrack *lv1 = (AliJBaseTrack*)arrPhoton->At(iPhoton1);
-    AliJBaseTrack *lv2 = (AliJBaseTrack*)arrPhoton->At(iPhoton2);
+    if (lv1->E() < 1. || lv2->E() < 1.) {
+        return false;
+    } else if (lv1->Pt() < 0.1 || lv2->Pt() < 0.1) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+double AliJHMRCorr::GetAsymmetry(TClonesArray *arrPhoton, AliJBaseTrack *lv1, AliJBaseTrack *lv2)
+{
     return TMath::Abs(lv1->E() - lv2->E())/(lv1->E() + lv2->E());
 }
 
-AliJBaseTrack AliJHMRCorr::GetPhotonSumVector(TClonesArray *arrPhoton, int iPhoton1, int iPhoton2)
+AliJBaseTrack AliJHMRCorr::GetPhotonSumVector(TClonesArray *arrPhoton, AliJBaseTrack *lv1, AliJBaseTrack *lv2)
 {
-    AliJBaseTrack *lv1 = (AliJBaseTrack*)arrPhoton->At(iPhoton1);
-    AliJBaseTrack *lv2 = (AliJBaseTrack*)arrPhoton->At(iPhoton2);
-
     AliJBaseTrack lvSum;
     lvSum = ((*lv1) + (*lv2));
 
@@ -342,11 +354,10 @@ void AliJHMRCorr::FillPionMasses(TClonesArray *arrPhoton, int binsWithTriggPeak[
 {
     int nPhoton = arrPhoton->GetEntriesFast();
     for (int i = 1; i < nPhoton; i++) {
+        AliJBaseTrack *lv1 = (AliJBaseTrack*)arrPhoton->At(i);
         for (int j = 0; j < i; j++) {
-
-            if (AsymmetryCut(arrPhoton, i, j)>0.7) continue;
-
-            AliJBaseTrack lvSum = GetPhotonSumVector(arrPhoton, i, j);
+            AliJBaseTrack *lv2 = (AliJBaseTrack*)arrPhoton->At(j);
+            AliJBaseTrack lvSum = GetPhotonSumVector(arrPhoton, lv1, lv2);
             if (lvSum.Eta()<detEta[idet][0]+etacut || lvSum.Eta()>detEta[idet][1]-etacut) continue;
             double mass = 1000.*lvSum.M();
             double pT = lvSum.Pt();
@@ -358,6 +369,26 @@ void AliJHMRCorr::FillPionMasses(TClonesArray *arrPhoton, int binsWithTriggPeak[
                 if (binsWithTriggPeak[it] > 0 && iAssocBin >= 0) histos->hPi0MassAssocPeak[it][iAssocBin]->Fill(mass);
                 if (binsWithTriggSide[it] > 0 && iAssocBin >= 0) histos->hPi0MassAssocSide[it][iAssocBin]->Fill(mass);
             }
+        }
+    }
+}
+
+void AliJHMRCorr::FillAsymmetry(TClonesArray *arrPhoton, detector idet)
+{
+    int nPhoton = arrPhoton->GetEntriesFast();
+    for (int i = 1; i < nPhoton; i++) {
+        AliJBaseTrack *lv1 = (AliJBaseTrack*)arrPhoton->At(i);
+        for (int j = 0; j < i; j++) {
+            AliJBaseTrack *lv2 = (AliJBaseTrack*)arrPhoton->At(j);
+            AliJBaseTrack lvSum = GetPhotonSumVector(arrPhoton, lv1, lv2);
+            if (lvSum.Eta()<detEta[idet][0]+etacut || lvSum.Eta()>detEta[idet][1]-etacut) continue;
+            double mass = 1000.*lvSum.M();
+            if (!IsMassWindow(mass)) continue;
+            double asym = GetAsymmetry(arrPhoton, lv1, lv2);
+            histos->hEnergyAsymRec->Fill(asym);
+            if (lv1->GetLabel()==1 && lv1->GetLabel()==1
+                && lv1->GetMotherID()==lv2->GetMotherID())
+                histos->hEnergyAsymTrue->Fill(asym);
         }
     }
 }

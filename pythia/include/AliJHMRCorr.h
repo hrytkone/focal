@@ -44,8 +44,9 @@ public:
     double PhotonEnergySmearing(double px, double py, double pz);
     void SmearEnergies(TClonesArray * arrParticles);
     bool IsPhotonRemoved(double ePhoton);
-    double AsymmetryCut(TClonesArray *arrPhoton, int iPhoton1, int iPhoton2);
-    AliJBaseTrack GetPhotonSumVector(TClonesArray *arrayPhoton, int iPhoton1, int iPhoton2);
+    bool IsPhotonRemoved(TClonesArray *arrPhoton, AliJBaseTrack *lv1, AliJBaseTrack *lv2);
+    double GetAsymmetry(TClonesArray *arrPhoton, AliJBaseTrack *lv1, AliJBaseTrack *lv2);
+    AliJBaseTrack GetPhotonSumVector(TClonesArray *arrayPhoton, AliJBaseTrack *lv1, AliJBaseTrack *lv2);
     int GetLeadingTriggerIndex(TClonesArray *arrPi0);
     int GetLargerTrigg(TClonesArray *arrPi0Peak, std::vector<int> listTriggPeak, TClonesArray *arrPi0Side, std::vector<int> listTriggSide);
 
@@ -60,6 +61,7 @@ public:
 
     void FillRealTriggers(TClonesArray *arrRealPi0, std::vector<int>& listTrigg);
     void FillPionMasses(TClonesArray *arrPhoton, int binsWithTriggPeak[NTRIGGBINS], int binsWithTriggSide[NTRIGGBINS], detector idet);
+    void FillAsymmetry(TClonesArray *arrPhoton, detector idet);
 
 protected:
 

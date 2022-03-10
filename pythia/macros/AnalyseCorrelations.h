@@ -2,8 +2,8 @@ const int ndata_star = 2;
 const int ndata_focal = 1;
 const int nTriggBins = 2;
 const int nAssocBins = 2;
-//const double triggPt[nTriggBins+1] = {2.0, 2.5, 3.0};
-//const double assocPt[nAssocBins+1] = {1.0, 1.5, 2.0, 2.5};
+//const double triggPt[nTriggBins+1] = {1.0, 2.0, 2.5, 3.0};
+//const double assocPt[nAssocBins+1] = {0.5, 1.0, 1.5, 2.0, 2.5};
 const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
 const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
 
@@ -11,8 +11,8 @@ const double pi0eff = 1./0.988;
 const double pi0br = 1./0.98823;
 //const double pi0eff = 1.;
 
-const double massWindowMin = 120.;
-const double massWindowMax = 150.;
+const double massWindowMin = 110.;
+const double massWindowMax = 160.;
 
 // Input
 int nEvent;

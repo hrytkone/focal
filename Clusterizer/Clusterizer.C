@@ -5,25 +5,29 @@ AliJHMREvent *event;
 
 void Clusterizer(TString simFolder, Int_t njobs)
 {
-    gSystem->Load("/home/heimarry/alice/sw/ubuntu1804_x86-64/AliRoot/master_ROOT6-local3/lib/libpythia6.so");
-    gSystem->Load("/home/heimarry/alice/sw/ubuntu1804_x86-64/AliRoot/master_ROOT6-local3/lib/libAliPythia6.so");
-    gSystem->Load("AliJHMREvent_cxx.so");
+    gSystem->Load("/home/heimarry/alice/sw/ubuntu1804_x86-64/AliRoot/latest/lib/libpythia6.so");
+    gSystem->Load("/home/heimarry/alice/sw/ubuntu1804_x86-64/AliRoot/latest/lib/libAliPythia6.so");
 
     InitCombinedData();
     InitClusterizer();
     CreateClusterMaps();
 
     int nevtot = 0;
-
+    int goodFiles = 0;
     for (Int_t ifolder = 1; ifolder <= njobs; ifolder++) {
         cout << "Processing folder " << Form("%03d", ifolder) << endl;
+
+        TString inputFile = Form("%s/%03d/%s", simFolder.Data(), ifolder, "galice.root");
+        int checkfileFocal = CheckFile(Form("%s/%03d/%s", simFolder.Data(), ifolder, "FOCAL.Hits.root"));
+        int checkfileKine = CheckFile(Form("%s/%03d/%s", simFolder.Data(), ifolder, "Kinematics.root"));
+        if (!checkfileFocal || !checkfileKine) continue;
+        goodFiles++;
 
         TFile * outputFile = fFOCALCluster->CreateOutputFile(Form("%s/clusters_%s_%i.root",
                                                     clusteringOutputFileDir.Data(),
                                                     clusteringParametersTag.Data(),
                                                     ifolder));
 
-        TString inputFile = Form("%s/%03d/%s", simFolder.Data(), ifolder, "galice.root");
         LoadClusterizerHit(inputFile);
 
         int nev = fRunLoader->GetNumberOfEvents();
@@ -51,12 +55,25 @@ void Clusterizer(TString simFolder, Int_t njobs)
     delete coarseClusterMap;
     */
 
-    cout << "DONE" << endl;
+    cout << "===========================DONE==========================" << endl;
+    cout << goodFiles << "/" << njobs << " GOOD FILES AND CLUSTERIZED" << endl;
+    cout << "=========================================================" << endl;
+
 }
 
 //******************************************************************************
 //      FUNCTIONS
 //******************************************************************************
+
+int CheckFile(TString filename)
+{
+    TFile file(filename.Data());
+    if (file.TestBit(TFile::kRecovered)) {
+        cout << "File not working : " << filename << endl;
+        return 0;
+    }
+    return 1;
+}
 
 void InitCombinedData()
 {
@@ -74,8 +91,6 @@ void SaveCombinedOutput()
 
 void GetKinematics(int nevtot)
 {
-    //event->SetHeader(nevtot, 20210708, 200);
-
     TTree* treeH = fFOCALLoader->TreeH();
     TTree* treeK = fRunLoader->TreeK();
     AliStack *stack = fRunLoader->Stack();
@@ -165,6 +180,7 @@ void LoadClusterizerHit(TString inputfile)
     if (!fRunLoader) {
         cout << "ERROR : RunLoader not found for " << inputfile.Data() << endl;
     }
+
 
     if (!fRunLoader->GetAliRun()) fRunLoader->LoadgAlice();
     if (!fRunLoader->TreeE()) fRunLoader->LoadHeader();

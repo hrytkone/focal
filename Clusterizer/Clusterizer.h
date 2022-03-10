@@ -4,9 +4,8 @@
 
 const TString detectorGeometryFile      = "geometry.txt";
 const TString clusterizerParametersFile = "parameters.txt";
-//const TString simFolder                 = "/home/heimarry/Simulations/focal_full-sim/focal-grid/test_n100";
 const TString clusteringOutputFileDir   = "results";
-const TString clusteringParametersTag   = "pi0";
+const TString clusteringParametersTag   = "pi0_1";
 
 // Whether should clusterizer provide debug messages
 bool clusteringDebugMode = false;
@@ -81,6 +80,7 @@ Int_t conv_flag[4];
 //      FUNCTIONS
 //******************************************************************************
 
+int CheckFile(TString filename);
 void InitCombinedData();
 void SaveCombinedOutput(); // Save kinematics & clusterizer results to same file
 void GetKinematics(int nevtot);

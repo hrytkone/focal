@@ -8,6 +8,9 @@ pythia/macros/STAR-real-pi0-corr
 STAR-data
 *.zip
 *.pdf
+*.eps
 *.o
 Clusterizer/*.log
 nanoDict*
+*_cxx*
+Clusterizer/results

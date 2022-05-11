@@ -1,7 +1,7 @@
 #include "AliJHMRConst.h"
 
 const double detEta[NDET][2] = {
-    {3.2, 5.8},
+    {3.5, 5.8},
 	{2.6, 4.},
 	{-0.8, 0.8},
 	{-1000., 1000.}
@@ -19,13 +19,24 @@ const TString accFunc[NDET] = {
 //double assocPt[NASSOCBINS+1] = {0.5, 1.0, 1.5, 2.0, 2.5};
 
 // FoCal bins
-double triggPt[NTRIGGBINS+1] = {4.0, 8.0, 20.0};
-double assocPt[NASSOCBINS+1] = {2.0, 3.0, 4.0};
+//double triggPt[NTRIGGBINS+1] = {4.0, 8.0, 20.0};
+//double assocPt[NASSOCBINS+1] = {2.0, 3.0, 4.0};
+double triggPt[NTRIGGBINS+1] = {4.0, 8.0, 10.0, 15.0, 20.0};
+double assocPt[NASSOCBINS+1] = {2.0, 3.0, 4.0, 8.0, 10.0, 15.0};
 
-extern const double massWindowMin = 110.;
-extern const double massWindowMax = 160.;
+const double massWindowMin = 110.;
+const double massWindowMax = 160.;
+const double massSigmaTrigg[NTRIGGBINS] = {19.3765, 15.2168, 15.0705, 14.2438};
+const double massSigmaAssoc[NASSOCBINS] = {21.0777, 29.3914, 19.3765, 15.2168, 15.0705};
+const double massPeakPosTrigg[NTRIGGBINS] = {135.685, 140.909, 141.813, 143.411};
+const double massPeakPosAssoc[NASSOCBINS] = {139.129, 130., 135.685, 140.909, 141.813};
+
+const double pi0eff = 0.9795;
+const double effCorrTrigg[NTRIGGBINS] = {0.221901, 0.409597, 0.440636, 0.42808};
+const double effCorrAssoc[NASSOCBINS] = {0.18273, 0.217738, 0.221901, 0.409597, 0.440636};
 
 const double etacut = 0.2;
+const double asymcut = 0.7;
 
 const double kJPi = TMath::Pi();
 const double kJTwoPi = 2 * TMath::Pi();
@@ -49,8 +60,3 @@ const double logBW = (log(limMax) - log(limMin))/NINCPTBIN;
 
 const double incEtaRange = 20.0;
 double limPhotonEnergyMin = 0., limPhotonEnergyMax = 1500.;
-
-double pi0eff = 0.9795;
-double bgeffTrigg[NTRIGGBINS] = {0.821586, 0.888725};
-double bgeffAssoc[NTRIGGBINS][NASSOCBINS] = {{0.414371, 0.309646},
-                                             {0.473806, 0.438502}};

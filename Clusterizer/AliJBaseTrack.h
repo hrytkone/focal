@@ -19,16 +19,15 @@
 #ifndef ALIJBASETRACK_H
 #define ALIJBASETRACK_H
 
-#ifndef ROOT_TObject
 #include <TObject.h>
 #include <TString.h>
-#endif
-
 #include <iostream>
 #include <TLorentzVector.h>
 #include <TMath.h>
 
 using namespace std;
+
+class AliJHMREvent;
 
 class AliJBaseTrack : public TLorentzVector {
     public:
@@ -109,7 +108,7 @@ class AliJBaseTrack : public TLorentzVector {
         Int_t         fMotherID;          //   //particle motherID
         Int_t         fMotherType;        //   //mother particle type
 
-        ClassDef(AliJBaseTrack,2)
+        ClassDef(AliJBaseTrack, 2)
 };
 
 #endif

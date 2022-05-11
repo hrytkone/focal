@@ -31,17 +31,28 @@ class AliJHMRGeantCatalyst {
 			inputfile(infile),
 			histos(inhistos) {
                 fInputListCluster = new TClonesArray("AliJBaseTrack", 1500);
-				fInputListTrack   = new TClonesArray("AliJBaseTrack", 1500);
+                fInputListHadron = new TClonesArray("AliJBaseTrack", 1500);
+				fInputListPi0 = new TClonesArray("AliJBaseTrack", 1500);
+				fInputListPhoton = new TClonesArray("AliJBaseTrack", 1500);
                 fEvent = 0;
                 fClusters = 0;
                 fTracks = 0;
 		}
 
+        void InitializeEvent(){
+            fInputListCluster->Clear("C");
+            fInputListHadron->Clear("C");
+            fInputListPi0->Clear("C");
+            fInputListPhoton->Clear("C");
+            UniqueID=0;
+        }
+
         Int_t LoadInput();
         Int_t GetNumberOfEvents() { return fTree->GetEntries(); }
         void GetEvent(int iev) { fTree->GetEntry(iev); }
+        void GetParticles();
+        TClonesArray * GetParticleList(particleType itype);
         TClonesArray * GetClusters();
-        TClonesArray * GetPi0True();
 
         int UniqueID;
 
@@ -54,10 +65,13 @@ class AliJHMRGeantCatalyst {
         AliJHMREvent *fEvent;
 
 		AliJHMRHist *histos;
-        TClonesArray *fClusters;
         TClonesArray *fTracks;
+        TClonesArray *fClusters;
         TClonesArray *fInputListCluster;
-        TClonesArray *fInputListTrack;
+        TClonesArray *fInputListHadron;
+		TClonesArray *fInputListPi0;
+		TClonesArray *fInputListPhoton;
+
 };
 
 #endif

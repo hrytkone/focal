@@ -10,14 +10,42 @@ bool AliJHMRCorr::IsDetAcceptance(double eta, detector labelDet)
     return (eta > detEta[labelDet][0] && eta < detEta[labelDet][1]) ? true : false;
 }
 
+// Fixed mass window (1. check for full sim)
+// done in reconstruction phase
 bool AliJHMRCorr::IsMassWindow(double mass)
 {
-    return (mass > massWindowMin && mass < massWindowMax) ? true : false;
+    if (fIsFullSim) {
+        return (mass > massWindowMin-60. && mass < massWindowMax+80.) ? true : false;
+    } else {
+        return (mass > massWindowMin && mass < massWindowMax) ? true : false;
+    }
+    return false;
+}
+
+// 2. check for full sim, use mass window of 3sigmas (in full sim), different for each pt bin
+// done in trigger-assoc division phase
+bool AliJHMRCorr::IsMassWindow(double mass, int ibin, bool isTriggBin)
+{
+    if (isTriggBin) {
+        if (mass > massPeakPosTrigg[ibin]-3.*massSigmaTrigg[ibin] && mass < massPeakPosTrigg[ibin]+3.*massSigmaTrigg[ibin])
+            return true;
+        else
+            return false;
+    } else {
+        if (mass > massPeakPosAssoc[ibin]-3.*massSigmaAssoc[ibin] && mass < massPeakPosAssoc[ibin]+3.*massSigmaAssoc[ibin])
+            return true;
+        else
+            return false;
+    }
+    return false;
 }
 
 bool AliJHMRCorr::IsSideband(double mass)
 {
-    return ((mass > 40. && mass < 80.) || (mass > 210. && mass < 280.)) ? true : false;
+    if (fIsFullSim)
+        return (mass > 275. && mass < 375.) ? true : false;
+    else
+        return ((mass > 40. && mass < 80.) || (mass > 210. && mass < 280.)) ? true : false;
 }
 
 // Return 1 if trigger from peak has larger pT than trigger from sideband, 0 if sideband
@@ -45,6 +73,7 @@ int AliJHMRCorr::ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0C
         for (int j = 0; j < i; j++) {
             AliJBaseTrack *lv2 = (AliJBaseTrack*)arrPhoton->At(j);
             if (IsPhotonRemoved(lv2->E())) continue;
+            if (fIsFullSim && GetAsymmetry(arrPhoton, lv1, lv2)>asymcut) continue;
             AliJBaseTrack lvSum = GetPhotonSumVector(arrPhoton, lv1, lv2);
             if (lvSum.Eta()<detEta[idet][0]+etacut || lvSum.Eta()>detEta[idet][1]-etacut) continue;
             double mass = 1000.*lvSum.M();
@@ -70,15 +99,16 @@ void AliJHMRCorr::GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector
     for (int i = 0; i < nPi0Candidates; i++) {
         AliJBaseTrack *lvPion = (AliJBaseTrack*)arrPi0Candidates->At(i);
         double pT = lvPion->Pt();
+        double mass = 1000.*lvPion->M();
         int iTrigg = GetBin(triggPt, NTRIGGBINS, pT);
         int iAssoc = GetBin(assocPt, NASSOCBINS, pT);
         if (bUseLeading) {
             if (i != iLeadingTrigg && iAssoc >= 0) listAssoc.push_back(i);
         } else {
-            if (iTrigg >= 0) listTrigg.push_back(i);
-            if (iAssoc >= 0) listAssoc.push_back(i);
+            if (iTrigg >= 0 && IsMassWindow(mass, iTrigg, 1)) listTrigg.push_back(i);
+            if (iAssoc >= 0 && IsMassWindow(mass, iAssoc, 0)) listAssoc.push_back(i);
         }
-        if (iTrigg >= 0) binsWithTrigg[iTrigg]++;
+        if (iTrigg >= 0 && IsMassWindow(mass, iTrigg, 1)) binsWithTrigg[iTrigg]++;
     }
 }
 
@@ -103,8 +133,8 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrig
         if (nAssoc < 1) continue;
 
         //if (bUseWeight) wTrigg = 1./fPhotonAcceptanceEfficiency->Eval(ptTrigg);
-        //if (bUseWeight) wTrigg = 1./pi0eff;
-        if (bUseWeight) wTrigg = (1./pi0eff)*(1./bgeffTrigg[it]);
+        if (bUseWeight) wTrigg = 1./pi0eff;
+        //if (bUseWeight) wTrigg = 1./effCorrTrigg[iTriggBin];
 
         for (int ia = 0; ia < nAssoc; ia++) {
             int iAssoc = listAssoc[ia];
@@ -118,8 +148,8 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrig
             if (triggPt[iTriggBin] < assocPt[iAssocBin+1]) continue;
 
             //if (bUseWeight) wAssoc = 1./fPhotonAcceptanceEfficiency->Eval(ptAssoc);
-            //if (bUseWeight) wAssoc = 1./pi0eff;
-            if (bUseWeight) wAssoc = (1./pi0eff)*(1./bgeffAssoc[it][ia]);
+            if (bUseWeight) wAssoc = 1./pi0eff;
+            //if (bUseWeight) wAssoc = 1./effCorrAssoc[iAssocBin];
 
             double dphi = GetDeltaPhi(phiTrigg, phiAssoc);
             double deta = etaTrigg - etaAssoc;
@@ -148,8 +178,8 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> lis
         if (nAssoc < 1) continue;
 
         //if (bUseWeightTrigg) wTrigg = 1./fPhotonAcceptanceEfficiency->Eval(ptTrigg);
-        //if (bUseWeightTrigg) wTrigg = 1./pi0eff;
-        if (bUseWeightTrigg) wTrigg = (1./pi0eff)*(1./bgeffTrigg[it]);
+        if (bUseWeightTrigg) wTrigg = 1./pi0eff;
+        //if (bUseWeightTrigg) wTrigg = 1./effCorrTrigg[iTriggBin];
 
         for (int ia = 0; ia < nAssoc; ia++) {
             int iAssoc = listAssoc[ia];
@@ -163,8 +193,8 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> lis
             if (triggPt[iTriggBin] < assocPt[iAssocBin+1]) continue;
 
             //if (bUseWeightAssoc) wAssoc = 1./fPhotonAcceptanceEfficiency->Eval(ptAssoc);
-            //if (bUseWeightAssoc) wAssoc = 1./pi0eff;
-            if (bUseWeightAssoc) wAssoc = (1./pi0eff)*(1./bgeffAssoc[it][ia]);
+            if (bUseWeightAssoc) wAssoc = 1./pi0eff;
+            //if (bUseWeightAssoc) wAssoc = 1./effCorrAssoc[iAssocBin];
 
             double dphi = GetDeltaPhi(phiTrigg, phiAssoc);
             double deta = etaTrigg - etaAssoc;
@@ -355,8 +385,11 @@ void AliJHMRCorr::FillPionMasses(TClonesArray *arrPhoton, int binsWithTriggPeak[
     int nPhoton = arrPhoton->GetEntriesFast();
     for (int i = 1; i < nPhoton; i++) {
         AliJBaseTrack *lv1 = (AliJBaseTrack*)arrPhoton->At(i);
+        if (IsPhotonRemoved(lv1->E())) continue;
         for (int j = 0; j < i; j++) {
             AliJBaseTrack *lv2 = (AliJBaseTrack*)arrPhoton->At(j);
+            if (GetAsymmetry(arrPhoton, lv1, lv2)>asymcut) continue;
+            if (IsPhotonRemoved(lv2->E())) continue;
             AliJBaseTrack lvSum = GetPhotonSumVector(arrPhoton, lv1, lv2);
             if (lvSum.Eta()<detEta[idet][0]+etacut || lvSum.Eta()>detEta[idet][1]-etacut) continue;
             double mass = 1000.*lvSum.M();
@@ -369,6 +402,25 @@ void AliJHMRCorr::FillPionMasses(TClonesArray *arrPhoton, int binsWithTriggPeak[
                 if (binsWithTriggPeak[it] > 0 && iAssocBin >= 0) histos->hPi0MassAssocPeak[it][iAssocBin]->Fill(mass);
                 if (binsWithTriggSide[it] > 0 && iAssocBin >= 0) histos->hPi0MassAssocSide[it][iAssocBin]->Fill(mass);
             }
+        }
+    }
+}
+
+// Fill true pi0 mass for check
+void AliJHMRCorr::FillPionMassesTrue(TClonesArray *arrPi0, int binsWithTriggReal[NTRIGGBINS], detector idet)
+{
+    int nPi0 = arrPi0->GetEntriesFast();
+    for (int i = 1; i < nPi0; i++) {
+        AliJBaseTrack *lvPi0 = (AliJBaseTrack*)arrPi0->At(i);
+        if (lvPi0->Eta()<detEta[idet][0]+etacut || lvPi0->Eta()>detEta[idet][1]-etacut) continue;
+        double mass = 1000.*lvPi0->M();
+        double pT = lvPi0->Pt();
+        int iTriggBin = GetBin(triggPt, NTRIGGBINS, pT);
+        int iAssocBin = GetBin(assocPt, NASSOCBINS, pT);
+        if (iTriggBin >= 0) histos->hPi0MassTrigg[iTriggBin]->Fill(mass);
+        for (int it = 0; it < NTRIGGBINS; it++) {
+            if (triggPt[it] < assocPt[iAssocBin+1]) continue;
+            if (binsWithTriggReal[it] > 0 && iAssocBin >= 0) histos->hPi0MassAssocPeak[it][iAssocBin]->Fill(mass);
         }
     }
 }

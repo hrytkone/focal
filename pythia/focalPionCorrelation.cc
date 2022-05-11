@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
     AliJHMRPythiaCatalyst *fCatalyst = new AliJHMRPythiaCatalyst(pythia.event, fHistos);
     AliJHMRGeantCatalyst *fCatalystG = new AliJHMRGeantCatalyst(siminput, fHistos);
 
-    AliJHMRCorr *fCorr = new AliJHMRCorr(fHistos, det);
+    AliJHMRCorr *fCorr = new AliJHMRCorr(fHistos, det, bUseSim);
 
     TClonesArray *arrPhotonFor = new TClonesArray("AliJBaseTrack", 1500);
     TClonesArray *arrPi0Real   = new TClonesArray("AliJBaseTrack", 1500);
@@ -105,9 +105,13 @@ int main(int argc, char *argv[]) {
             std::cout << "\nEvent " << iEvent << std::endl;
 
         if (bUseSim) { // Get stuff from detector simulation file
+            if (iEvent%100==0) cout << "event " << iEvent << "/" << nEvents << endl;
             fCatalystG->GetEvent(iEvent);
+            fCatalystG->InitializeEvent();
+            fCatalystG->GetParticles();
+            arrPi0Real   = fCatalystG->GetParticleList(kJPi0);
             arrPhotonFor = fCatalystG->GetClusters();
-            arrPi0Real   = fCatalystG->GetPi0True();
+            //arrPhotonFor = fCatalystG->GetParticleList(kJDecayPhoton);
         } else { // Get stuff from pythia
             if ( !pythia.next() ) continue;
             fCatalyst->InitializeEvent();
@@ -137,6 +141,7 @@ int main(int argc, char *argv[]) {
         fCorr->GetTriggAssocLists(arrPi0Side, listTriggSide, listAssocSide, binsWithTriggSide, bUseLeading);
 
         fCorr->FillPionMasses(arrPhotonFor, binsWithTriggPeak, binsWithTriggSide, det);
+        //fCorr->FillPionMassesTrue(arrPi0Real, binsWithTriggReal, det);
         fCorr->FillRealTriggers(arrPi0Real, listTriggReal);
         fCorr->FillAsymmetry(arrPhotonFor, det);
 
@@ -160,28 +165,34 @@ int main(int argc, char *argv[]) {
         fCorr->ConstructTrueCorrComponents(arrPi0Peak, listTriggPeak, listAssocPeak, 0);
 
         // Mixed event : take triggers from this event, associated from previous
-        if (iEvent >= poolsize) {
-            for (int ipool = 0; ipool < poolsize; ipool++) {
-                std::vector<int> listTriggPeakMixed, listTriggSideMixed, listAssocPeakMixed, listAssocSideMixed;
-                int binsWithTriggPeakMixed[NTRIGGBINS+1] = {0}, binsWithTriggSideMixed[NTRIGGBINS+1] = {0};
-                fCorr->GetTriggAssocLists(arrPi0PeakMixed[ipool], listTriggPeakMixed, listAssocPeakMixed, binsWithTriggPeakMixed, bUseLeading);
-                fCorr->GetTriggAssocLists(arrPi0SideMixed[ipool], listTriggSideMixed, listAssocSideMixed, binsWithTriggSideMixed, bUseLeading);
-                fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0PeakMixed[ipool], listAssocPeakMixed, fHistos->hCorrMassMassMixed, 1, 1);
-                fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0SideMixed[ipool], listAssocSideMixed, fHistos->hCorrSideSideMixed, 0, 0);
-                fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0SideMixed[ipool], listAssocSideMixed, fHistos->hCorrMassSideMixed, 1, 0);
-                fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0PeakMixed[ipool], listAssocPeakMixed, fHistos->hCorrSideMassMixed, 0, 1);
+        if (poolsize > 0) {
+            if (iEvent >= poolsize) {
+                for (int ipool = 0; ipool < poolsize; ipool++) {
+                    std::vector<int> listTriggPeakMixed, listTriggSideMixed, listAssocPeakMixed, listAssocSideMixed;
+                    int binsWithTriggPeakMixed[NTRIGGBINS+1] = {0}, binsWithTriggSideMixed[NTRIGGBINS+1] = {0};
+                    fCorr->GetTriggAssocLists(arrPi0PeakMixed[ipool], listTriggPeakMixed, listAssocPeakMixed, binsWithTriggPeakMixed, bUseLeading);
+                    fCorr->GetTriggAssocLists(arrPi0SideMixed[ipool], listTriggSideMixed, listAssocSideMixed, binsWithTriggSideMixed, bUseLeading);
+                    fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0PeakMixed[ipool], listAssocPeakMixed, fHistos->hCorrMassMassMixed, 0, 0);
+                    //fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0PeakMixed[ipool], listAssocPeakMixed, fHistos->hCorrMassMassMixed, 1, 1);
+                    fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0SideMixed[ipool], listAssocSideMixed, fHistos->hCorrSideSideMixed, 0, 0);
+                    //fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0SideMixed[ipool], listAssocSideMixed, fHistos->hCorrSideSideMixed, 0, 0);
+                    fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0SideMixed[ipool], listAssocSideMixed, fHistos->hCorrMassSideMixed, 0, 0);
+                    //fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0SideMixed[ipool], listAssocSideMixed, fHistos->hCorrMassSideMixed, 1, 0);
+                    fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0PeakMixed[ipool], listAssocPeakMixed, fHistos->hCorrSideMassMixed, 0, 0);
+                    //fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0PeakMixed[ipool], listAssocPeakMixed, fHistos->hCorrSideMassMixed, 0, 1);
 
+                }
+                // Remove the first from the pool and add new array to the pool
+                for (int ipool = 0; ipool < poolsize-1; ipool++) {
+                    *arrPi0PeakMixed[ipool] = *arrPi0PeakMixed[ipool+1];
+                    *arrPi0SideMixed[ipool] = *arrPi0SideMixed[ipool+1];
+                }
+                *arrPi0PeakMixed[poolsize-1] = *arrPi0Peak;
+                *arrPi0SideMixed[poolsize-1] = *arrPi0Side;
+            } else { // Create pools
+                *arrPi0PeakMixed[iEvent] = *arrPi0Peak;
+                *arrPi0SideMixed[iEvent] = *arrPi0Side;
             }
-            // Remove the first from the pool and add new array to the pool
-            for (int ipool = 0; ipool < poolsize-1; ipool++) {
-                *arrPi0PeakMixed[ipool] = *arrPi0PeakMixed[ipool+1];
-                *arrPi0SideMixed[ipool] = *arrPi0SideMixed[ipool+1];
-            }
-            *arrPi0PeakMixed[poolsize-1] = *arrPi0Peak;
-            *arrPi0SideMixed[poolsize-1] = *arrPi0Side;
-        } else { // Create pools
-            *arrPi0PeakMixed[iEvent] = *arrPi0Peak;
-            *arrPi0SideMixed[iEvent] = *arrPi0Side;
         }
 
         arrPhotonFor->Clear("C");

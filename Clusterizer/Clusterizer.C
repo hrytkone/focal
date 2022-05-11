@@ -31,6 +31,7 @@ void Clusterizer(TString simFolder, Int_t njobs)
         LoadClusterizerHit(inputFile);
 
         int nev = fRunLoader->GetNumberOfEvents();
+        //int nev = 10;
         cout << "\tN EVENTS : " << nev << endl;
         for (int ievt = 0; ievt < nev; ievt++) {
             LoadEvent(simFolder, ifolder, ievt);
@@ -67,9 +68,18 @@ void Clusterizer(TString simFolder, Int_t njobs)
 
 int CheckFile(TString filename)
 {
+    if (gSystem->AccessPathName(filename.Data())) {
+        cout << "!!!" << endl;
+        cout << "FILE NOT FOUND : " << filename << endl;
+        cout << "!!!" << endl;
+        return 0;
+    }
+
     TFile file(filename.Data());
     if (file.TestBit(TFile::kRecovered)) {
-        cout << "File not working : " << filename << endl;
+        cout << "!!!" << endl;
+        cout << "FILE NOT WORKING : " << filename << endl;
+        cout << "!!!" << endl;
         return 0;
     }
     return 1;
@@ -80,6 +90,7 @@ void InitCombinedData()
     outfile = TFile::Open(Form("%s/output.root", clusteringOutputFileDir.Data()), "RECREATE");
     tree = new TTree("Run", "MC and cluster data for FoCal");
     event = new AliJHMREvent();
+    event->InitEvent();
     tree->Branch("Events", &event, 32000, 2);
 }
 
@@ -95,7 +106,8 @@ void GetKinematics(int nevtot)
     TTree* treeK = fRunLoader->TreeK();
     AliStack *stack = fRunLoader->Stack();
 
-    int npart = stack->GetNtrack();
+    //int npart = stack->GetNtrack();
+    int npart = stack->GetNprimary(); // Save only primaries
     for (int ipart = 0; ipart < npart; ipart++) {
         auto track = stack->Particle(ipart);
         int pdg = track->GetPdgCode();
@@ -103,16 +115,21 @@ void GetKinematics(int nevtot)
             //std::cout << "Event " << nevtot << " : Particle with id " << pdg << " not found, skip" << std::endl;
             continue;
         }
-        double charge = TDatabasePDG::Instance()->GetParticle(pdg)->Charge();
-        double px = track->Px();
-        double py = track->Py();
-        double pz = track->Pz();
-        double vx = track->Vx();
-        double vy = track->Vy();
-        double vz = track->Vz();
-        double e = track->Energy();
-        double eta = track->Eta();
-        event->AddTrack(pdg, px, py, pz, e, vx, vy, vz, charge, eta);
+        bool isPrimary = stack->IsPhysicalPrimary(ipart);
+        Float_t charge = TDatabasePDG::Instance()->GetParticle(pdg)->Charge();
+        Float_t px = track->Px();
+        Float_t py = track->Py();
+        Float_t pz = track->Pz();
+        Float_t e = track->Energy();
+        Int_t motherId = track->GetFirstMother();
+        Int_t motherPdg = -1;
+        if (motherId!=-1) {
+            auto motherTrack = stack->Particle(motherId);
+            motherPdg = motherTrack->GetPdgCode();
+        }
+        Float_t mass = TMath::Sqrt(e*e + track->P()*track->P());
+        //if (pdg==22) cout << "PDG 22, isPrimary=" << isPrimary << ", mass=" << mass << ", mass(true)=" << track->GetMass() << ", status=" << track->GetStatusCode() << ", mother=" << motherPdg << ", isSecondaryFromWeakDecay=" << stack->IsSecondaryFromWeakDecay(ipart) << ", IsSecondaryFromMaterial=" << stack->IsSecondaryFromMaterial(ipart) << endl;
+        event->AddTrack(pdg, px, py, pz, e, charge, ipart, motherId, motherPdg, isPrimary);
     }
 }
 
@@ -826,7 +843,17 @@ void Clusterize(int ifolder, int ievt)
         double clustZ = cluster->Z();
         double clustE = cluster->E();
         double clustEHCAL = cluster->GetHCALEnergy();
-        event->AddCluster(clustX, clustY, clustZ, clustE, clustEHCAL);
+        float segE[AliFOCALCluster::N_DEPTH_FIELDS];
+        float seedE[AliFOCALCluster::N_DEPTH_FIELDS];
+        float width1[AliFOCALCluster::N_DEPTH_FIELDS];
+        float width2[AliFOCALCluster::N_DEPTH_FIELDS];
+        for (int i=0; i<AliFOCALCluster::N_DEPTH_FIELDS; i++) {
+            segE[i] = cluster->GetSegmentEnergy(i);
+            seedE[i] = cluster->GetSeedEnergy(i);
+            width1[i] = cluster->GetWidth1(i);
+            width2[i] = cluster->GetWidth2(i);
+        }
+        event->AddCluster(clustX, clustY, clustZ, clustE, clustEHCAL, segE, seedE, width1, width2);
     }
     clusters->Compress();
 
@@ -841,6 +868,8 @@ void Clusterize(int ifolder, int ievt)
     // Save clusters to output ttree
     fFOCALCluster->FillClusterTree();
     fFOCALCluster->SaveEventOutput(Form("Event%i",ievt));
+    if (saveFigures)
+        fFOCALCluster->SaveImage(Form("figs/event_%02i", ievt));
 }
 
 Float_t Calibration(Float_t signal, Int_t segment, Float_t * pars, bool calibrationRun, bool debug) {

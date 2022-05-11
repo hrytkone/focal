@@ -29,8 +29,8 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet) {
     hPhotonEta = new TH1D("hPhotonEta", "hPhotonEta", NINCETABIN, -incEtaRange/2., incEtaRange/2.); hPhotonEta->Sumw2();
     hChargedHadronEta = new TH1D("hChargedHadronEta", "hChargedHadronEta", NINCETABIN, -incEtaRange/2., incEtaRange/2.); hChargedHadronEta->Sumw2();
 
-    hEnergyAsymTrue = new TH1D("hEnergyAsymTrue", "hEnergyAsymTrue", 100, -1., 1.); hEnergyAsymTrue->Sumw2();
-    hEnergyAsymRec = new TH1D("hEnergyAsymRec", "hEnergyAsymRec", 100, -1., 1.); hEnergyAsymRec->Sumw2();
+    hEnergyAsymTrue = new TH1D("hEnergyAsymTrue", "hEnergyAsymTrue", 100, 0., 1.); hEnergyAsymTrue->Sumw2();
+    hEnergyAsymRec = new TH1D("hEnergyAsymRec", "hEnergyAsymRec", 100, 0., 1.); hEnergyAsymRec->Sumw2();
 
     // Correlation and mass histograms
     dirMasses = output->mkdir("Masses");

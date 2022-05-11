@@ -5,11 +5,11 @@ using namespace std;
 
 void AliJHMRPythiaCatalyst::GetParticles(detector idet) {
 
+    double etaMin = detEta[idet][0];
+    double etaMax = detEta[idet][1];
 	for (int partIdx = 0; partIdx < event.size(); partIdx++) {
 
 		double trEta = event[partIdx].eta();
-        double etaMin = detEta[idet][0];
-        double etaMax = detEta[idet][1];
 		if( trEta < etaMin || trEta > etaMax ) continue;
 
 		lvParticle.SetPxPyPzE(event[partIdx].px(), event[partIdx].py(), event[partIdx].pz(), event[partIdx].e() );

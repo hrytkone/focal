@@ -5,8 +5,9 @@
 #include "TString.h"
 
 #define NDET 4
-#define NTRIGGBINS 2
-#define NASSOCBINS 2
+#define NTRIGGBINS 4
+#define NASSOCBINS 5
+#define NMASSBINS 6
 #define NINCPTBIN 150
 #define NINCETABIN 150
 #define NPHOTONENERGYBIN 150
@@ -14,10 +15,23 @@
 enum particleType { kJHadron, kJPi0, kJDecayPhoton, kJRecPi0 };
 enum detector { kJFoCal, kJSTAR, kJTracker, kJFull };
 
+// For fixed mass window
 extern const double massWindowMin;
 extern const double massWindowMax;
 
+// mass peak sigmas & peak positions for each pT bin
+// DEPENDS ON ETA AND ASYM CUTS
+extern const double massSigmaTrigg[NTRIGGBINS];
+extern const double massSigmaAssoc[NASSOCBINS];
+extern const double massPeakPosTrigg[NTRIGGBINS];
+extern const double massPeakPosAssoc[NASSOCBINS];
+
+extern const double pi0eff; // FOR MC SIMULATION
+extern const double effCorrTrigg[NTRIGGBINS]; // FOR GEANT SIMUALTION
+extern const double effCorrAssoc[NASSOCBINS]; // FOR GEANT SIMUALTION
+
 extern const double etacut;
+extern const double asymcut;
 
 extern const double detEta[NDET][2];
 extern const TString accFunc[NDET];
@@ -51,9 +65,5 @@ extern const double incEtaRange;
 
 //extern const int nPhotonEnergyBin = 150;
 extern double limPhotonEnergyMin, limPhotonEnergyMax;
-
-extern double pi0eff;
-extern double bgeffTrigg[NTRIGGBINS];
-extern double bgeffAssoc[NTRIGGBINS][NASSOCBINS];
 
 #endif

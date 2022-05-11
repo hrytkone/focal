@@ -27,12 +27,14 @@ class AliJHMRCorr {
 
 public:
 
-    AliJHMRCorr(AliJHMRHist *inhistos, detector det) :
+    AliJHMRCorr(AliJHMRHist *inhistos, detector det, bool isFullSim) :
         histos(inhistos) {
             fPhotonEfficiency = new TF1("fPhotonEfficiency", "TMath::Exp(-3.20093/x)"); // Parameters from fit to efficiency (PhotonEfficiency.C)
             fPhotonAcceptanceEfficiency = new TF1("fPhotonAcceptanceEfficiency", accFunc[det].Data()); // Parameters from fit (CheckMissingPionsRatio.C)
             std::cout << "Using acceptance function " << accFunc[det].Data() << std::endl;
             fRand = new TRandom3();
+            fIsFullSim = isFullSim;
+            cout << "Using full sim : " << fIsFullSim << endl;
         }
 
     virtual ~AliJHMRCorr(){ }
@@ -57,13 +59,17 @@ public:
     void GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector<int>& listTrigg, std::vector<int>& listAssoc, int *binsWithTrigg, bool bUseLeading);
 
     bool IsMassWindow(double mass);
+    bool IsMassWindow(double mass, int ibin, bool isTriggBin);
     bool IsSideband(double mass);
 
     void FillRealTriggers(TClonesArray *arrRealPi0, std::vector<int>& listTrigg);
     void FillPionMasses(TClonesArray *arrPhoton, int binsWithTriggPeak[NTRIGGBINS], int binsWithTriggSide[NTRIGGBINS], detector idet);
+    void FillPionMassesTrue(TClonesArray *arrPi0, int binsWithTriggReal[NTRIGGBINS], detector idet);
     void FillAsymmetry(TClonesArray *arrPhoton, detector idet);
 
 protected:
+
+    bool fIsFullSim; // choose if data is pythia monte carlo data or from geant simulation
 
     TF1 *fPhotonEfficiency;
     TF1 *fPhotonAcceptanceEfficiency;

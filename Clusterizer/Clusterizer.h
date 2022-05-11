@@ -5,7 +5,9 @@
 const TString detectorGeometryFile      = "geometry.txt";
 const TString clusterizerParametersFile = "parameters.txt";
 const TString clusteringOutputFileDir   = "results";
-const TString clusteringParametersTag   = "pi0_1";
+const TString clusteringParametersTag   = "pi0";
+
+bool saveFigures = false;
 
 // Whether should clusterizer provide debug messages
 bool clusteringDebugMode = false;

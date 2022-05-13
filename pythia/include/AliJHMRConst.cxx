@@ -1,7 +1,7 @@
 #include "AliJHMRConst.h"
 
 const double detEta[NDET][2] = {
-    {3.5, 5.8},
+    {4., 5.},//{3.5, 5.8},
 	{2.6, 4.},
 	{-0.8, 0.8},
 	{-1000., 1000.}
@@ -35,7 +35,7 @@ const double pi0eff = 0.9795;
 const double effCorrTrigg[NTRIGGBINS] = {0.221901, 0.409597, 0.440636, 0.42808};
 const double effCorrAssoc[NASSOCBINS] = {0.18273, 0.217738, 0.221901, 0.409597, 0.440636};
 
-const double etacut = 0.2;
+const double etacut = 0.;
 const double asymcut = 0.7;
 
 const double kJPi = TMath::Pi();

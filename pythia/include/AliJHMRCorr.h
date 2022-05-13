@@ -34,7 +34,6 @@ public:
             std::cout << "Using acceptance function " << accFunc[det].Data() << std::endl;
             fRand = new TRandom3();
             fIsFullSim = isFullSim;
-            cout << "Using full sim : " << fIsFullSim << endl;
         }
 
     virtual ~AliJHMRCorr(){ }

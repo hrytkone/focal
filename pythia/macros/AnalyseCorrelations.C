@@ -43,7 +43,8 @@ void processDataSTAR()
 void processDataFoCal()
 {
 	TString fInName[ndata_focal] = {
-        "/home/heimarry/Simulations/focal/pythia/full-sim_trigg-not-weighted_mixed.root"
+        "/home/heimarry/Simulations/focal/pythia/full-sim_test.root"
+        //"/home/heimarry/Simulations/focal/pythia/full-sim_trigg-not-weighted_mixed.root"
         //"/home/heimarry/Simulations/focal/pythia/full-sim_eta-4-5_weighted.root"
         //"/home/heimarry/Simulations/focal-pythia-sim/focal-pp_test-bg-weight.root"
         //"/home/heimarry/Simulations/focal-pythia-sim/focal-pp_const-weight.root"
@@ -148,7 +149,6 @@ void DoAnalysis()
             hCorr[it][ia]->Add(hCorrSideSideProj[it][ia]);
 
             // Take efficiencies into account
-            st[it] *= effCorrTrigg[it]*pi0br;
             hCorr[it][ia]->Scale(1.0/st[it], "width");
             //hCorr[it][ia]->Scale(1.0/hCorr[it][ia]->GetEntries(), "width");
 
@@ -278,7 +278,8 @@ void GetScaleFactorsVersion1()
             massWindowMax = massPeakPosTrigg[it]+3.*massSigmaTrigg[it];
         }
         //st[it] = fPeakTrigg[it]->Integral(massWindowMin, massWindowMax);
-        st[it]    = hMassTrigg[it]->Integral(hMassTrigg[it]->GetXaxis()->FindBin(massWindowMin), hMassTrigg[it]->GetXaxis()->FindBin(massWindowMax)) - fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/hMassTrigg[it]->GetBinWidth(0);
+        st[it]  = hMassTrigg[it]->Integral(hMassTrigg[it]->GetXaxis()->FindBin(massWindowMin), hMassTrigg[it]->GetXaxis()->FindBin(massWindowMax)) - fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/hMassTrigg[it]->GetBinWidth(0);
+        st[it] *= effCorrTrigg[it]*pi0br;
         stobtrigg[it] = fPeakTrigg[it]->Integral(massWindowMin, massWindowMax)/fFitTrigg[it]->Integral(massWindowMin, massWindowMax);
         std::cout << "\n\tbin [ " << triggPt[it] << " " << triggPt[it+1] << " ] : \treal=" << nRealTrigg[it] << "\treconst=" << st[it] << "\trec=" << stfit[it] << "\trec/real=" << st[it]/nRealTrigg[it] << std::endl;
         std::cout << "\tS/(S+B) : " << stobtrigg[it] << std::endl;
@@ -496,7 +497,7 @@ void DrawMassHistos(TString dataname)
             tl.DrawLatexNDC(.55, .65, Form("#bf{#bf{%.1f < p_{T,t} < %.1f GeV/c}}", tlow, tupp));
             tl.DrawLatexNDC(.55, .6, Form("%.1f < p_{T,a} < %.1f GeV/c", alow, aupp));
             gPad->RedrawAxis();
-            cMassAssocSide[it][ia]->SaveAs(Form("MassAssocSide%d-%d_%s.pdf",it,ia,dataname.Data()));
+            //cMassAssocSide[it][ia]->SaveAs(Form("MassAssocSide%d-%d_%s.pdf",it,ia,dataname.Data()));
         }
     }
 }

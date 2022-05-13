@@ -36,6 +36,7 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet) {
     dirMasses = output->mkdir("Masses");
     dirCorrMid = output->mkdir("CorrMid");
     dirCorrFor = output->mkdir("CorrFor");
+    dirCorrMeas = output->mkdir("CorrMeas");
     dirCorrChargedMid = output->mkdir("CorrChargedMid");
     dirCorrChargedFor = output->mkdir("CorrChargedFor");
     dirCorrMassMass = output->mkdir("CorrMassMass");
@@ -76,6 +77,13 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet) {
                                       Form("hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
                                       nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
             hCorrFor[i][j]->Sumw2();
+
+            dirCorrMeas->cd();
+            hCorrMeas[i][j] = new TH2D(Form("hCorrMeas[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                      Form("hCorrMeas[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                      nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
+            hCorrMeas[i][j]->Sumw2();
+
 
             dirCorrChargedMid->cd();
             hCorrChargedMid[i][j] = new TH2D(Form("hCorrChargedMid[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),

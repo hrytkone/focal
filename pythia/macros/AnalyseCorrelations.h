@@ -18,8 +18,8 @@ const double pi0br = 1./0.98823;
 const double effCorrTrigg[nTriggBins] = {1./0.221901, 1./0.409597, 1./0.440636, 1./0.42808};
 //const double effCorrTrigg[nTriggBins] = {1./0.988, 1./0.988};
 
-const double massMin = 110.;
-const double massMax = 160.;
+const double massMin = 110.-60.;
+const double massMax = 160.+80.;
 const double massSigmaTrigg[nTriggBins] = {19.3765, 15.2168, 15.0705, 14.2438};
 const double massSigmaAssoc[nAssocBins] = {21.0777, 29.3914, 19.3765, 15.2168, 15.0705};
 const double massPeakPosTrigg[nTriggBins] = {135.685, 140.909, 141.813, 143.411};

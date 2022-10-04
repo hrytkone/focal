@@ -18,6 +18,8 @@ enum detector { kJFoCal, kJSTAR, kJTracker, kJFull };
 // For fixed mass window
 extern const double massWindowMin;
 extern const double massWindowMax;
+extern const double sidebandMin;
+extern const double sidebandMax;
 
 // mass peak sigmas & peak positions for each pT bin
 // DEPENDS ON ETA AND ASYM CUTS

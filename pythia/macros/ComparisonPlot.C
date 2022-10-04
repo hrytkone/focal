@@ -131,9 +131,9 @@ void ConfigHistos()
                 leg[iset][itrigg][iassoc]->SetFillStyle(0); leg[iset][itrigg][iassoc]->SetBorderSize(0); leg[iset][itrigg][iassoc]->SetTextSize(0.05);
                 leg[iset][itrigg][iassoc]->SetHeader(Form("#splitline{%s}{[%0.1f,%0.1f][%0.1f,%0.1f]}", legHeader[iset].Data(),triggPt[itrigg],triggPt[itrigg+1],assocPt[iassoc],assocPt[iassoc+1]));
                 leg[iset][itrigg][iassoc]->AddEntry(hCorrReal[0][0][0], "MC truth", "pe");
-                //leg[iset][itrigg][iassoc]->AddEntry(hCorrFinal[0][0][0], "GEANT3 sim", "pe");
-                leg[iset][itrigg][iassoc]->AddEntry(hCorrMeas[0][0][0], "Before SB corr", "pe");
-                leg[iset][itrigg][iassoc]->AddEntry(hCorrFinal[0][0][0], "After SB corr", "pe");
+                leg[iset][itrigg][iassoc]->AddEntry(hCorrMeas[0][0][0], "GEANT3 sim", "pe");
+                //leg[iset][itrigg][iassoc]->AddEntry(hCorrMeas[0][0][0], "Before SB corr", "pe");
+                //leg[iset][itrigg][iassoc]->AddEntry(hCorrFinal[0][0][0], "After SB corr", "pe");
             }
         }
     }
@@ -174,18 +174,18 @@ void DrawFiliPad()
                 hCorrReal[iset][itrigg][iassoc]->GetYaxis()->SetRangeUser(rangeMin, rangeMax);
                 hCorrReal[iset][itrigg][iassoc]->Draw("P");
                 hCorrMeas[iset][itrigg][iassoc]->Draw("SAME P");
-                hCorrFinal[iset][itrigg][iassoc]->Draw("SAME P");
-                hCorrMixed[iset][itrigg][iassoc]->Draw("SAME P");
+                //hCorrFinal[iset][itrigg][iassoc]->Draw("SAME P");
+                //hCorrMixed[iset][itrigg][iassoc]->Draw("SAME P");
                 leg[iset][itrigg][iassoc]->Draw("SAME");
                 t->Draw("SAME");
 
                 // Lower pad
                 p = fpad[iset][itrigg][iassoc]->GetPad(2);
                 p->SetTickx(); p->SetGridy(1); p->SetLogx(0), p->SetLogy(0); p->cd();
-                hset( *hRatioFinal[iset][itrigg][iassoc], "#Delta#phi", "Ratio",1.1,0.7, 0.09,0.09, 0.01,0.01, 0.08,0.08, 510,505);
-                hRatioFinal[iset][itrigg][iassoc]->GetYaxis()->SetRangeUser(-0.2, 1.8);
-                hRatioFinal[iset][itrigg][iassoc]->Draw("P");
-                hRatioMeas[iset][itrigg][iassoc]->Draw("SAME P");
+                hset( *hRatioMeas[iset][itrigg][iassoc], "#Delta#phi", "Ratio",1.1,0.7, 0.09,0.09, 0.01,0.01, 0.08,0.08, 510,505);
+                hRatioMeas[iset][itrigg][iassoc]->GetYaxis()->SetRangeUser(-0.2, 1.8);
+                //hRatioFinal[iset][itrigg][iassoc]->Draw("P");
+                hRatioMeas[iset][itrigg][iassoc]->Draw("P");
             }
         }
     }

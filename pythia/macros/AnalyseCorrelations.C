@@ -11,7 +11,8 @@ void processDataSTAR()
 {
 	TString fInName[ndata_star] = {
         "/home/heimarry/Simulations/focal/STAR-data/output_pAu.root",
-        "/home/heimarry/Simulations/focal-pythia-sim/star-pp_WRONG-TRUE-CORR-COMP.root"
+        "/home/heimarry/Simulations/focal/STAR-data/output_pp.root"
+        //"/home/heimarry/Simulations/focal-pythia-sim/star-pp_WRONG-TRUE-CORR-COMP.root"
 	};
 
 	TString fOutName[ndata_star] = {
@@ -43,7 +44,7 @@ void processDataSTAR()
 void processDataFoCal()
 {
 	TString fInName[ndata_focal] = {
-        "/home/heimarry/Simulations/focal/pythia/full-sim_test.root"
+        "/home/heimarry/Simulations/focal/pythia/fullsim_pthard-2_asym-08_bigger-windows_n1m_no-weights.root"
         //"/home/heimarry/Simulations/focal/pythia/full-sim_trigg-not-weighted_mixed.root"
         //"/home/heimarry/Simulations/focal/pythia/full-sim_eta-4-5_weighted.root"
         //"/home/heimarry/Simulations/focal-pythia-sim/focal-pp_test-bg-weight.root"
@@ -90,7 +91,7 @@ void LoadInput()
 	    double tlow = triggPt[it];
 	    double tupp = triggPt[it+1];
 
-	    hMassTrigg[it] = (TH1D*)fIn->Get(Form("Masses/hPi0MassTrigg[%4.1f,%4.1f]",tlow,tupp)); hMassTrigg[it]->Rebin();
+	    hMassTrigg[it] = (TH1D*)fIn->Get(Form("Masses/hPi0MassTrigg[%4.1f,%4.1f]",tlow,tupp)); hMassTrigg[it]->Rebin(4);
         //hMassTrigg[it]->Scale(1., "width");
 
 	    for (int ia = 0; ia < nAssocBins; ia++) {
@@ -99,16 +100,16 @@ void LoadInput()
 
 	        if (tlow < aupp) continue;
 
-	        hMassAssocPeak[it][ia] = (TH1D*)fIn->Get(Form("Masses/hPi0MassAssocPeak[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hMassAssocPeak[it][ia]->Rebin();
+	        hMassAssocPeak[it][ia] = (TH1D*)fIn->Get(Form("Masses/hPi0MassAssocPeak[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hMassAssocPeak[it][ia]->Rebin(4);
             //hMassAssocPeak[it][ia]->Scale(1., "width");
-	        hMassAssocSide[it][ia] = (TH1D*)fIn->Get(Form("Masses/hPi0MassAssocSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hMassAssocSide[it][ia]->Rebin();
+	        hMassAssocSide[it][ia] = (TH1D*)fIn->Get(Form("Masses/hPi0MassAssocSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hMassAssocSide[it][ia]->Rebin(4);
             //hMassAssocSide[it][ia]->Scale(1., "width");
 
-	        hCorrReal[it][ia]     = (TH2D*)fIn->Get(Form("CorrFor/hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));           hCorrReal[it][ia]->Rebin2D(10);
-	        hCorrMassMass[it][ia] = (TH2D*)fIn->Get(Form("CorrMassMass/hCorrMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrMassMass[it][ia]->Rebin2D(10);
-            hCorrMassSide[it][ia] = (TH2D*)fIn->Get(Form("CorrMassSide/hCorrMassSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrMassSide[it][ia]->Rebin2D(10);
-	        hCorrSideMass[it][ia] = (TH2D*)fIn->Get(Form("CorrSideMass/hCorrSideMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrSideMass[it][ia]->Rebin2D(10);
-	        hCorrSideSide[it][ia] = (TH2D*)fIn->Get(Form("CorrSideSide/hCorrSideSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrSideSide[it][ia]->Rebin2D(10);
+	        hCorrReal[it][ia]     = (TH2D*)fIn->Get(Form("CorrFor/hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));           hCorrReal[it][ia]->Rebin2D(12);
+	        hCorrMassMass[it][ia] = (TH2D*)fIn->Get(Form("CorrMassMass/hCorrMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrMassMass[it][ia]->Rebin2D(12);
+            hCorrMassSide[it][ia] = (TH2D*)fIn->Get(Form("CorrMassSide/hCorrMassSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrMassSide[it][ia]->Rebin2D(12);
+	        hCorrSideMass[it][ia] = (TH2D*)fIn->Get(Form("CorrSideMass/hCorrSideMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrSideMass[it][ia]->Rebin2D(12);
+	        hCorrSideSide[it][ia] = (TH2D*)fIn->Get(Form("CorrSideSide/hCorrSideSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrSideSide[it][ia]->Rebin2D(12);
             hCorrMeas[it][ia]     = (TH2D*)hCorrMassMass[it][ia]->Clone(Form("hCorrMeas[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
 
             hCorrMassMassMixed[it][ia] = (TH2D*)fIn->Get(Form("CorrMassMass/hCorrMassMassMixed[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrMassMassMixed[it][ia]->Rebin2D(10);
@@ -135,13 +136,13 @@ void DoAnalysis()
             hCorrMassMassProj[it][ia] = hCorrMassMass[it][ia]->ProjectionX();
 
             hCorrMassSideProj[it][ia] = hCorrMassSide[it][ia]->ProjectionX();
-            hCorrMassSideProj[it][ia]->Scale(alpha[it][ia]);
+            //hCorrMassSideProj[it][ia]->Scale(alpha[it][ia]);
 
             hCorrSideMassProj[it][ia] = hCorrSideMass[it][ia]->ProjectionX();
-            hCorrSideMassProj[it][ia]->Scale(beta[it][ia]);
+            //hCorrSideMassProj[it][ia]->Scale(beta[it][ia]);
 
             hCorrSideSideProj[it][ia] = hCorrSideSide[it][ia]->ProjectionX();
-            hCorrSideSideProj[it][ia]->Scale(yamma[it][ia]);
+            //hCorrSideSideProj[it][ia]->Scale(yamma[it][ia]);
 
             hCorr[it][ia] = (TH1D*)hCorrMassMassProj[it][ia]->Clone(Form("hCorrFinal[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
             hCorr[it][ia]->Add(hCorrMassSideProj[it][ia], -1);
@@ -172,7 +173,7 @@ void DoAnalysis()
 void FitMassPeaks()
 {
     for (int it = 0; it < nTriggBins; it++) {
-        fFitTrigg[it] = new TF1(Form("fFitTrigg%d", it), FitFunction, 50, 400, 10);
+        fFitTrigg[it] = new TF1(Form("fFitTrigg%d", it), FitFunction, 20, 500, 10);
         fFitTrigg[it]->SetParameters(0., 0., 0., 0., 0., 1., 1., 135., 5., 10.);
         //fFitTrigg[it]->SetParLimits(4, 132., 137.);
         fFitTrigg[it]->SetParLimits(7, 130., 160.);
@@ -184,11 +185,11 @@ void FitMassPeaks()
         fFitTrigg[it]->FixParameter(9, 0.);
         fFitTrigg[it]->SetNpx(1000);
 
-        fPeakTrigg[it] = new TF1(Form("fPeakTrigg%d", it), FitPeak, 50, 400, 5);
+        fPeakTrigg[it] = new TF1(Form("fPeakTrigg%d", it), FitPeak, 20, 500, 5);
         fPeakTrigg[it]->SetLineColor(kBlue);
         fPeakTrigg[it]->SetNpx(1000);
 
-        fBgTrigg[it] = new TF1(Form("fBgTrigg%d", it), FitBackground, 50, 400, 5);
+        fBgTrigg[it] = new TF1(Form("fBgTrigg%d", it), FitBackground, 20, 500, 5);
         fBgTrigg[it]->SetLineColor(kBlack);
         fBgTrigg[it]->SetLineStyle(kDashed);
         fBgTrigg[it]->SetNpx(1000);
@@ -209,7 +210,7 @@ void FitMassPeaks()
             if (tlow < aupp) continue;
 
             // Assoc mass histrograms where trigger is from peak region
-            fFitAssocPeak[it][ia] = new TF1(Form("fFitAssocPeak%d-%d", it, ia), FitFunction, 50, 400, 10);
+            fFitAssocPeak[it][ia] = new TF1(Form("fFitAssocPeak%d-%d", it, ia), FitFunction, 50, 500, 10);
             fFitAssocPeak[it][ia]->SetParameters(0., 0., 0., 0., 0., 1., 1., 135., 5., 10.);
             //fFitAssocPeak[it]->SetParLimits(4, 132., 137.);
             fFitAssocPeak[it][ia]->SetParLimits(7, 130., 160.);
@@ -221,11 +222,11 @@ void FitMassPeaks()
             fFitAssocPeak[it][ia]->FixParameter(9, 0.);
             fFitAssocPeak[it][ia]->SetNpx(1000);
 
-            fPeakAssocPeak[it][ia] = new TF1(Form("fPeakAssocPeak%d-%d", it, ia), FitPeak, 50, 400, 5);
+            fPeakAssocPeak[it][ia] = new TF1(Form("fPeakAssocPeak%d-%d", it, ia), FitPeak, 50, 500, 5);
             fPeakAssocPeak[it][ia]->SetLineColor(kBlue);
             fPeakAssocPeak[it][ia]->SetNpx(1000);
 
-            fBgAssocPeak[it][ia]= new TF1(Form("fBgAssocPeak%d-%d", it, ia), FitBackground, 50, 400, 5);
+            fBgAssocPeak[it][ia]= new TF1(Form("fBgAssocPeak%d-%d", it, ia), FitBackground, 50, 500, 5);
             fBgAssocPeak[it][ia]->SetLineColor(kBlack);
             fBgAssocPeak[it][ia]->SetLineStyle(kDashed);
             fBgAssocPeak[it][ia]->SetNpx(1000);
@@ -237,7 +238,7 @@ void FitMassPeaks()
             fPeakAssocPeak[it][ia]->SetParameters(&parAssocPeak[5]);
 
             // Assoc mass histrograms where trigger is from sideband region
-            fFitAssocSide[it][ia] = new TF1(Form("fFitAssocSide%d-%d", it, ia), FitFunction, 50, 400, 10);
+            fFitAssocSide[it][ia] = new TF1(Form("fFitAssocSide%d-%d", it, ia), FitFunction, 50, 500, 10);
             fFitAssocSide[it][ia]->SetParameters(0., 0., 0., 0., 0., 1., 1., 135., 5., 10.);
             //fFitAssocSide[it]->SetParLimits(4, 132., 137.);
             fFitAssocSide[it][ia]->SetParLimits(7, 130., 160.);
@@ -249,11 +250,11 @@ void FitMassPeaks()
             fFitAssocSide[it][ia]->FixParameter(9, 0.);
             fFitAssocSide[it][ia]->SetNpx(1000);
 
-            fPeakAssocSide[it][ia] = new TF1(Form("fPeakAssocSide%d-%d", it, ia), FitPeak, 50, 400, 5);
+            fPeakAssocSide[it][ia] = new TF1(Form("fPeakAssocSide%d-%d", it, ia), FitPeak, 50, 500, 5);
             fPeakAssocSide[it][ia]->SetLineColor(kBlue);
             fPeakAssocSide[it][ia]->SetNpx(1000);
 
-            fBgAssocSide[it][ia]= new TF1(Form("fBgAssocSide%d-%d", it, ia), FitBackground, 50, 400, 5);
+            fBgAssocSide[it][ia]= new TF1(Form("fBgAssocSide%d-%d", it, ia), FitBackground, 50, 500, 5);
             fBgAssocSide[it][ia]->SetLineColor(kBlack);
             fBgAssocSide[it][ia]->SetLineStyle(kDashed);
             fBgAssocSide[it][ia]->SetNpx(1000);
@@ -300,8 +301,8 @@ void GetScaleFactorsVersion1()
             if (tlow < aupp) continue;
             //alpha[it][ia] = fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/(fBgAssocPeak[it][ia]->Integral(40, 80) + fBgAssocPeak[it][ia]->Integral(210, 280));
             //beta[it][ia]  = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/(fBgTrigg[it]->Integral(40, 80) + fBgTrigg[it]->Integral(210, 280));
-            alpha[it][ia] = fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/fBgAssocPeak[it][ia]->Integral(275, 375);
-            beta[it][ia]  = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/fBgTrigg[it]->Integral(275, 375);
+            alpha[it][ia] = fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/fBgAssocPeak[it][ia]->Integral(300, 450);
+            beta[it][ia]  = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/fBgTrigg[it]->Integral(300, 450);
             yamma[it][ia] = alpha[it][ia]*beta[it][ia];
             std::cout << "\t\tbin [ "  << assocPt[ia] << " " << assocPt[ia+1] << " ] : "
                       << "\talpha=" << alpha[it][ia]
@@ -369,7 +370,7 @@ void DrawMassHistos(TString dataname)
         }
         cMassTrigg[it] = new TCanvas(Form("cMassTrigg%d", it), Form("cMassTrigg%d", it), 600, 600);
         hMassTrigg[it]->SetTitle(Form("Trigger invariant mass, %.1f < p_{T,t} < %.1f GeV/c; M_{#gamma#gamma} (MeV/c^{2}); counts", triggPt[it], triggPt[it+1]));
-        hMassTrigg[it]->GetXaxis()->SetRangeUser(0., 400.);
+        hMassTrigg[it]->GetXaxis()->SetRangeUser(0., 500.);
         hMassTrigg[it]->GetYaxis()->SetMaxDigits(3);
 
         fPeakColored[it] = (TF1*)fFitTrigg[it]->Clone("fPeakColored");
@@ -382,7 +383,7 @@ void DrawMassHistos(TString dataname)
         fLeftSidebandColored[it]->SetFillStyle(1001);
         fRightSidebandColored[it] = (TF1*)fFitTrigg[it]->Clone("fLeftSidebandColored");
         fRightSidebandColored[it]->SetFillColor(kGreen-10);
-        fRightSidebandColored[it]->GetXaxis()->SetRangeUser(275., 375.);
+        fRightSidebandColored[it]->GetXaxis()->SetRangeUser(300., 450.);
         fRightSidebandColored[it]->SetFillStyle(1001);
         fBgColored[it] = (TF1*)fBgTrigg[it]->Clone("fBgColored");
         fBgColored[it]->SetFillColor(kBlue-10);
@@ -423,7 +424,7 @@ void DrawMassHistos(TString dataname)
             cMassAssocPeak[it][ia] = new TCanvas(Form("cMassAssocPeak%d:%d",it,ia), Form("cMassAssocPeak%d:%d",it,ia), 600, 600);
             hMassAssocPeak[it][ia]->SetTitle("; M_{#gamma#gamma} (MeV/c^{2}); counts");
             //hMassAssocPeak[it][ia]->SetTitle(Form("%.1f < p_{T,t} < %.1f GeV/c, %.1f < p_{T,a} < %.1f GeV/c; M_{#gamma#gamma}; counts", tlow, tupp, alow, aupp));
-            hMassAssocPeak[it][ia]->GetXaxis()->SetRangeUser(0., 400.);
+            hMassAssocPeak[it][ia]->GetXaxis()->SetRangeUser(0., 500.);
             hMassAssocPeak[it][ia]->GetYaxis()->SetMaxDigits(3);
 
             fPeakColoredAssocPeak[it][ia] = (TF1*)fFitAssocPeak[it][ia]->Clone("fPeakColoredAssocPeak");
@@ -436,7 +437,7 @@ void DrawMassHistos(TString dataname)
             fLeftSidebandColoredAssocPeak[it][ia]->SetFillStyle(1001);
             fRightSidebandColoredAssocPeak[it][ia] = (TF1*)fFitAssocPeak[it][ia]->Clone("fLeftSidebandColoredAssocPeak");
             fRightSidebandColoredAssocPeak[it][ia]->SetFillColor(kGreen-10);
-            fRightSidebandColoredAssocPeak[it][ia]->GetXaxis()->SetRangeUser(275., 375.);
+            fRightSidebandColoredAssocPeak[it][ia]->GetXaxis()->SetRangeUser(300., 450.);
             fRightSidebandColoredAssocPeak[it][ia]->SetFillStyle(1001);
             fBgColoredAssocPeak[it][ia] = (TF1*)fBgAssocPeak[it][ia]->Clone("fBgColoredAssocPeak");
             fBgColoredAssocPeak[it][ia]->SetFillColor(kBlue-10);
@@ -449,6 +450,7 @@ void DrawMassHistos(TString dataname)
             //fLeftSidebandColoredAssocPeak[it][ia]->Draw("SAME");
             fRightSidebandColoredAssocPeak[it][ia]->Draw("SAME");
             fBgColoredAssocPeak[it][ia]->Draw("SAME");
+            hMassAssocPeak[it][ia]->Draw("HIST SAME");
             fFitAssocPeak[it][ia]->Draw("SAME");
             fBgAssocPeak[it][ia]->Draw("SAME");
             fPeakAssocPeak[it][ia]->Draw("SAME");
@@ -463,7 +465,7 @@ void DrawMassHistos(TString dataname)
             cMassAssocSide[it][ia] = new TCanvas(Form("cMassAssocSide%d:%d",it,ia), Form("cMassAssocSide%d:%d",it,ia), 600, 600);
             //hMassAssocSide[it][ia]->SetTitle(Form("%.1f < p_{T,t} < %.1f GeV/c, %.1f < p_{T,a} < %.1f GeV/c; M_{#gamma#gamma}; counts", tlow, tupp, alow, aupp));
             hMassAssocSide[it][ia]->SetTitle("; M_{#gamma#gamma}; counts");
-            hMassAssocSide[it][ia]->GetXaxis()->SetRangeUser(0., 400.);
+            hMassAssocSide[it][ia]->GetXaxis()->SetRangeUser(0., 500.);
             hMassAssocSide[it][ia]->GetYaxis()->SetMaxDigits(6);
 
             fPeakColoredAssocSide[it][ia] = (TF1*)fFitAssocSide[it][ia]->Clone("fPeakColoredAssocSide");
@@ -476,7 +478,7 @@ void DrawMassHistos(TString dataname)
             fLeftSidebandColoredAssocSide[it][ia]->SetFillStyle(1001);
             fRightSidebandColoredAssocSide[it][ia] = (TF1*)fFitAssocSide[it][ia]->Clone("fLeftSidebandColoredAssocSide");
             fRightSidebandColoredAssocSide[it][ia]->SetFillColor(kGreen-10);
-            fRightSidebandColoredAssocSide[it][ia]->GetXaxis()->SetRangeUser(275., 375.);
+            fRightSidebandColoredAssocSide[it][ia]->GetXaxis()->SetRangeUser(300., 450.);
             fRightSidebandColoredAssocSide[it][ia]->SetFillStyle(1001);
             fBgColoredAssocSide[it][ia] = (TF1*)fBgAssocSide[it][ia]->Clone("fBgColoredAssocSide");
             fBgColoredAssocSide[it][ia]->SetFillColor(kBlue-10);

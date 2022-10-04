@@ -1,11 +1,13 @@
-# settings of Pythia 8 wrapper program
-Main:numberOfEvents = 1000       ! number of events to generate
-Next:numberShowEvent = 0           ! suppress full listing of first events
+! 1) Settings used in the main program
+Main:numberOfEvents = 1000000
+Next:numberCount = 10000
 
-# Beam parameter settings.
-Beams:idA = 2212                ! first beam, p = 2212, pbar = -2212
-Beams:idB = 2212                ! second beam, p = 2212, pbar = -2212
-Beams:eCM = 14000               ! CM energy of collision
+! 2) Beam parameter settings
+Beams:idA = 2212
+Beams:idB = 1000791970
+Beams:eA = 100
+Beams:eB = 100
+Beams:frameType = 2
 
 # Minimum Bias process (as taken from one of pythia8 example)
 SoftQCD:nonDiffractive = on               ! minimum bias QCD processes
@@ -24,4 +26,3 @@ PhaseSpace:mHatMax = -1   # max mHat
 # Makes particles with c*tau > 10 mm stable:
 ParticleDecays:limitTau0 = On
 ParticleDecays:tau0Max = 10.0
-

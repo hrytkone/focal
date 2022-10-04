@@ -14,25 +14,22 @@ bool AliJHMRCorr::IsDetAcceptance(double eta, detector labelDet)
 // done in reconstruction phase
 bool AliJHMRCorr::IsMassWindow(double mass)
 {
-    if (fIsFullSim) {
-        return (mass > massWindowMin-60. && mass < massWindowMax+80.) ? true : false;
-    } else {
-        return (mass > massWindowMin && mass < massWindowMax) ? true : false;
-    }
-    return false;
+    return (mass > massWindowMin && mass < massWindowMax) ? true : false;
 }
 
 // 2. check for full sim, use mass window of 3sigmas (in full sim), different for each pt bin
 // done in trigger-assoc division phase
 bool AliJHMRCorr::IsMassWindow(double mass, int ibin, bool isTriggBin)
 {
-    //std::cout << isTriggBin << "\tibin: " << ibin << "\tmass: " << mass << "\tmass window: [" << massPeakPosTrigg[ibin]-3.*massSigmaTrigg[ibin] << " " << massPeakPosTrigg[ibin]+3.*massSigmaTrigg[ibin] << "]" << std::endl;
+
     if (isTriggBin) {
+        //std::cout << isTriggBin << "\tibin: " << ibin << "\tmass: " << mass << "\tmass window: [" << massPeakPosTrigg[ibin]-3.*massSigmaTrigg[ibin] << " " << massPeakPosTrigg[ibin]+3.*massSigmaTrigg[ibin] << "]" << std::endl;
         if (mass > massPeakPosTrigg[ibin]-3.*massSigmaTrigg[ibin] && mass < massPeakPosTrigg[ibin]+3.*massSigmaTrigg[ibin])
             return true;
         else
             return false;
     } else {
+        //std::cout << isTriggBin << "\tibin: " << ibin << "\tmass: " << mass << "\tmass window: [" << massPeakPosAssoc[ibin]-3.*massSigmaAssoc[ibin] << " " << massPeakPosAssoc[ibin]+3.*massSigmaAssoc[ibin] << "]" << std::endl;
         if (mass > massPeakPosAssoc[ibin]-3.*massSigmaAssoc[ibin] && mass < massPeakPosAssoc[ibin]+3.*massSigmaAssoc[ibin])
             return true;
         else
@@ -44,7 +41,7 @@ bool AliJHMRCorr::IsMassWindow(double mass, int ibin, bool isTriggBin)
 bool AliJHMRCorr::IsSideband(double mass)
 {
     if (fIsFullSim)
-        return (mass > 275. && mass < 375.) ? true : false;
+        return (mass > sidebandMin && mass < sidebandMax) ? true : false;
     else
         return ((mass > 40. && mass < 80.) || (mass > 210. && mass < 280.)) ? true : false;
 }
@@ -106,12 +103,16 @@ void AliJHMRCorr::GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector
         if (bUseLeading) {
             if (i != iLeadingTrigg && iAssoc >= 0) listAssoc.push_back(i);
         } else {
-            //if (iTrigg >= 0 && IsMassWindow(mass, iTrigg, 1)) listTrigg.push_back(i);
-            //if (iAssoc >= 0 && IsMassWindow(mass, iAssoc, 0)) listAssoc.push_back(i);
-            if (iTrigg >= 0) listTrigg.push_back(i);
-            if (iAssoc >= 0) listAssoc.push_back(i);
+            //if (fIsFullSim) {
+            //    if (iTrigg >= 0 && IsMassWindow(mass, iTrigg, 1)) listTrigg.push_back(i);
+            //    if (iAssoc >= 0 && IsMassWindow(mass, iAssoc, 0)) listAssoc.push_back(i);
+            //} else {
+                if (iTrigg >= 0) listTrigg.push_back(i);
+                if (iAssoc >= 0)  listAssoc.push_back(i);
+            //}
         }
-        if (iTrigg >= 0 && IsMassWindow(mass, iTrigg, 1)) binsWithTrigg[iTrigg]++;
+        //if (iTrigg >= 0 && IsMassWindow(mass, iTrigg, 1)) binsWithTrigg[iTrigg]++;
+        if (iTrigg >= 0) binsWithTrigg[iTrigg]++;
     }
 }
 

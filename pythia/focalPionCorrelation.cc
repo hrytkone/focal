@@ -105,7 +105,7 @@ int main(int argc, char *argv[]) {
             std::cout << "\nEvent " << iEvent << std::endl;
 
         if (bUseSim) { // Get stuff from detector simulation file
-            if (iEvent%100==0) cout << "event " << iEvent << "/" << nEvents << endl;
+            if (iEvent%100000==0) cout << "event " << iEvent << "/" << nEvents << endl;
             fCatalystG->GetEvent(iEvent);
             fCatalystG->InitializeEvent();
             fCatalystG->GetParticles();
@@ -173,13 +173,9 @@ int main(int argc, char *argv[]) {
                     fCorr->GetTriggAssocLists(arrPi0PeakMixed[ipool], listTriggPeakMixed, listAssocPeakMixed, binsWithTriggPeakMixed, bUseLeading);
                     fCorr->GetTriggAssocLists(arrPi0SideMixed[ipool], listTriggSideMixed, listAssocSideMixed, binsWithTriggSideMixed, bUseLeading);
                     fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0PeakMixed[ipool], listAssocPeakMixed, fHistos->hCorrMassMassMixed, 0, 0);
-                    //fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0PeakMixed[ipool], listAssocPeakMixed, fHistos->hCorrMassMassMixed, 1, 1);
                     fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0SideMixed[ipool], listAssocSideMixed, fHistos->hCorrSideSideMixed, 0, 0);
-                    //fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0SideMixed[ipool], listAssocSideMixed, fHistos->hCorrSideSideMixed, 0, 0);
                     fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0SideMixed[ipool], listAssocSideMixed, fHistos->hCorrMassSideMixed, 0, 0);
-                    //fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0SideMixed[ipool], listAssocSideMixed, fHistos->hCorrMassSideMixed, 1, 0);
                     fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0PeakMixed[ipool], listAssocPeakMixed, fHistos->hCorrSideMassMixed, 0, 0);
-                    //fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0PeakMixed[ipool], listAssocPeakMixed, fHistos->hCorrSideMassMixed, 0, 1);
 
                 }
                 // Remove the first from the pool and add new array to the pool

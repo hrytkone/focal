@@ -1,7 +1,8 @@
 #include "AliJHMRConst.h"
 
 const double detEta[NDET][2] = {
-    {4., 5.},//{3.5, 5.8},
+    {4.2, 5.3},
+    //{3.5, 5.8},
 	{2.6, 4.},
 	{-0.8, 0.8},
 	{-1000., 1000.}
@@ -24,19 +25,30 @@ const TString accFunc[NDET] = {
 double triggPt[NTRIGGBINS+1] = {4.0, 8.0, 10.0, 15.0, 20.0};
 double assocPt[NASSOCBINS+1] = {2.0, 3.0, 4.0, 8.0, 10.0, 15.0};
 
-const double massWindowMin = 110.;
-const double massWindowMax = 160.;
-const double massSigmaTrigg[NTRIGGBINS] = {19.3765, 15.2168, 15.0705, 14.2438};
-const double massSigmaAssoc[NASSOCBINS] = {21.0777, 29.3914, 19.3765, 15.2168, 15.0705};
-const double massPeakPosTrigg[NTRIGGBINS] = {135.685, 140.909, 141.813, 143.411};
-const double massPeakPosAssoc[NASSOCBINS] = {139.129, 130., 135.685, 140.909, 141.813};
+// For pure PYTHIA simulations
+//const double massWindowMin = 110.;
+//const double massWindowMax = 160.;
+
+const double massWindowMin = 50.;
+const double massWindowMax = 220.;
+
+const double sidebandMin = 300.;
+const double sidebandMax = 450.;
+
+const double massSigmaTrigg[NTRIGGBINS] = {16.896, 16.8545, 17.8731, 11.8696};
+const double massSigmaAssoc[NASSOCBINS] = {26.3631, 20.0558, 16.896, 16.8545, 17.8731};
+const double massPeakPosTrigg[NTRIGGBINS] = {140.115, 142.753, 144.739, 143.427};
+const double massPeakPosAssoc[NASSOCBINS] = {130.582, 135.952, 140.115, 142.753, 144.739};
 
 const double pi0eff = 0.9795;
-const double effCorrTrigg[NTRIGGBINS] = {0.221901, 0.409597, 0.440636, 0.42808};
-const double effCorrAssoc[NASSOCBINS] = {0.18273, 0.217738, 0.221901, 0.409597, 0.440636};
+//const double effCorrTrigg[NTRIGGBINS] = {0.47261, 0.590262, 0.649246, 0.477833};
+//const double effCorrAssoc[NASSOCBINS] = {0.2903, 0.385151, 0.47261, 0.590262, 0.649246};
+const double effCorrTrigg[NTRIGGBINS] = {0.485133, 0.610642, 0.674529, 0.561265};
+const double effCorrAssoc[NASSOCBINS] = {0.297458, 0.383115, 0.485133, 0.610642, 0.674529};
+
 
 const double etacut = 0.;
-const double asymcut = 0.7;
+const double asymcut = 0.8;
 
 const double kJPi = TMath::Pi();
 const double kJTwoPi = 2 * TMath::Pi();

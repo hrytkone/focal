@@ -14,16 +14,16 @@ const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0, 8.0, 10.0, 15.0};
 const double pi0br = 1./0.98823;
 //const double pi0eff = 1.;
 
-//const double effCorrTrigg[nTriggBins] = {1., 1., 1., 1.};
-const double effCorrTrigg[nTriggBins] = {1./0.221901, 1./0.409597, 1./0.440636, 1./0.42808};
+const double effCorrTrigg[nTriggBins] = {1., 1., 1.};//, 1.};
+//const double effCorrTrigg[nTriggBins] = {1./0.221901, 1./0.409597, 1./0.440636, 1./0.42808};
 //const double effCorrTrigg[nTriggBins] = {1./0.988, 1./0.988};
 
-const double massMin = 110.-60.;
-const double massMax = 160.+80.;
-const double massSigmaTrigg[nTriggBins] = {19.3765, 15.2168, 15.0705, 14.2438};
-const double massSigmaAssoc[nAssocBins] = {21.0777, 29.3914, 19.3765, 15.2168, 15.0705};
-const double massPeakPosTrigg[nTriggBins] = {135.685, 140.909, 141.813, 143.411};
-const double massPeakPosAssoc[nAssocBins] = {139.129, 130., 135.685, 140.909, 141.813};
+const double massMin = 50.;
+const double massMax = 220.;
+const double massSigmaTrigg[nTriggBins] = {16.896, 16.8545, 17.8731, 11.8696};
+const double massSigmaAssoc[nAssocBins] = {26.3631, 20.0558, 16.896, 16.8545, 17.8731};
+const double massPeakPosTrigg[nTriggBins] = {140.115, 142.753, 144.739, 143.427};
+const double massPeakPosAssoc[nAssocBins] = {130.582, 135.952, 140.115, 142.753, 144.739};
 
 // Input
 int nEvent;

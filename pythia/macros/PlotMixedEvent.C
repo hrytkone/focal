@@ -10,8 +10,7 @@ TH2D *hCorrMixed[nTriggBins][nAssocBins];
 TH1D *hCorrMixedProjX[nTriggBins][nAssocBins];
 TH1D *hCorrMixedProjY[nTriggBins][nAssocBins];
 TCanvas *canvas[nTriggBins][nAssocBins];
-TCanvas *canvas_px[nTriggBins][nAssocBins];
-TCanvas *canvas_py[nTriggBins][nAssocBins];
+TCanvas *canvas_px_py[nTriggBins][nAssocBins];
 
 void LoadData(TString input);
 
@@ -20,10 +19,10 @@ void PlotMixedEvent(TString input="input.root")
     //gStyle->SetOptStat(0);
 
     LoadData(input);
-    for (int itrigg = 0; itrigg < nTriggBins; itrigg++) {
+    for (int itrigg = 0; itrigg < 1; itrigg++) {
         double tlow = triggPt[itrigg];
         double tupp = triggPt[itrigg+1];
-		for (int iassoc = 0; iassoc < nAssocBins; iassoc++) {
+		for (int iassoc = 0; iassoc < 1; iassoc++) {
             double alow = assocPt[iassoc];
             double aupp = assocPt[iassoc+1];
 
@@ -32,22 +31,29 @@ void PlotMixedEvent(TString input="input.root")
 			canvas[itrigg][iassoc] = new TCanvas(Form("c_%d_%d", itrigg, iassoc), "", 600, 600);
             hCorrMixed[itrigg][iassoc]->Draw("LEGO2Z");
 
-			canvas_px[itrigg][iassoc] = new TCanvas(Form("cpx_%d_%d", itrigg, iassoc), "", 600, 600);
+			canvas_px_py[itrigg][iassoc] = new TCanvas(Form("cpx_%d_%d", itrigg, iassoc), "", 1200, 600);
+            canvas_px_py[itrigg][iassoc]->Divide(2,1);
+
+            canvas_px_py[itrigg][iassoc]->cd(1);
             hCorrMixedProjX[itrigg][iassoc] = hCorrMixed[itrigg][iassoc]->ProjectionX();
             int maxBin = hCorrMixedProjX[itrigg][iassoc]->GetMaximumBin();
             double rangeMax = hCorrMixedProjX[itrigg][iassoc]->GetBinContent(maxBin) + hCorrMixedProjX[itrigg][iassoc]->GetBinContent(maxBin);
             hCorrMixedProjX[itrigg][iassoc]->GetYaxis()->SetRangeUser(0., rangeMax);
             hCorrMixedProjX[itrigg][iassoc]->SetMarkerStyle(kOpenCircle);
             hCorrMixedProjX[itrigg][iassoc]->SetMarkerColor(kBlack);
+            hCorrMixedProjX[itrigg][iassoc]->SetLineColor(kBlack);
+            hCorrMixedProjX[itrigg][iassoc]->SetTitle(";#phi;counts");
             hCorrMixedProjX[itrigg][iassoc]->Draw("P");
 
-            canvas_py[itrigg][iassoc] = new TCanvas(Form("cpy_%d_%d", itrigg, iassoc), "", 600, 600);
+            canvas_px_py[itrigg][iassoc]->cd(2);
             hCorrMixedProjY[itrigg][iassoc] = hCorrMixed[itrigg][iassoc]->ProjectionY();
             maxBin = hCorrMixedProjY[itrigg][iassoc]->GetMaximumBin();
             rangeMax = hCorrMixedProjY[itrigg][iassoc]->GetBinContent(maxBin) + 0.7*hCorrMixedProjY[itrigg][iassoc]->GetBinContent(maxBin);
             hCorrMixedProjY[itrigg][iassoc]->GetYaxis()->SetRangeUser(0., rangeMax);
             hCorrMixedProjY[itrigg][iassoc]->SetMarkerStyle(kOpenCircle);
             hCorrMixedProjY[itrigg][iassoc]->SetMarkerColor(kBlack);
+            hCorrMixedProjY[itrigg][iassoc]->SetLineColor(kBlack);
+            hCorrMixedProjY[itrigg][iassoc]->SetTitle(";#eta;");
             hCorrMixedProjY[itrigg][iassoc]->Draw("P");
 		}
 	}

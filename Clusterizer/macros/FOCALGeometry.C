@@ -10,13 +10,32 @@ void FOCALGeometry()
 
     gGeoManager->Import("geometry.root","");
 
+    TObjArray* volumes = gGeoManager->GetListOfVolumes();
+    for (Int_t i=0; i<volumes->GetEntriesFast(); i++) {
+        if ( !((TGeoVolume*)volumes->At(i))->IsAssembly() )
+        ((TGeoVolume*)volumes->At(i))->SetVisibility(kTRUE);
+    }
+
+
+    //gGeoManager->SetVisLevel(5);
+    //gGeoManager->GetTopVolume()->SetVisContainers(kTRUE);
+    //gGeoManager->GetTopVolume()->Draw("ogl");
+
     TGeoVolume *topvol = gGeoManager->GetTopVolume();
     topvol->SetActiveDaughters();
-    TGeoVolume *vol = topvol->GetNode(76)->GetVolume();
+    TGeoVolume *vol_focal = topvol->GetNode("FOCAL_1")->GetVolume();
+    //TGeoVolume *vol_pipe = topvol->GetNode("RB26Pipe_1")->GetVolume();
+    //vol_pipe->SetLineColor(kRed);
+
+    gGeoManager->CloseGeometry();
 
     //topvol->PrintNodes();
 
-    topvol->Draw("ogl");
+    vol_focal->Draw("ogl");
+    //vol_pipe->Draw("ogl");
+    //gGeoManager->Edit();
+
+//    geom->CloseGeometry();
 
     /**new TGeoManager("world", "the simplest geometry");
 

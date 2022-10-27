@@ -3,10 +3,11 @@
 SECONDS=0
 
 indir=${1} # directory where input is
-ndirs=${2} # number of jobs
+outdir=${2} # directory where output is saved
+ndirs=${3} # number of jobs
 
 #ndirs=$(ls -l ${indir} | grep -c ^d)
 #echo 'Processing '${ndirs}' jobs'
 
-cmd="aliroot -b -q 'RunClusterizer.C(\"${indir}\",'${ndirs}')'"
+cmd="aliroot -b -q 'RunClusterizer.C(\"${indir}\",\"${outdir}\",'${ndirs}')'"
 eval $cmd

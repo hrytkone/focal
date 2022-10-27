@@ -16,7 +16,7 @@ void Efficiency(TString inputfile)
     cout << "Processing " << nev << " events" << endl;
     for (int iev=0; iev<nev; iev++) {
 
-        if (iev%100==0) cout << "event " << iev << "/" << nev << endl;
+        if (iev%1000==0) cout << "event " << iev << "/" << nev << endl;
         //cout << "\n================================" << endl;
         //cout << "Event " << iev << endl;
 
@@ -42,6 +42,7 @@ void Efficiency(TString inputfile)
 
         FillTruePions();
         FillRecPions();
+        FillMassHistos(fTrackClusters);
         fTrackClusters->Clear("C");
 
     }
@@ -66,13 +67,37 @@ Int_t LoadInput(TString inputfile)
 void InitOutput()
 {
     fOut = TFile::Open(Form("%s.root", outputname.Data()), "RECREATE");
-    for (int i = 0; i <= nIncPtBin; i++) logBinsX[i] = limMin*exp(i*logBW);
-    hEtaPtTrue = new TH2D("hEtaPtTrue", "hEtaPtTrue", nEtaBin, etamin, etamax, nIncPtBin, logBinsX);
-    hEtaETrue = new TH2D("hEtaETrue", "hEtaETrue", nEtaBin, etamin, etamax, 200, 0., 200.);
-    hEtaPtRec = new TH2D("hEtaPtRec", "hEtaPtRec", nEtaBin, etamin, etamax, nIncPtBin, logBinsX);
-    hEtaERec = new TH2D("hEtaERec", "hEtaERec", nEtaBin, etamin, etamax, 200, 0., 200.);
+    cout << "\npt=[ ";
+    for (int i = 0; i <= nPtBin; i++) {
+        pt[i] = limMin*exp(i*logBW);
+        cout << pt[i] << " ";
+    }
+    cout << "]\neta=[ ";
+    for (int i = 0; i <= nEtaBin; i++) {
+        eta[i] = etamin + i*etaBW;
+        cout << eta[i] << " ";
+    }
+    cout << "]\n" << endl;
+
+    for (int i=0; i<nEtaBin; i++) {
+        for (int j=0; j<nPtBin; j++) {
+            hMassCluster[i][j] = new TH1D(Form("hMassCluster_%d_%d", i, j), "hMassCluster", 350, 0., 700.); hMassCluster[i][j]->Sumw2();
+        }
+    }
+
+    hEtaPtTrue = new TH2D("hEtaPtTrue", "hEtaPtTrue", nEtaBin, eta, nPtBin, pt);
+    hEtaETrue = new TH2D("hEtaETrue", "hEtaETrue", nEtaBin, eta, 200, 0., 200.);
+    hEtaPtRec = new TH2D("hEtaPtRec", "hEtaPtRec", nEtaBin, eta, nPtBin, pt);
+    hEtaERec = new TH2D("hEtaERec", "hEtaERec", nEtaBin, eta, 200, 0., 200.);
     hEPhotonTrue = new TH1D("hEPhotonTrue", "hEPhotonTrue", 200, 0., 200.);
     hEPhotonCluster = new TH1D("hEPhotonCluster", "hEPhotonCluster", 200, 0., 200.);
+
+    hPtMass  = new TH2D("hPtMass", "hPtMass", 36, 2., 20., 350, 0., 700.);
+    for (int ipt=0; ipt<nPtBin; ipt++)
+        hEtaMass[ipt] = new TH2D(Form("hEtaMass_%d", ipt), "hEtaMass", nEtaBin, eta, 350, 0., 700.);
+
+    hPhiEtaTrue = new TH2D("hPhiEtaTrue", "hPhiEtaTrue", nPhiBin, phimin, phimax, nEtaBin, eta);
+    hPhiEta = new TH2D("hPhiEta", "hPhiEta", nPhiBin, phimin, phimax, nEtaBin, eta);
 }
 
 void FillTruePions()
@@ -81,6 +106,7 @@ void FillTruePions()
     for (int itrack=0; itrack<ntrack; itrack++) {
         AliJBaseTrack *tr = (AliJBaseTrack*)fTracks->At(itrack);
         double trEta = tr->Eta();
+        double trPhi = tr->Phi();
         double trPt = tr->Pt();
         double trE = tr->E();
         double trPid = tr->GetID();
@@ -88,10 +114,44 @@ void FillTruePions()
         if (trPid==111) {
             hEtaPtTrue->Fill(trEta, trPt);
             hEtaETrue->Fill(trEta, trE);
+            hPhiEtaTrue->Fill(trPhi, trEta);
         }
         if (trPid==22 && trMomType==111 && tr->IsPrimary())
             hEPhotonTrue->Fill(trE);
     }
+}
+
+void FillMassHistos(TClonesArray *clusters)
+{
+    int nclust = clusters->GetEntriesFast();
+    for (int i = 1; i < nclust; i++) {
+        AliJBaseTrack *lv1 = (AliJBaseTrack*)clusters->At(i);
+        for (int j = 0; j < i; j++) {
+            AliJBaseTrack *lv2 = (AliJBaseTrack*)clusters->At(j);
+            AliJBaseTrack lvSum = GetPhotonSumVector(lv1, lv2);
+        //    if (TMath::Abs(lv1->E() - lv2->E())/(lv1->E() + lv2->E())>asymcut[nasym-1]) continue;
+            if (lvSum.Eta()<etamin || lvSum.Eta()>etamax) continue;
+            int ptbin = GetBin(pt, nPtBin+1, lvSum.Pt());
+            int etabin = GetBin(eta, nEtaBin+1, lvSum.Eta());
+            if (ptbin==-1 || etabin==-1) continue;
+            if (TMath::Abs(lv1->E() - lv2->E())/(lv1->E() + lv2->E())<asymcut) {
+                double mass = 1000.*lvSum.M();
+                hMassCluster[etabin][ptbin]->Fill(mass);
+                hPtMass->Fill(lvSum.Pt(), mass);
+                hEtaMass[ptbin]->Fill(lvSum.Eta(), mass);
+                if (mass > 110. && mass < 140.)
+                    hPhiEta->Fill(lvSum.Phi(), lvSum.Eta());
+            }
+        }
+    }
+}
+
+int GetBin(double arr[], int nArr, double val)
+{
+    for (int i=0; i<nArr; i++) {
+        if (arr[i]<=val && val<arr[i+1]) return i;
+    }
+    return -1;
 }
 
 void FillRecPions()
@@ -101,7 +161,7 @@ void FillRecPions()
         AliJBaseTrack *lv1 = (AliJBaseTrack*)fTrackClusters->At(i);
         for (int j = 0; j < i; j++) {
             AliJBaseTrack *lv2 = (AliJBaseTrack*)fTrackClusters->At(j);
-            AliJBaseTrack lvSum = GetPhotonSumVector(fTrackClusters, lv1, lv2);
+            AliJBaseTrack lvSum = GetPhotonSumVector(lv1, lv2);
             if (TMath::Abs(lv1->E() - lv2->E())/(lv1->E() + lv2->E())>asymcut) continue;
             double mass = 1000.*lvSum.M();
             if (mass > 110. && mass < 160.) {
@@ -112,7 +172,7 @@ void FillRecPions()
     }
 }
 
-AliJBaseTrack GetPhotonSumVector(TClonesArray *clusters, AliJBaseTrack *lv1, AliJBaseTrack *lv2)
+AliJBaseTrack GetPhotonSumVector(AliJBaseTrack *lv1, AliJBaseTrack *lv2)
 {
     AliJBaseTrack lvSum;
     lvSum = ((*lv1) + (*lv2));

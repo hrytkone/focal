@@ -1,13 +1,13 @@
 //const TString outputname = "test";
-const TString outputname = "etacut_4-5_pthard-0";
-//const TString outputname = "etacut_4-5";
+//const TString outputname = "etacut_37-56_pthard-2";
+const TString outputname = "gamma_etacut_42-53";
 const int nasym = 6;
 const int npt = 6;
 
-//const double etamin = 3.7;
-const double etamin = 4.;
-//const double etamax = 5.6;
-const double etamax = 5.;
+const double etamin = 4.2;
+const double etamax = 5.3;
+//const double etamin = 4.;
+//const double etamax = 5.;
 
 const int poolsize = 0;
 

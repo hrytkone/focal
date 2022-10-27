@@ -26,7 +26,7 @@ using namespace Pythia8;
 int main(int argc, char *argv[]) {
 
     if (argc==1) {
-        cout << "Usage : ./focalPionCorrelation output.root bUseLeading bDebugOn pythiaSettings.cmnd poolsize seed bUseSim siminput" << endl;
+        cout << "Usage : ./focalPionCorrelation <output.root> <bUseLeading> <bDebugOn> <pythiaSettings.cmnd> <poolsize> <seed> <bUseSim> <siminput> <evStart> <evEnd>" << endl;
         return 0;
     }
 
@@ -41,6 +41,8 @@ int main(int argc, char *argv[]) {
     int seed               = argc > 6 ? atol(argv[6]) : 0;
     Int_t bUseSim          = argc > 7 ? atol(argv[7]) : 0;
     TString siminput       = argc > 8 ? argv[8] : "input.root";
+    int evStart            = argc > 9 ? atol(argv[9]) : 0;
+    int nEvents            = argc > 10 ? atol(argv[10]) : -1;
 
     std::cout << "Simulation parameters : " << std::endl;
     std::cout << "\tOutput         : \t" << outFileName << std::endl;
@@ -51,6 +53,8 @@ int main(int argc, char *argv[]) {
     std::cout << "\tSeed           : \t" << seed << std::endl;
     std::cout << "\tUse sim input  : \t" << bUseSim << std::endl;
     std::cout << "\tSim input file : \t" << siminput << std::endl;
+    if (argc > 9)
+        std::cout << "\tRun over events from " << evStart << " to " << nEvents << " (only if input is used)" << std::endl;
 
     detector det = kJFoCal;
 
@@ -79,25 +83,26 @@ int main(int argc, char *argv[]) {
         arrPi0SideMixed[ipool] = new TClonesArray("AliJBaseTrack", 1500);
     }
 
-    int nEvents = 0;
     if (bUseSim) {
         if (!fCatalystG->LoadInput()) return 1;
-        nEvents = fCatalystG->GetNumberOfEvents();
+        if (nEvents==-1)
+            nEvents = fCatalystG->GetNumberOfEvents();
     } else {
         // Initialise pythia
         pythia.readFile(pythiaSettings.Data());
         pythia.readString("Random:setSeed = on");
         pythia.readString(Form("Random:seed = %d", seed));
         pythia.init();
+        evStart = 0;
         nEvents = pythia.mode("Main:numberOfEvents");
     }
 
-    std::cout << "Number of events : " << nEvents << std::endl;
+    std::cout << "Number of events : " << nEvents - evStart << std::endl;
 
     //
     // Loop over events
     //
-    for ( int iEvent = 0; iEvent < nEvents; ++iEvent ) {
+    for ( int iEvent = evStart; iEvent < nEvents; ++iEvent ) {
 
         fHistos->hCounter->Fill(0.5); // number of events
 
@@ -105,7 +110,7 @@ int main(int argc, char *argv[]) {
             std::cout << "\nEvent " << iEvent << std::endl;
 
         if (bUseSim) { // Get stuff from detector simulation file
-            if (iEvent%100000==0) cout << "event " << iEvent << "/" << nEvents << endl;
+            if (iEvent%10==0) cout << "event " << iEvent << "/" << nEvents << endl;
             fCatalystG->GetEvent(iEvent);
             fCatalystG->InitializeEvent();
             fCatalystG->GetParticles();

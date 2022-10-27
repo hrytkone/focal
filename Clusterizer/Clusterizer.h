@@ -4,7 +4,6 @@
 
 const TString detectorGeometryFile      = "geometry.txt";
 const TString clusterizerParametersFile = "parameters.txt";
-const TString clusteringOutputFileDir   = "results";
 const TString clusteringParametersTag   = "pi0";
 
 bool saveFigures = false;
@@ -83,7 +82,7 @@ Int_t conv_flag[4];
 //******************************************************************************
 
 int CheckFile(TString filename);
-void InitCombinedData();
+void InitCombinedData(TString clusteringOutputFileDir);
 void SaveCombinedOutput(); // Save kinematics & clusterizer results to same file
 void GetKinematics(int nevtot);
 void InitClusterizer();

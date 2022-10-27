@@ -3,10 +3,12 @@ const int npt = 6;
 
 //const TString filename = "etacut_4-5_shapecut_4-06.root";
 //const TString filename = "etacut_37-56.root";
-const TString filename = "etacut_4-5.root";
+//const TString filename = "etacut_4-5_pthard-2.root";
+const TString filename = "etacut_42-53.root";
+//const TString filename = "etacut_37-56_pthard-2.root";
 //const TString filename = "etacut_37-56_diff-pt-bins_1.root";
-const TString lowmassfilename = "etacut_4-5_gamma.root";
-const TString legEta = "4.0 < #eta < 5.0";
+const TString lowmassfilename = "gamma_etacut_42-53.root";
+const TString legEta = "4.2 < #eta < 5.3";
 
 //------------------------------------------------------------------------------
 
@@ -112,19 +114,19 @@ void PlotMassPeaks()
             gPad->SetBottomMargin(0.1);
             gPad->SetRightMargin(0.05);
             gPad->SetTopMargin(0.05);
-            hMassClusterBg[j][i]->SetTitle(";M_{#gamma#gamma};counts");
+            hMassCluster[j][i]->SetTitle(";M_{#gamma#gamma};counts");
             double max = hMassCluster[j][i]->GetBinContent(hMassCluster[j][i]->GetMaximumBin());
-            hMassClusterBg[j][i]->GetXaxis()->SetRangeUser(0., 350.);
-            hMassClusterBg[j][i]->GetYaxis()->SetRangeUser(0., max+0.2*max);
-            hMassClusterBg[j][i]->Draw("PE");
-            hMassCluster[j][i]->Draw("PE SAME");
+            hMassCluster[j][i]->GetXaxis()->SetRangeUser(0., 450.);
+            hMassCluster[j][i]->GetYaxis()->SetRangeUser(0., max+0.2*max);
+            //hMassClusterBg[j][i]->Draw("PE");
+            hMassCluster[j][i]->Draw("PE");
             //hMassClusterMixed[j][i]->Draw("PE SAME");
             fBg[j][i]->Draw("SAME");
-            fPeak[j][i]->Draw("SAME");
+            //fPeak[j][i]->Draw("SAME");
             fBg[j][i]->SetLineWidth(1);
             fPeak[j][i]->SetLineWidth(1);
             fFit[j][i]->SetLineWidth(1);
-            fFit[j][i]->Draw("SAME");
+            //fFit[j][i]->Draw("SAME");
 
             TLine *minMassBorder = new TLine(massmin[j][i], 0., massmin[j][i], max);
             TLine *maxMassBorder = new TLine(massmax[j][i], 0., massmax[j][i], max);
@@ -277,6 +279,9 @@ void FitMassPeaks()
             //    massmax[i][j] = fitPar[7]+6.*fitPar[9];
             //}
 
+            massmin[i][j] = 50.;
+            massmax[i][j] = 220.;
+
             peakPos[i][j] = fitPar[7];
             peakPosErr[i][j] = fFit[i][j]->GetParError(7);
 
@@ -318,7 +323,10 @@ void CreateGraphs()
         cout << "\npt = " << legHeader[i]<< endl;
         for (int j=0; j<nset; j++) {
             //eff[i][j] = fPeak[j][i]->Integral(110, 160)/hCounter->GetBinContent(i+1);
-            eff[i][j] = (hMassCluster[j][i]->Integral(hMassCluster[j][i]->FindBin(massmin[j][i]), hMassCluster[j][i]->FindBin(massmax[j][i])) - fBg[j][i]->Integral(massmin[j][i], massmax[j][i])/hMassCluster[j][i]->GetBinWidth(0))/(hCounter->GetBinContent(i+1));
+            if (i==npt-1)
+                eff[i][j] = hMassCluster[j][i]->Integral(hMassCluster[j][i]->FindBin(massmin[j][i]), hMassCluster[j][i]->FindBin(massmax[j][i]))/(hCounter->GetBinContent(i+1));
+            else
+                eff[i][j] = (hMassCluster[j][i]->Integral(hMassCluster[j][i]->FindBin(massmin[j][i]), hMassCluster[j][i]->FindBin(massmax[j][i])) - fBg[j][i]->Integral(massmin[j][i], massmax[j][i])/hMassCluster[j][i]->GetBinWidth(0))/(hCounter->GetBinContent(i+1));
             cout << "asymmetry " << asymmetry[j] << "\tEff : " << eff[i][j] << endl;
             //eff[i][j] = hMassCluster[j][i]->Integral(hMassCluster[j][i]->FindBin(110), hMassCluster[j][i]->FindBin(160))/hCounter->GetBinContent(i+1);
             //double dPeak = fFit[j][i]->IntegralError(110, 160)/fFit[j][i]->Integral(110, 160);

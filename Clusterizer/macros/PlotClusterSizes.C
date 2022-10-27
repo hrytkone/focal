@@ -39,14 +39,19 @@ TCanvas *cClusterPerGammaEnergyProj;
 TCanvas *cLeadingClusterDeltaPhiDeltaEta;
 EColor mColor[npt] = {kBlue, kRed, kOrange, kBlack, kMagenta, kCyan};
 
+double xmax[necut] = {25., 20., 20., 20., 20., 15.};
+
 void LoadData();
 void CreateLegend();
+void SetStyle(Bool_t graypalette);
 
 void PlotClusterSizes()
 {
-    gStyle->SetOptStat(0);
-    gStyle->SetPadBottomMargin(0.15);
-    gStyle->SetPadLeftMargin(0.15);
+    //gStyle->SetOptStat(0);
+    //gStyle->SetPadBottomMargin(0.15);
+    //gStyle->SetPadLeftMargin(0.15);
+
+    SetStyle(0);
 
     LoadData();
     CreateLegend();
@@ -69,8 +74,6 @@ void PlotClusterSizes()
 
         cCumulative[iecut] = new TCanvas(Form("cCumulative_%d", iecut), "", 600, 600);
         for (int i=0; i<npt; i++) {
-            hCumulative[i][iecut]->SetTitle(";N_{clust};");
-            hCumulative[i][iecut]->GetYaxis()->SetTitleOffset(1.);
             if (i==0) {
                 hCumulative[i][iecut]->Draw("HIST");
             } else {
@@ -125,6 +128,7 @@ void LoadData()
             hNumberOfClusters[ipt][iecut]->SetMarkerColor(mColor[ipt]);
             hNumberOfClusters[ipt][iecut]->SetLineColor(mColor[ipt]);
             hNumberOfClusters[ipt][iecut]->GetYaxis()->SetMaxDigits(3);
+            hNumberOfClusters[ipt][iecut]->SetLineWidth(1);
 
             hCumulative[ipt][iecut] = hNumberOfClusters[ipt][iecut]->GetCumulative();
             hCumulative[ipt][iecut]->SetMarkerStyle(kOpenCircle);
@@ -132,6 +136,14 @@ void LoadData()
             hCumulative[ipt][iecut]->SetMarkerColor(mColor[ipt]);
             hCumulative[ipt][iecut]->SetLineColor(mColor[ipt]);
             hCumulative[ipt][iecut]->GetYaxis()->SetMaxDigits(3);
+            hCumulative[ipt][iecut]->SetTitle(";N_{clust};CDF");
+            hCumulative[ipt][iecut]->SetLineWidth(1);
+            hCumulative[ipt][iecut]->GetXaxis()->SetRangeUser(0., xmax[iecut]);
+            hCumulative[ipt][iecut]->GetYaxis()->SetTitleOffset(1.);
+            hCumulative[ipt][iecut]->GetYaxis()->SetTitleSize(0.042);
+            hCumulative[ipt][iecut]->GetXaxis()->SetTitleSize(0.042);
+            hCumulative[ipt][iecut]->GetYaxis()->SetLabelSize(0.042);
+            hCumulative[ipt][iecut]->GetXaxis()->SetLabelSize(0.042);
         }
     }
     hClusterPt = (TH1D*)fin->Get("hClusterPt");
@@ -160,15 +172,57 @@ void LoadData()
     //hLeadingClusterDeltaPhiDeltaEta->Scale(1., "width");
 }
 
+void SetStyle(Bool_t graypalette)
+{
+    cout << "Setting style!" << endl;
+
+    //gStyle->Reset("Plain");
+    //gStyle->SetOptTitle(0);
+    gStyle->SetOptStat(0);
+    //gStyle->SetLineScalePS(1);
+    //if(graypalette) gStyle->SetPalette(8,0);
+    //else gStyle->SetPalette(1);
+    gStyle->SetCanvasColor(10);
+    gStyle->SetCanvasBorderMode(0);
+    gStyle->SetFrameLineWidth(2);
+    gStyle->SetFrameFillColor(kWhite);
+    gStyle->SetPadColor(10);
+    gStyle->SetPadTickX(0);
+    gStyle->SetPadTickY(0);
+    gStyle->SetPadBottomMargin(0.15);
+    gStyle->SetPadLeftMargin(0.15);
+    gStyle->SetHistLineWidth(2);
+    //gStyle->SetHistLineColor(kRed);
+    gStyle->SetFuncWidth(2);
+    //gStyle->SetFuncColor(kGreen);
+    gStyle->SetLineWidth(2);
+    gStyle->SetLabelSize(0.045,"xyz");
+    gStyle->SetLabelOffset(0.01,"y");
+    gStyle->SetLabelOffset(0.01,"x");
+    gStyle->SetLabelColor(kBlack,"xyz");
+    //gStyle->SetTitleSize(0.035,"xyz");
+    //gStyle->SetTitleOffset(1.25,"y");
+    //gStyle->SetTitleOffset(1.2,"x");
+    //gStyle->SetTitleFillColor(kWhite);
+    gStyle->SetTextSizePixels(26);
+    gStyle->SetTextFont(42);
+    //  gStyle->SetTickLength(0.04,"X");  gStyle->SetTickLength(0.04,"Y");
+
+    gStyle->SetLegendBorderSize(0);
+    gStyle->SetLegendFillColor(kWhite);
+    //  gStyle->SetFillColor(kWhite);
+    gStyle->SetLegendFont(42);
+}
+
 void CreateLegend()
 {
     // Legend for singal-to-background figure
     for (int iecut=0; iecut<necut; iecut++) {
-        leg[iecut] = new TLegend(0.17, 0.67, 0.72, 0.87);
-        leg[iecut]->SetFillStyle(0); leg[iecut]->SetBorderSize(0); leg[iecut]->SetTextSize(0.025);
-        leg[iecut]->SetNColumns(2);
+        leg[iecut] = new TLegend(0.47, 0.27, 0.82, 0.67);
+        leg[iecut]->SetFillStyle(0); leg[iecut]->SetBorderSize(0); leg[iecut]->SetTextSize(0.035);
+        //leg[iecut]->SetNColumns(2);
         leg[iecut]->SetHeader(legHeader[iecut].Data(), "C");
         for (int i=0; i<npt; i++)
-            leg[iecut]->AddEntry(hNumberOfClusters[i][iecut], legEntry[i], "lep");
+            leg[iecut]->AddEntry(hNumberOfClusters[i][iecut], legEntry[i], "l");
     }
 }

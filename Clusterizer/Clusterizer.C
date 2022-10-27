@@ -3,12 +3,12 @@
 
 AliJHMREvent *event;
 
-void Clusterizer(TString simFolder, Int_t njobs)
+void Clusterizer(TString simFolder, TString clusteringOutputFileDir, Int_t njobs)
 {
     gSystem->Load("/home/heimarry/alice/sw/ubuntu1804_x86-64/AliRoot/latest/lib/libpythia6.so");
     gSystem->Load("/home/heimarry/alice/sw/ubuntu1804_x86-64/AliRoot/latest/lib/libAliPythia6.so");
 
-    InitCombinedData();
+    InitCombinedData(clusteringOutputFileDir);
     InitClusterizer();
     CreateClusterMaps();
 
@@ -31,7 +31,6 @@ void Clusterizer(TString simFolder, Int_t njobs)
         LoadClusterizerHit(inputFile);
 
         int nev = fRunLoader->GetNumberOfEvents();
-        //int nev = 10;
         cout << "\tN EVENTS : " << nev << endl;
         for (int ievt = 0; ievt < nev; ievt++) {
             LoadEvent(simFolder, ifolder, ievt);
@@ -85,7 +84,7 @@ int CheckFile(TString filename)
     return 1;
 }
 
-void InitCombinedData()
+void InitCombinedData(TString clusteringOutputFileDir)
 {
     outfile = TFile::Open(Form("%s/output.root", clusteringOutputFileDir.Data()), "RECREATE");
     tree = new TTree("Run", "MC and cluster data for FoCal");

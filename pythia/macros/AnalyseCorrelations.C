@@ -44,7 +44,8 @@ void processDataSTAR()
 void processDataFoCal()
 {
 	TString fInName[ndata_focal] = {
-        "/home/heimarry/Simulations/focal/pythia/fullsim_pthard-2_asym-08_bigger-windows_n1m_no-weights.root"
+        "/home/heimarry/Simulations/focal/analysis_output/2022-11-06/output_analysis.root"
+        //"/home/heimarry/Simulations/focal/pythia/fullsim_pthard-2_asym-08_bigger-windows_n1m_no-weights.root"
         //"/home/heimarry/Simulations/focal/pythia/full-sim_trigg-not-weighted_mixed.root"
         //"/home/heimarry/Simulations/focal/pythia/full-sim_eta-4-5_weighted.root"
         //"/home/heimarry/Simulations/focal-pythia-sim/focal-pp_test-bg-weight.root"

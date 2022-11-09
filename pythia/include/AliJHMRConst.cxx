@@ -1,7 +1,7 @@
 #include "AliJHMRConst.h"
 
 const double detEta[NDET][2] = {
-    {4.2, 5.3},
+    {4.1, 5.4},
     //{3.5, 5.8},
 	{2.6, 4.},
 	{-0.8, 0.8},
@@ -45,7 +45,6 @@ const double pi0eff = 0.9795;
 //const double effCorrAssoc[NASSOCBINS] = {0.2903, 0.385151, 0.47261, 0.590262, 0.649246};
 const double effCorrTrigg[NTRIGGBINS] = {0.485133, 0.610642, 0.674529, 0.561265};
 const double effCorrAssoc[NASSOCBINS] = {0.297458, 0.383115, 0.485133, 0.610642, 0.674529};
-
 
 const double etacut = 0.;
 const double asymcut = 0.8;

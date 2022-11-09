@@ -1,4 +1,4 @@
-const TString outputname = "efficiency_asym-08_v1.3_calib";
+const TString outputname = "efficiency_asym-08_v1.3_cc-12200";
 const double asymcut = 0.8;
 
 const int nPtBin = 6;
@@ -9,8 +9,13 @@ const int nEtaBin = 52;
 double eta[nEtaBin+1];
 double etaBW = 0.05, etamin = 3.2, etamax = 5.8;
 
-const int nPhiBin = 52;
+//const int nPhiBin = 52;
+const int nPhiBin = 104;
 double phimin = -TMath::Pi(), phimax = TMath::Pi();
+
+//const int nThetaBin = 52;
+const int nThetaBin = 104;
+double thetamin = 0., thetamax = 0.12;
 
 TFile *fIn, *fOut;
 TTree *fTree;
@@ -34,6 +39,7 @@ TH2D *hPtMass;
 TH2D *hEtaMass[nPtBin];
 TH2D *hPhiEtaTrue;
 TH2D *hPhiEta;
+TH2D *hPhiTheta;
 
 TH1D *hMassCluster[nEtaBin][nPtBin];
 TH1D *hEPhotonCluster;

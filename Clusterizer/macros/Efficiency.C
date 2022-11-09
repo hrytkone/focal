@@ -11,8 +11,8 @@ void Efficiency(TString inputfile)
 
     InitOutput();
 
-    //int nev = 1000;
     int nev = fTree->GetEntries();
+    //nev = 100;
     cout << "Processing " << nev << " events" << endl;
     for (int iev=0; iev<nev; iev++) {
 
@@ -98,6 +98,7 @@ void InitOutput()
 
     hPhiEtaTrue = new TH2D("hPhiEtaTrue", "hPhiEtaTrue", nPhiBin, phimin, phimax, nEtaBin, eta);
     hPhiEta = new TH2D("hPhiEta", "hPhiEta", nPhiBin, phimin, phimax, nEtaBin, eta);
+    hPhiTheta = new TH2D("hPhiTheta", "hPhiTheta", nPhiBin, phimin, phimax, nThetaBin, thetamin, thetamax);
 }
 
 void FillTruePions()
@@ -139,8 +140,10 @@ void FillMassHistos(TClonesArray *clusters)
                 hMassCluster[etabin][ptbin]->Fill(mass);
                 hPtMass->Fill(lvSum.Pt(), mass);
                 hEtaMass[ptbin]->Fill(lvSum.Eta(), mass);
-                if (mass > 110. && mass < 140.)
+                if (mass > 110. && mass < 160.) {
                     hPhiEta->Fill(lvSum.Phi(), lvSum.Eta());
+                    hPhiTheta->Fill(lvSum.Phi(), lvSum.Theta());
+                }
             }
         }
     }

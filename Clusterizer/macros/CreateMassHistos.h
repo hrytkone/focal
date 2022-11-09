@@ -1,6 +1,6 @@
 //const TString outputname = "test";
 //const TString outputname = "etacut_37-56_pthard-2";
-const TString outputname = "gamma_etacut_42-53";
+const TString outputname = "low-mass_etacut_42-53";
 const int nasym = 6;
 const int npt = 6;
 

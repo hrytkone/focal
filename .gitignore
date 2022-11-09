@@ -9,8 +9,10 @@ STAR-data
 *.zip
 *.pdf
 *.eps
+*.png
 *.o
 Clusterizer/*.log
 nanoDict*
 *_cxx*
 Clusterizer/results
+analysis_output

@@ -23,17 +23,19 @@ bool AliJHMRCorr::IsMassWindow(double mass, int ibin, bool isTriggBin)
 {
 
     if (isTriggBin) {
-        //std::cout << isTriggBin << "\tibin: " << ibin << "\tmass: " << mass << "\tmass window: [" << massPeakPosTrigg[ibin]-3.*massSigmaTrigg[ibin] << " " << massPeakPosTrigg[ibin]+3.*massSigmaTrigg[ibin] << "]" << std::endl;
-        if (mass > massPeakPosTrigg[ibin]-3.*massSigmaTrigg[ibin] && mass < massPeakPosTrigg[ibin]+3.*massSigmaTrigg[ibin])
+        if (mass > massPeakPosTrigg[ibin]-3.*massSigmaTrigg[ibin] && mass < massPeakPosTrigg[ibin]+3.*massSigmaTrigg[ibin]) {
+            std::cout << isTriggBin << "\tibin: " << ibin << "\tmass: " << mass << "\tmass window: [" << massPeakPosTrigg[ibin]-3.*massSigmaTrigg[ibin] << " " << massPeakPosTrigg[ibin]+3.*massSigmaTrigg[ibin] << "]" << std::endl;
             return true;
-        else
+        } else {
             return false;
+        }
     } else {
-        //std::cout << isTriggBin << "\tibin: " << ibin << "\tmass: " << mass << "\tmass window: [" << massPeakPosAssoc[ibin]-3.*massSigmaAssoc[ibin] << " " << massPeakPosAssoc[ibin]+3.*massSigmaAssoc[ibin] << "]" << std::endl;
-        if (mass > massPeakPosAssoc[ibin]-3.*massSigmaAssoc[ibin] && mass < massPeakPosAssoc[ibin]+3.*massSigmaAssoc[ibin])
+        if (mass > massPeakPosAssoc[ibin]-3.*massSigmaAssoc[ibin] && mass < massPeakPosAssoc[ibin]+3.*massSigmaAssoc[ibin]) {
+            std::cout << isTriggBin << "\tibin: " << ibin << "\tmass: " << mass << "\tmass window: [" << massPeakPosAssoc[ibin]-3.*massSigmaAssoc[ibin] << " " << massPeakPosAssoc[ibin]+3.*massSigmaAssoc[ibin] << "]" << std::endl;
             return true;
-        else
+        } else {
             return false;
+        }
     }
     return false;
 }
@@ -103,13 +105,13 @@ void AliJHMRCorr::GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector
         if (bUseLeading) {
             if (i != iLeadingTrigg && iAssoc >= 0) listAssoc.push_back(i);
         } else {
-            //if (fIsFullSim) {
-            //    if (iTrigg >= 0 && IsMassWindow(mass, iTrigg, 1)) listTrigg.push_back(i);
-            //    if (iAssoc >= 0 && IsMassWindow(mass, iAssoc, 0)) listAssoc.push_back(i);
-            //} else {
+            if (fIsFullSim) {
+                if (iTrigg >= 0 && IsMassWindow(mass, iTrigg, 1)) listTrigg.push_back(i);
+                if (iAssoc >= 0 && IsMassWindow(mass, iAssoc, 0)) listAssoc.push_back(i);
+            } else {
                 if (iTrigg >= 0) listTrigg.push_back(i);
                 if (iAssoc >= 0)  listAssoc.push_back(i);
-            //}
+            }
         }
         //if (iTrigg >= 0 && IsMassWindow(mass, iTrigg, 1)) binsWithTrigg[iTrigg]++;
         if (iTrigg >= 0) binsWithTrigg[iTrigg]++;

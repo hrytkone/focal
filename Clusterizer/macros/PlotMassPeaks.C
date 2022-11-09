@@ -4,10 +4,10 @@ const int npt = 6;
 //const TString filename = "etacut_4-5_shapecut_4-06.root";
 //const TString filename = "etacut_37-56.root";
 //const TString filename = "etacut_4-5_pthard-2.root";
-const TString filename = "etacut_42-53.root";
+const TString filename = "masses_etacut_42-53.root";
 //const TString filename = "etacut_37-56_pthard-2.root";
 //const TString filename = "etacut_37-56_diff-pt-bins_1.root";
-const TString lowmassfilename = "gamma_etacut_42-53.root";
+const TString lowmassfilename = "low-mass_etacut_42-53.root";
 const TString legEta = "4.2 < #eta < 5.3";
 
 //------------------------------------------------------------------------------
@@ -118,7 +118,7 @@ void PlotMassPeaks()
             double max = hMassCluster[j][i]->GetBinContent(hMassCluster[j][i]->GetMaximumBin());
             hMassCluster[j][i]->GetXaxis()->SetRangeUser(0., 450.);
             hMassCluster[j][i]->GetYaxis()->SetRangeUser(0., max+0.2*max);
-            //hMassClusterBg[j][i]->Draw("PE");
+            hMassClusterBg[j][i]->Draw("PE");
             hMassCluster[j][i]->Draw("PE");
             //hMassClusterMixed[j][i]->Draw("PE SAME");
             fBg[j][i]->Draw("SAME");
@@ -126,7 +126,7 @@ void PlotMassPeaks()
             fBg[j][i]->SetLineWidth(1);
             fPeak[j][i]->SetLineWidth(1);
             fFit[j][i]->SetLineWidth(1);
-            //fFit[j][i]->Draw("SAME");
+            fFit[j][i]->Draw("SAME");
 
             TLine *minMassBorder = new TLine(massmin[j][i], 0., massmin[j][i], max);
             TLine *maxMassBorder = new TLine(massmax[j][i], 0., massmax[j][i], max);

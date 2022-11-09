@@ -1,5 +1,5 @@
 //const TString filename = "efficiency_asym-08_v1.3_calib.root";
-const TString filename = "efficiency_asym-08_v1.2.root";
+const TString filename = "efficiency_asym-08_v1.3_cc-12200.root";
 
 const int nPtBin = 6;
 double pt[nPtBin+1], limMin = 2, limMax = 20;
@@ -15,6 +15,7 @@ TH2D *hEtaPtTrue;
 TH2D *hEtaPtRec;
 TH2D *hPhiEtaTrue;
 TH2D *hPhiEta;
+TH2D *hPhiTheta;
 
 TH2D *hEfficiency;
 TH1D *hEfficiency_py;
@@ -106,6 +107,7 @@ void PlotEfficiency()
     textPion.SetTextColor(kWhite);
     textPion.SetTextSize(0.035);
     textPion.DrawLatexNDC(.18,.28,"m_{#pi0}=135 MeV/c^{2}");
+    //c6->SaveAs("pion-mass.png");
 
     //TLatex textEta;
     //textEta.SetTextColor(kWhite);
@@ -121,23 +123,24 @@ void PlotEfficiency()
     c7->cd(1);
     gPad->SetTheta(90.);
     gPad->SetPhi(0.);
-    gPad->DrawFrame(-5.8, -5.8, 5.8, 5.8);
-    hPhiEtaTrue->RebinY();
+    //gPad->DrawFrame(-5.8, -5.8, 5.8, 5.8);
+    //hPhiEtaTrue->RebinY();
     hPhiEtaTrue->GetXaxis()->SetTitleSize(0.042);
     hPhiEtaTrue->GetYaxis()->SetTitleSize(0.042);
     hPhiEtaTrue->GetXaxis()->SetLabelSize(0.042);
     hPhiEtaTrue->GetYaxis()->SetLabelSize(0.042);
     hPhiEtaTrue->SetTitle(";#phi;#eta");
     //hPhiEtaTrue->Draw("lego2 pol");
-    hPhiEtaTrue->Draw("same colz pol");
-    //hPhiEtaTrue->Draw("same colz");
+    //hPhiEtaTrue->Draw("colz psr");
+    //hPhiEtaTrue->Draw("same colz pol");
+    hPhiEtaTrue->Draw("same colz");
 
 
     c7->cd(2);
     gPad->SetTheta(90.);
     gPad->SetPhi(0.);
-    gPad->DrawFrame(-5.8, -5.8, 5.8, 5.8);
-    hPhiEta->RebinY();
+    //gPad->DrawFrame(-5.8, -5.8, 5.8, 5.8);
+    //hPhiEta->RebinY();
     hPhiEta->Divide(hPhiEtaTrue);
     hPhiEta->GetXaxis()->SetTitleSize(0.042);
     hPhiEta->GetYaxis()->SetTitleSize(0.042);
@@ -145,8 +148,8 @@ void PlotEfficiency()
     hPhiEta->GetYaxis()->SetLabelSize(0.042);
     hPhiEta->SetTitle(";#phi;#eta");
     //hPhiEta->Draw("lego2 pol");
-    hPhiEta->Draw("same colz pol");
-    //hPhiEta->Draw("same colz");
+    //hPhiEta->Draw("same colz pol");
+    hPhiEta->Draw("same colz");
 
     TCanvas *c8 = new TCanvas("c8", "c8", 1200, 600);
     c8->Divide(2, 1);
@@ -156,6 +159,49 @@ void PlotEfficiency()
 
     c8->cd(2);
     hPhiEta->ProjectionX()->Draw("HIST");
+
+    // Theta-phi histogram plotting
+    TCanvas *c9 = new TCanvas("c9", "c9", 600, 600);
+
+    gPad->SetTheta(90.);
+    gPad->SetPhi(0.);
+    //gPad->DrawFrame(-0.049, -0.049, 0.049, 0.049);
+    gPad->DrawFrame(-0.07, -0.07, 0.07, 0.07);
+    hPhiTheta->SetTitle(";#phi;#theta");
+    hPhiTheta->GetYaxis()->SetRangeUser(0.,0.12);
+    hPhiTheta->GetXaxis()->SetTitleSize(0.);
+    hPhiTheta->GetYaxis()->SetTitleSize(0.);
+    hPhiTheta->GetXaxis()->SetLabelOffset(999);
+    hPhiTheta->GetXaxis()->SetLabelSize(0.);
+    hPhiTheta->GetYaxis()->SetLabelOffset(999);
+    hPhiTheta->GetYaxis()->SetLabelSize(0.);
+    //hPhiTheta->Draw("surf1 pol");
+    hPhiTheta->Draw("same col2 pol");
+    //hPhiTheta->Draw("");
+    TEllipse *ring1 = new TEllipse(0, 0, 0.04);
+    ring1->SetLineColor(kWhite);
+    ring1->SetLineWidth(2);
+    ring1->SetLineStyle(2);
+    ring1->SetFillStyle(0);
+    ring1->Draw("same");
+
+    TEllipse *ring2 = new TEllipse(0, 0, 0.02);
+    ring2->SetLineColor(kWhite);
+    ring2->SetLineWidth(2);
+    ring2->SetLineStyle(2);
+    ring2->SetFillStyle(0);
+    ring2->Draw("same");
+
+    TLatex text;
+    text.SetTextColor(kWhite);
+    text.SetTextFont(62);
+    text.SetTextSize(0.052);
+    text.DrawLatexNDC(0.475, 0.74, "#eta = 3.9");
+    text.DrawLatexNDC(0.475, 0.625, "#eta = 4.6");
+    gPad->Update();
+
+
+    c9->SaveAs("phi-theta-pol.pdf");
 }
 
 void LoadData()
@@ -173,6 +219,7 @@ void LoadData()
     hEfficiency_py->Divide(hEtaPtTrue_py);
 
     hPtMass = (TH2D*)fin->Get("hPtMass");
+    hPhiTheta = (TH2D*)fin->Get("hPhiTheta");
     hPhiEta = (TH2D*)fin->Get("hPhiEta");
     hPhiEtaTrue = (TH2D*)fin->Get("hPhiEtaTrue");
     for (int ipt=0; ipt<nPtBin; ipt++)
@@ -291,7 +338,7 @@ void SetStyle(Bool_t graypalette)
     gStyle->SetHistLineColor(kRed);
     gStyle->SetFuncWidth(1);
     gStyle->SetFuncColor(kRed);
-    gStyle->SetLineWidth(1);
+    gStyle->SetLineWidth(0);
     gStyle->SetLabelSize(0.042,"xyz");
     gStyle->SetLabelOffset(0.01,"y");
     gStyle->SetLabelOffset(0.01,"x");

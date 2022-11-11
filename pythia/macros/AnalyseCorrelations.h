@@ -37,11 +37,18 @@ TH1D *hMassAssocSide[nTriggBins][nAssocBins];
 
 TH2D *hCorrReal[nTriggBins][nAssocBins];
 TH2D *hCorrMeas[nTriggBins][nAssocBins];
+
+// Same event
 TH2D *hCorrMassMass[nTriggBins][nAssocBins];
 TH2D *hCorrMassSide[nTriggBins][nAssocBins];
 TH2D *hCorrSideMass[nTriggBins][nAssocBins];
 TH2D *hCorrSideSide[nTriggBins][nAssocBins];
+
+// Mixed event
 TH2D *hCorrMassMassMixed[nTriggBins][nAssocBins];
+TH2D *hCorrMassSideMixed[nTriggBins][nAssocBins];
+TH2D *hCorrSideMassMixed[nTriggBins][nAssocBins];
+TH2D *hCorrSideSideMixed[nTriggBins][nAssocBins];
 
 // Output
 double parTrigg[8];
@@ -57,7 +64,7 @@ double assocSigmaPeak[nTriggBins][nAssocBins] = {0};
 double assocSigmaSide[nTriggBins][nAssocBins] = {0};
 
 double alpha[nTriggBins][nAssocBins];
-double beta[nTriggBins][nAssocBins];
+double beeta[nTriggBins][nAssocBins];
 double yamma[nTriggBins][nAssocBins];
 double st[nTriggBins];
 double stobtrigg[nTriggBins];
@@ -82,7 +89,6 @@ TH1D *hCorrMassMassProj[nTriggBins][nAssocBins];
 TH1D *hCorrMassSideProj[nTriggBins][nAssocBins];
 TH1D *hCorrSideMassProj[nTriggBins][nAssocBins];
 TH1D *hCorrSideSideProj[nTriggBins][nAssocBins];
-TH1D *hCorrMassMassMixedProj[nTriggBins][nAssocBins];
 TH1D *hCorr[nTriggBins][nAssocBins];
 
 TFile *fIn;
@@ -111,6 +117,7 @@ void processDataFoCal();
 
 void LoadInput();
 void DoAnalysis();
+void MixedEventCorrection();
 void FitMassPeaks();
 void GetScaleFactorsVersion1();
 void GetScaleFactorsVersion2();

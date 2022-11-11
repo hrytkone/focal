@@ -40,7 +40,6 @@ TH1D *hCorrFinal[nset][nTriggBins][nAssocBins];
 TH1D *hCorrMeas[nset][nTriggBins][nAssocBins];
 TH1D *hRatioFinal[nset][nTriggBins][nAssocBins];
 TH1D *hRatioMeas[nset][nTriggBins][nAssocBins];
-TH1D *hCorrMixed[nset][nTriggBins][nAssocBins];
 TH1D *hRatioPt;
 TLegend *leg[nset][nTriggBins][nAssocBins];
 
@@ -71,9 +70,6 @@ void LoadData()
                 hCorrReal[iset][itrigg][iassoc]  = (TH1D*)fin[iset]->Get(Form("hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp));  //hCorrReal[iset][itrigg][iassoc]->Rebin(6);
                 hCorrFinal[iset][itrigg][iassoc] = (TH1D*)fin[iset]->Get(Form("hCorrFinal[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));   //hCorrFinal[iset][itrigg][iassoc]->Rebin(6);
                 hCorrMeas[iset][itrigg][iassoc]  = (TH1D*)fin[iset]->Get(Form("hCorrMeas[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp)); //hCorrMeas[iset][itrigg][iassoc]->Rebin(6);
-				hCorrMixed[iset][itrigg][iassoc] = (TH1D*)fin[iset]->Get(Form("hCorrMassMassMixed[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp)); //hCorrMeas[iset][itrigg][iassoc]->Rebin(6);
-                double scale = hCorrFinal[iset][itrigg][iassoc]->Integral(hCorrFinal[iset][itrigg][iassoc]->FindBin(1.), hCorrMixed[iset][itrigg][iassoc]->FindBin(2.))/hCorrMixed[iset][itrigg][iassoc]->Integral(hCorrMixed[iset][itrigg][iassoc]->FindBin(1.), hCorrMixed[iset][itrigg][iassoc]->FindBin(2.));
-                hCorrMixed[iset][itrigg][iassoc]->Scale(scale);
 
                 // Calculate ratios
                 hRatioFinal[iset][itrigg][iassoc] = (TH1D*)hCorrReal[iset][itrigg][iassoc]->Clone(Form("hRatioFinal[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp));
@@ -111,10 +107,6 @@ void ConfigHistos()
                 hCorrMeas[iset][itrigg][iassoc]->SetMarkerColor(kBlue);
                 hCorrMeas[iset][itrigg][iassoc]->SetMarkerStyle(20);
                 hCorrMeas[iset][itrigg][iassoc]->SetMarkerSize(mSize);
-                hCorrMixed[iset][itrigg][iassoc]->SetLineColor(kBlack);
-                hCorrMixed[iset][itrigg][iassoc]->SetMarkerColor(kBlack);
-                hCorrMixed[iset][itrigg][iassoc]->SetMarkerStyle(20);
-                hCorrMixed[iset][itrigg][iassoc]->SetMarkerSize(mSize);
 
                 hRatioFinal[iset][itrigg][iassoc]->GetYaxis()->SetRangeUser(0., 5.);
                 hRatioFinal[iset][itrigg][iassoc]->SetLineColor(kRed-9);
@@ -131,9 +123,9 @@ void ConfigHistos()
                 leg[iset][itrigg][iassoc]->SetFillStyle(0); leg[iset][itrigg][iassoc]->SetBorderSize(0); leg[iset][itrigg][iassoc]->SetTextSize(0.05);
                 leg[iset][itrigg][iassoc]->SetHeader(Form("#splitline{%s}{[%0.1f,%0.1f][%0.1f,%0.1f]}", legHeader[iset].Data(),triggPt[itrigg],triggPt[itrigg+1],assocPt[iassoc],assocPt[iassoc+1]));
                 leg[iset][itrigg][iassoc]->AddEntry(hCorrReal[0][0][0], "MC truth", "pe");
-                leg[iset][itrigg][iassoc]->AddEntry(hCorrMeas[0][0][0], "GEANT3 sim", "pe");
-                //leg[iset][itrigg][iassoc]->AddEntry(hCorrMeas[0][0][0], "Before SB corr", "pe");
-                //leg[iset][itrigg][iassoc]->AddEntry(hCorrFinal[0][0][0], "After SB corr", "pe");
+                //leg[iset][itrigg][iassoc]->AddEntry(hCorrMeas[0][0][0], "GEANT3 sim", "pe");
+                leg[iset][itrigg][iassoc]->AddEntry(hCorrMeas[0][0][0], "Before SB corr", "pe");
+                leg[iset][itrigg][iassoc]->AddEntry(hCorrFinal[0][0][0], "After SB corr", "pe");
             }
         }
     }
@@ -175,7 +167,6 @@ void DrawFiliPad()
                 hCorrReal[iset][itrigg][iassoc]->Draw("P");
                 hCorrMeas[iset][itrigg][iassoc]->Draw("SAME P");
                 //hCorrFinal[iset][itrigg][iassoc]->Draw("SAME P");
-                //hCorrMixed[iset][itrigg][iassoc]->Draw("SAME P");
                 leg[iset][itrigg][iassoc]->Draw("SAME");
                 t->Draw("SAME");
 

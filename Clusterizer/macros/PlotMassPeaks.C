@@ -4,11 +4,11 @@ const int npt = 6;
 //const TString filename = "etacut_4-5_shapecut_4-06.root";
 //const TString filename = "etacut_37-56.root";
 //const TString filename = "etacut_4-5_pthard-2.root";
-const TString filename = "masses_etacut_42-53.root";
+const TString filename = "etacut_41-55.root";
 //const TString filename = "etacut_37-56_pthard-2.root";
 //const TString filename = "etacut_37-56_diff-pt-bins_1.root";
 const TString lowmassfilename = "low-mass_etacut_42-53.root";
-const TString legEta = "4.2 < #eta < 5.3";
+const TString legEta = "4.1 < #eta < 5.5";
 
 //------------------------------------------------------------------------------
 
@@ -85,6 +85,7 @@ void CreateLegends();
 void FitMassPeaks();
 void CreateGraphs();
 double FitPeak(double *x, double *p);
+Double_t LorentzianPeak(Double_t *x, Double_t *p);
 double FitBackground(double *x, double *p);
 double FitFunction(double *x, double *p);
 
@@ -116,7 +117,7 @@ void PlotMassPeaks()
             gPad->SetTopMargin(0.05);
             hMassCluster[j][i]->SetTitle(";M_{#gamma#gamma};counts");
             double max = hMassCluster[j][i]->GetBinContent(hMassCluster[j][i]->GetMaximumBin());
-            hMassCluster[j][i]->GetXaxis()->SetRangeUser(0., 450.);
+            hMassCluster[j][i]->GetXaxis()->SetRangeUser(0., 750.);
             hMassCluster[j][i]->GetYaxis()->SetRangeUser(0., max+0.2*max);
             hMassClusterBg[j][i]->Draw("PE");
             hMassCluster[j][i]->Draw("PE");
@@ -133,8 +134,8 @@ void PlotMassPeaks()
             minMassBorder->SetLineStyle(7);
             maxMassBorder->SetLineStyle(7);
 
-            //minMassBorder->Draw("SAME");
-            //maxMassBorder->Draw("SAME");
+            minMassBorder->Draw("SAME");
+            maxMassBorder->Draw("SAME");
             leg[j][i]->Draw("SAME");
         }
         c1[j]->SaveAs(Form("mass_%d.eps", j));
@@ -246,15 +247,20 @@ void FitMassPeaks()
     for (int i=0; i<nset; i++) {
         cout << "\nAsymmetry " << asymmetry[i] << endl;
         for (int j=0; j<npt; j++) {
-            fFit[i][j] = new TF1(Form("fFit_%d_%d", i, j), FitFunction, fitStartingPoint[j], 400, 10);
-            fFit[i][j]->SetParameters(0., 0., 0., 0., 0., 1., 1., 135., 5., 10.);
+            fFit[i][j] = new TF1(Form("fFit_%d_%d", i, j), FitFunction, fitStartingPoint[j], 450, 10);
+            fFit[i][j]->SetParameters(0., 0., 0., 0., 0., 1., 1., 135., 5., 1.);
             fFit[i][j]->SetParLimits(7, 130., 160.);
-            fFit[i][j]->SetParLimits(8, 0.1, 50.);
-            fFit[i][j]->SetParLimits(9, 5., 50.);
+            fFit[i][j]->SetParLimits(8, 2., 50.);
+            fFit[i][j]->SetParLimits(9, 1., 10.);
+
+            //fFit[i][j] = new TF1(Form("fFit_%d_%d", i, j), FitFunction, fitStartingPoint[j], 400, 8);
+            //fFit[i][j]->SetParameters(0., 0., 0., 0., 0., 100., 100., 135.);
+            //fFit[i][j]->SetParLimits(8, 120., 160.);
+
             fFit[i][j]->FixParameter(0, 0.);
             fFit[i][j]->FixParameter(1, 0.);
-            fFit[i][j]->FixParameter(6, 0.);
-            fFit[i][j]->FixParameter(9, 0.);
+            //fFit[i][j]->FixParameter(6, 0.);
+            //fFit[i][j]->FixParameter(9, 0.);
             fFit[i][j]->SetNpx(1000);
 
             fPeak[i][j] = new TF1(Form("fPeak_%d_%d", i, j), FitPeak, fitStartingPoint[j], 400, 5);
@@ -279,8 +285,8 @@ void FitMassPeaks()
             //    massmax[i][j] = fitPar[7]+6.*fitPar[9];
             //}
 
-            massmin[i][j] = 50.;
-            massmax[i][j] = 220.;
+            //massmin[i][j] = 50.;
+            //massmax[i][j] = 220.;
 
             peakPos[i][j] = fitPar[7];
             peakPosErr[i][j] = fFit[i][j]->GetParError(7);
@@ -295,7 +301,7 @@ void FitMassPeaks()
 
             //cout << legHeader[j] << "  Nrec=" << fPeak[i][j]->Integral(110, 160) << "\tNtrue=" << hCounter->GetBinContent(j+1) << endl;
             //cout << legHeader[j] << "  Nrec=" << hMassCluster[i][j]->Integral(hMassCluster[i][j]->FindBin(110), hMassCluster[i][j]->FindBin(160)) << "\tNtrue=" << hCounter->GetBinContent(j+1) << "\tratio=" <<  hMassCluster[i][j]->Integral(hMassCluster[i][j]->FindBin(110), hMassCluster[i][j]->FindBin(160))/hCounter->GetBinContent(j+1) << endl;
-            cout << legHeader[j] << "  Nrec=" << hMassCluster[i][j]->Integral(hMassCluster[i][j]->FindBin(massmin[i][j]), hMassCluster[i][j]->FindBin(massmax[i][j])) - fBg[i][j]->Integral(massmin[i][j], massmax[i][j])/hMassCluster[i][j]->GetBinWidth(0) << "\tNtrue=" << hCounter->GetBinContent(j+1) << "\tsigma=" << fitPar[8] << "\tpeak=" << fitPar[7] << endl;
+            cout << legHeader[j] << "  Nrec=" << hMassCluster[i][j]->Integral(hMassCluster[i][j]->FindBin(massmin[i][j]), hMassCluster[i][j]->FindBin(massmax[i][j])) - fBg[i][j]->Integral(massmin[i][j], massmax[i][j])/hMassCluster[i][j]->GetBinWidth(0) << "\tNtrue=" << hCounter->GetBinContent(j+1) << "\tsigma=" << fitPar[8] << "/" << fitPar[9] << "\tpeak=" << fitPar[7] << endl;
         }
     }
 }
@@ -355,6 +361,15 @@ double FitPeak(double *x, double *p)
     //return c1*TMath::Exp(-(x[0]-mu)*(x[0]-mu)/(2*sigma1*sigma1)) + c2*TMath::Exp(-(x[0]-mu)*(x[0]-mu)/(2*sigma2*sigma2));
 }
 
+// Lorentzian Peak function
+Double_t LorentzianPeak(Double_t *x, Double_t *p) {
+    double c = p[0];
+    double gamma = p[1];
+    double mu = p[2];
+
+    return (0.5*c*gamma/TMath::Pi()) / TMath::Max(1.e-10,(x[0]-mu)*(x[0]-mu) + .25*gamma*gamma);
+}
+
 double FitBackground(double *x, double *p)
 {
     double a = p[0];
@@ -368,6 +383,6 @@ double FitBackground(double *x, double *p)
 
 double FitFunction(double *x, double *p)
 {
-    //return FitBackground(x, p) + FitPeak(x, &p[3]);
     return FitBackground(x, p) + FitPeak(x, &p[5]);
+    //return FitBackground(x, p) + LorentzianPeak(x, &p[5]);
 }

@@ -1,7 +1,7 @@
 #include "AliJHMRConst.h"
 
 const double detEta[NDET][2] = {
-    {4.1, 5.4},
+    {4.1, 5.5},
     //{3.5, 5.8},
 	{2.6, 4.},
 	{-0.8, 0.8},

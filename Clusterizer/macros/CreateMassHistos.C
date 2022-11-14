@@ -12,7 +12,7 @@ void CreateMassHistos(TString inputfile)
     InitOutput();
 
     int nev = fTree->GetEntries();
-    //nev = 400000;
+    //nev = 500000;
     cout << "Processing " << nev << " events" << endl;
     for (int iev=0; iev<nev; iev++) {
 

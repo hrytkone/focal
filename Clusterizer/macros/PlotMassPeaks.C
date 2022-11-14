@@ -117,16 +117,16 @@ void PlotMassPeaks()
             gPad->SetTopMargin(0.05);
             hMassCluster[j][i]->SetTitle(";M_{#gamma#gamma};counts");
             double max = hMassCluster[j][i]->GetBinContent(hMassCluster[j][i]->GetMaximumBin());
-            hMassCluster[j][i]->GetXaxis()->SetRangeUser(0., 750.);
+            hMassCluster[j][i]->GetXaxis()->SetRangeUser(0., 650.);
             hMassCluster[j][i]->GetYaxis()->SetRangeUser(0., max+0.2*max);
-            hMassClusterBg[j][i]->Draw("PE");
-            hMassCluster[j][i]->Draw("PE");
+            hMassClusterBg[j][i]->Draw("HIST E");
+            hMassCluster[j][i]->Draw("HIST E");
             //hMassClusterMixed[j][i]->Draw("PE SAME");
             fBg[j][i]->Draw("SAME");
             //fPeak[j][i]->Draw("SAME");
             fBg[j][i]->SetLineWidth(1);
             fPeak[j][i]->SetLineWidth(1);
-            fFit[j][i]->SetLineWidth(1);
+            fFit[j][i]->SetLineWidth(2);
             fFit[j][i]->Draw("SAME");
 
             TLine *minMassBorder = new TLine(massmin[j][i], 0., massmin[j][i], max);
@@ -184,6 +184,7 @@ void LoadData()
             hMassCluster[iasym][ipt]->Rebin();
             //hMassCluster[iasym][ipt]->Scale(1., "width");
             hMassCluster[iasym][ipt]->SetMarkerStyle(kDot);
+            hMassCluster[iasym][ipt]->SetFillColor(kGray);
             hMassCluster[iasym][ipt]->SetMarkerSize(.5);
             hMassCluster[iasym][ipt]->SetMarkerColor(kBlack);
             hMassCluster[iasym][ipt]->SetLineColor(kBlack);
@@ -301,7 +302,7 @@ void FitMassPeaks()
 
             //cout << legHeader[j] << "  Nrec=" << fPeak[i][j]->Integral(110, 160) << "\tNtrue=" << hCounter->GetBinContent(j+1) << endl;
             //cout << legHeader[j] << "  Nrec=" << hMassCluster[i][j]->Integral(hMassCluster[i][j]->FindBin(110), hMassCluster[i][j]->FindBin(160)) << "\tNtrue=" << hCounter->GetBinContent(j+1) << "\tratio=" <<  hMassCluster[i][j]->Integral(hMassCluster[i][j]->FindBin(110), hMassCluster[i][j]->FindBin(160))/hCounter->GetBinContent(j+1) << endl;
-            cout << legHeader[j] << "  Nrec=" << hMassCluster[i][j]->Integral(hMassCluster[i][j]->FindBin(massmin[i][j]), hMassCluster[i][j]->FindBin(massmax[i][j])) - fBg[i][j]->Integral(massmin[i][j], massmax[i][j])/hMassCluster[i][j]->GetBinWidth(0) << "\tNtrue=" << hCounter->GetBinContent(j+1) << "\tsigma=" << fitPar[8] << "/" << fitPar[9] << "\tpeak=" << fitPar[7] << endl;
+            cout << legHeader[j] << "  Nrec=" << hMassCluster[i][j]->Integral(hMassCluster[i][j]->FindBin(massmin[i][j]), hMassCluster[i][j]->FindBin(massmax[i][j])) - fBg[i][j]->Integral(massmin[i][j], massmax[i][j])/hMassCluster[i][j]->GetBinWidth(0) << "\tNtrue=" << hCounter->GetBinContent(j+1) << "\tsigma=" << fitPar[8] << "\tpeak=" << fitPar[7] << endl;
         }
     }
 }

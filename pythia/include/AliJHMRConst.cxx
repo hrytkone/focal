@@ -35,10 +35,10 @@ const double massWindowMax = 220.;
 const double sidebandMin = 300.;
 const double sidebandMax = 450.;
 
-const double massSigmaTrigg[NTRIGGBINS] = {16.896, 16.8545, 17.8731, 11.8696};
-const double massSigmaAssoc[NASSOCBINS] = {26.3631, 20.0558, 16.896, 16.8545, 17.8731};
-const double massPeakPosTrigg[NTRIGGBINS] = {140.115, 142.753, 144.739, 143.427};
-const double massPeakPosAssoc[NASSOCBINS] = {130.582, 135.952, 140.115, 142.753, 144.739};
+const double massSigmaTrigg[NTRIGGBINS] = {27.4508, 28.5018, 24.3633, 20.5244};
+const double massSigmaAssoc[NASSOCBINS] = {28.8498, 25.1395, 27.4508, 28.5018, 24.3633};
+const double massPeakPosTrigg[NTRIGGBINS] = {140.779, 143.724, 146.13, 146.865};
+const double massPeakPosAssoc[NASSOCBINS] = {130, 135.607, 140.779, 143.724, 146.13};
 
 const double pi0eff = 0.9795;
 //const double effCorrTrigg[NTRIGGBINS] = {0.47261, 0.590262, 0.649246, 0.477833};

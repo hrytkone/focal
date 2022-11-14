@@ -172,9 +172,9 @@ void PlotEfficiency()
     hPhiTheta->GetXaxis()->SetTitleSize(0.);
     hPhiTheta->GetYaxis()->SetTitleSize(0.);
     hPhiTheta->GetXaxis()->SetLabelOffset(999);
-    hPhiTheta->GetXaxis()->SetLabelSize(0.);
+    //hPhiTheta->GetXaxis()->SetLabelSize(0.);
     hPhiTheta->GetYaxis()->SetLabelOffset(999);
-    hPhiTheta->GetYaxis()->SetLabelSize(0.);
+    //hPhiTheta->GetYaxis()->SetLabelSize(0.);
     //hPhiTheta->Draw("surf1 pol");
     hPhiTheta->Draw("same col2 pol");
     //hPhiTheta->Draw("");
@@ -328,8 +328,8 @@ void SetStyle(Bool_t graypalette)
     gStyle->SetFrameLineWidth(2);
     gStyle->SetFrameFillColor(kWhite);
     gStyle->SetPadColor(10);
-    gStyle->SetPadTickX(0);
-    gStyle->SetPadTickY(0);
+    //gStyle->SetPadTickX(0);
+    //gStyle->SetPadTickY(0);
     gStyle->SetPadBottomMargin(0.1);
     gStyle->SetPadLeftMargin(0.15);
     gStyle->SetPadTopMargin(0.1);
@@ -349,7 +349,7 @@ void SetStyle(Bool_t graypalette)
     gStyle->SetTitleFillColor(kWhite);
     gStyle->SetTextSizePixels(26);
     gStyle->SetTextFont(42);
-    //  gStyle->SetTickLength(0.04,"X");  gStyle->SetTickLength(0.04,"Y");
+    gStyle->SetTickLength(0.04,"X");  gStyle->SetTickLength(0.04,"Y");
 
     gStyle->SetLegendBorderSize(0);
     gStyle->SetLegendFillColor(kWhite);

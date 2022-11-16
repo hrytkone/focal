@@ -73,7 +73,7 @@ void PlotMixedRemoved(TString input="input.root")
     hCorrMassMassDiv[itrigg][iassoc]->GetYaxis()->SetRangeUser(-edgecut, edgecut);
     hCorrMassMassDiv[itrigg][iassoc]->Divide(hCorrMassMassMixed[itrigg][iassoc]);
     hCorrMassMassDiv[itrigg][iassoc]->Draw("LEGO2");
-    canvasMM->SaveAs(Form("mass-mass[%.1f,%.1f][%.1f,%.1f].png", triggPt[itrigg], triggPt[itrigg+1], assocPt[itrigg], assocPt[itrigg+1]));
+    canvasMM->SaveAs(Form("mass-mass[%.1f,%.1f][%.1f,%.1f].png", triggPt[itrigg], triggPt[itrigg+1], assocPt[iassoc], assocPt[iassoc+1]));
 
     // Mass-side
     canvasMS = new TCanvas("canvasMS", "canvasMS", 1800, 600);

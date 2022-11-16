@@ -1,4 +1,4 @@
-const TString outputname = "efficiency_asym-08_v1.3_cc-12200";
+const TString outputname = "efficiency_xy";
 const double asymcut = 0.8;
 
 const int nPtBin = 6;
@@ -7,7 +7,7 @@ double logBW = (log(limMax) - log(limMin))/nPtBin;
 
 const int nEtaBin = 52;
 double eta[nEtaBin+1];
-double etaBW = 0.05, etamin = 3.2, etamax = 5.8;
+double etaBW = 0.05, etamin = 3.0, etamax = 5.8;
 
 //const int nPhiBin = 52;
 const int nPhiBin = 104;
@@ -16,6 +16,9 @@ double phimin = -TMath::Pi(), phimax = TMath::Pi();
 //const int nThetaBin = 52;
 const int nThetaBin = 104;
 double thetamin = 0., thetamax = 0.12;
+
+const int nXYBin = 400;
+double xymin = -50., xymax = 50.;
 
 TFile *fIn, *fOut;
 TTree *fTree;
@@ -40,15 +43,18 @@ TH2D *hEtaMass[nPtBin];
 TH2D *hPhiEtaTrue;
 TH2D *hPhiEta;
 TH2D *hPhiTheta;
+TH2D *hXY;
 
-TH1D *hMassCluster[nEtaBin][nPtBin];
+TH2D *hPhiEtaGamma;
+TH2D *hPhiThetaGamma;
+TH2D *hXYGamma;
+
 TH1D *hEPhotonCluster;
 TH1D *hEPhotonTrue;
 
 Int_t LoadInput(TString inputfile);
 void InitOutput();
 void FillTruePions();
-void FillRecPions();
-void FillMassHistos(TClonesArray *clusters);
+void FillRecPions(TClonesArray *clusters);
 int GetBin(double arr[], int nArr, double val);
 AliJBaseTrack GetPhotonSumVector(AliJBaseTrack *lv1, AliJBaseTrack *lv2);

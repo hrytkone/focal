@@ -55,7 +55,7 @@ public:
     void DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> listTrigg, TClonesArray *arrPi0Assoc, std::vector<int> listAssoc, TH2D *hCorr[NTRIGGBINS][NASSOCBINS], bool bUseWeightTrigg, bool bUseWeightAssoc);
     void ConstructTrueCorrComponents(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vector<int> listAssoc, bool bUseWeight);
     int ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0Candidates, detector idet, bool bMass);
-    void GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector<int>& listTrigg, std::vector<int>& listAssoc, int *binsWithTrigg, bool bUseLeading);
+    void GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector<int>& listTrigg, std::vector<int>& listAssoc, int *binsWithTrigg, bool bMass, bool bUseLeading);
 
     bool IsMassWindow(double mass);
     bool IsMassWindow(double mass, int ibin, bool isTriggBin);

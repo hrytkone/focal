@@ -16,18 +16,20 @@ const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0, 8.0, 10.0, 15.0};
 
 const double mSize = 1.;
 
-const int nset = 1;
+const int nset = 2;
 //TString infiles[nset] = {
 //    "analysis_STAR_pp.root"//,
 //	//"analysis_STAR_pAu.root"
 //};
 
 TString infiles[nset] = {
-    "analysis_FoCal_pp_fullsim.root"
+    "analysis_FoCal_pp_fullsim_no-mixed.root",
+    "analysis_FoCal_pp_fullsim_mixed.root",
     //"analysis_FoCal_pp_test-pythia.root"
 };
 
 TString legHeader[nset] = {
+    "p-p #sqrt{s} = 14 TeV",
     "p-p #sqrt{s} = 14 TeV"//,
     //"p-Au"
 };
@@ -103,8 +105,14 @@ void ConfigHistos()
                 hCorrFinal[iset][itrigg][iassoc]->SetMarkerColor(kRed);
                 hCorrFinal[iset][itrigg][iassoc]->SetMarkerStyle(20);
                 hCorrFinal[iset][itrigg][iassoc]->SetMarkerSize(mSize);
-                hCorrMeas[iset][itrigg][iassoc]->SetLineColor(kBlue);
-                hCorrMeas[iset][itrigg][iassoc]->SetMarkerColor(kBlue);
+                if (iset==0) {
+                    hCorrMeas[iset][itrigg][iassoc]->SetLineColor(kBlue);
+                    hCorrMeas[iset][itrigg][iassoc]->SetMarkerColor(kBlue);
+                } else {
+                    hCorrMeas[iset][itrigg][iassoc]->SetLineColor(kRed);
+                    hCorrMeas[iset][itrigg][iassoc]->SetMarkerColor(kRed);
+                }
+
                 hCorrMeas[iset][itrigg][iassoc]->SetMarkerStyle(20);
                 hCorrMeas[iset][itrigg][iassoc]->SetMarkerSize(mSize);
 
@@ -114,8 +122,14 @@ void ConfigHistos()
                 hRatioFinal[iset][itrigg][iassoc]->SetMarkerStyle(20);
                 hRatioFinal[iset][itrigg][iassoc]->SetMarkerSize(mSize);
                 hRatioMeas[iset][itrigg][iassoc]->GetYaxis()->SetRangeUser(0., 5.);
-                hRatioMeas[iset][itrigg][iassoc]->SetLineColor(kBlue-9);
-                hRatioMeas[iset][itrigg][iassoc]->SetMarkerColor(kBlue-9);
+                if (iset==0) {
+                    hRatioMeas[iset][itrigg][iassoc]->SetLineColor(kBlue-9);
+                    hRatioMeas[iset][itrigg][iassoc]->SetMarkerColor(kBlue-9);
+                } else {
+                    hRatioMeas[iset][itrigg][iassoc]->SetLineColor(kRed-9);
+                    hRatioMeas[iset][itrigg][iassoc]->SetMarkerColor(kRed-9);
+                }
+
                 hRatioMeas[iset][itrigg][iassoc]->SetMarkerStyle(20);
                 hRatioMeas[iset][itrigg][iassoc]->SetMarkerSize(mSize);
 
@@ -124,8 +138,10 @@ void ConfigHistos()
                 leg[iset][itrigg][iassoc]->SetHeader(Form("#splitline{%s}{[%0.1f,%0.1f][%0.1f,%0.1f]}", legHeader[iset].Data(),triggPt[itrigg],triggPt[itrigg+1],assocPt[iassoc],assocPt[iassoc+1]));
                 leg[iset][itrigg][iassoc]->AddEntry(hCorrReal[0][0][0], "MC truth", "pe");
                 //leg[iset][itrigg][iassoc]->AddEntry(hCorrMeas[0][0][0], "GEANT3 sim", "pe");
-                leg[iset][itrigg][iassoc]->AddEntry(hCorrMeas[0][0][0], "Before SB corr", "pe");
-                leg[iset][itrigg][iassoc]->AddEntry(hCorrFinal[0][0][0], "After SB corr", "pe");
+                //leg[iset][itrigg][iassoc]->AddEntry(hCorrMeas[0][0][0], "Before SB corr", "pe");
+                //leg[iset][itrigg][iassoc]->AddEntry(hCorrFinal[0][0][0], "After SB corr", "pe");
+                leg[iset][itrigg][iassoc]->AddEntry(hCorrMeas[0][0][0], "No mixed", "pe");
+                leg[iset][itrigg][iassoc]->AddEntry(hCorrMeas[1][0][0], "Mixed", "pe");
             }
         }
     }
@@ -155,8 +171,8 @@ void DrawFiliPad()
                 // Upper pad
                 int minBin = hCorrFinal[iset][itrigg][iassoc]->GetMinimumBin();
                 int maxBin = hCorrMeas[iset][itrigg][iassoc]->GetMaximumBin();
-                double rangeMin = hCorrFinal[iset][itrigg][iassoc]->GetBinContent(minBin) - 0.4*hCorrFinal[iset][itrigg][iassoc]->GetBinContent(minBin);
-                double rangeMax = hCorrMeas[iset][itrigg][iassoc]->GetBinContent(maxBin) + 2.*hCorrMeas[iset][itrigg][iassoc]->GetBinContent(maxBin);
+                double rangeMin = hCorrFinal[iset][itrigg][iassoc]->GetBinContent(minBin) - 0.1*hCorrFinal[iset][itrigg][iassoc]->GetBinContent(minBin);
+                double rangeMax = hCorrMeas[iset][itrigg][iassoc]->GetBinContent(maxBin) + 10.*hCorrMeas[iset][itrigg][iassoc]->GetBinContent(maxBin);
                 if (rangeMin<=0) rangeMin = 0.0008;
                 cout << rangeMin << " " << rangeMax << endl;
                 TPad *p = fpad[iset][itrigg][iassoc]->GetPad(1);
@@ -165,7 +181,8 @@ void DrawFiliPad()
                 hset(*hCorrMeas[iset][itrigg][iassoc], "#Delta#phi", "1/N_{trigg}dN/d#Delta#phi", 1.1,1.2, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
                 hCorrReal[iset][itrigg][iassoc]->GetYaxis()->SetRangeUser(rangeMin, rangeMax);
                 hCorrReal[iset][itrigg][iassoc]->Draw("P");
-                hCorrMeas[iset][itrigg][iassoc]->Draw("SAME P");
+                hCorrMeas[0][itrigg][iassoc]->Draw("SAME P");
+                hCorrMeas[1][itrigg][iassoc]->Draw("SAME P");
                 //hCorrFinal[iset][itrigg][iassoc]->Draw("SAME P");
                 leg[iset][itrigg][iassoc]->Draw("SAME");
                 t->Draw("SAME");
@@ -175,8 +192,9 @@ void DrawFiliPad()
                 p->SetTickx(); p->SetGridy(1); p->SetLogx(0), p->SetLogy(0); p->cd();
                 hset( *hRatioMeas[iset][itrigg][iassoc], "#Delta#phi", "Ratio",1.1,0.7, 0.09,0.09, 0.01,0.01, 0.08,0.08, 510,505);
                 hRatioMeas[iset][itrigg][iassoc]->GetYaxis()->SetRangeUser(-0.2, 1.8);
-                //hRatioFinal[iset][itrigg][iassoc]->Draw("P");
-                hRatioMeas[iset][itrigg][iassoc]->Draw("P");
+                hRatioMeas[0][itrigg][iassoc]->Draw("P");
+                hRatioMeas[1][itrigg][iassoc]->Draw("P SAME");
+                //hRatioFinal[iset][itrigg][iassoc]->Draw("P SAME");
             }
         }
     }

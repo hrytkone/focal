@@ -67,7 +67,7 @@ void PlotMixedEvent(TString input="input.root")
 
 			canvas[itrigg][iassoc] = new TCanvas(Form("c_%d_%d", itrigg, iassoc), "", 600, 600);
             hCorrMixed[itrigg][iassoc]->Draw("LEGO2Z");
-            canvas[itrigg][iassoc]->SaveAs("corr2d_500k_2.png");
+            //canvas[itrigg][iassoc]->SaveAs(Form("corr2d_500k_2.png");
 
 			canvas_px_py[itrigg][iassoc] = new TCanvas(Form("cpx_%d_%d", itrigg, iassoc), "", 1200, 600);
             canvas_px_py[itrigg][iassoc]->Divide(2,1);
@@ -80,7 +80,7 @@ void PlotMixedEvent(TString input="input.root")
             hCorrMixedProjX[itrigg][iassoc]->SetMarkerStyle(kOpenCircle);
             hCorrMixedProjX[itrigg][iassoc]->SetMarkerColor(kBlack);
             hCorrMixedProjX[itrigg][iassoc]->SetLineColor(kBlack);
-            hCorrMixedProjX[itrigg][iassoc]->SetTitle(Form("%s;#phi;counts", hCorrMixed[itrigg][iassoc]->GetName()));
+            hCorrMixedProjX[itrigg][iassoc]->SetTitle(Form("[%.1f,%.1f][%.1f,%.1f];#Delta#phi;counts", triggPt[itrigg], triggPt[itrigg+1], assocPt[iassoc], assocPt[iassoc+1]));
             hCorrMixedProjX[itrigg][iassoc]->Draw("P");
 
             canvas_px_py[itrigg][iassoc]->cd(2);
@@ -91,9 +91,9 @@ void PlotMixedEvent(TString input="input.root")
             hCorrMixedProjY[itrigg][iassoc]->SetMarkerStyle(kOpenCircle);
             hCorrMixedProjY[itrigg][iassoc]->SetMarkerColor(kBlack);
             hCorrMixedProjY[itrigg][iassoc]->SetLineColor(kBlack);
-            hCorrMixedProjY[itrigg][iassoc]->SetTitle(";#eta;");
+            hCorrMixedProjY[itrigg][iassoc]->SetTitle(";#Delta#eta;");
             hCorrMixedProjY[itrigg][iassoc]->Draw("P");
-            //canvas_px_py[itrigg][iassoc]->SaveAs("proj_500k_2.png");
+            canvas_px_py[itrigg][iassoc]->SaveAs(Form("proj_[%.1f,%.1f][%.1f,%.1f].png", triggPt[itrigg], triggPt[itrigg+1], assocPt[iassoc], assocPt[iassoc+1]));
 		}
 	}
 }

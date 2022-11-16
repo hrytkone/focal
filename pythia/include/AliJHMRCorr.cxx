@@ -21,7 +21,6 @@ bool AliJHMRCorr::IsMassWindow(double mass)
 // done in trigger-assoc division phase
 bool AliJHMRCorr::IsMassWindow(double mass, int ibin, bool isTriggBin)
 {
-
     if (isTriggBin) {
         if (mass > massPeakPosTrigg[ibin]-3.*massSigmaTrigg[ibin] && mass < massPeakPosTrigg[ibin]+3.*massSigmaTrigg[ibin]) {
             std::cout << isTriggBin << "\tibin: " << ibin << "\tmass: " << mass << "\tmass window: [" << massPeakPosTrigg[ibin]-3.*massSigmaTrigg[ibin] << " " << massPeakPosTrigg[ibin]+3.*massSigmaTrigg[ibin] << "]" << std::endl;
@@ -87,7 +86,7 @@ int AliJHMRCorr::ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0C
     return nTrue;
 }
 
-void AliJHMRCorr::GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector<int>& listTrigg, std::vector<int>& listAssoc, int *binsWithTrigg, bool bUseLeading)
+void AliJHMRCorr::GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector<int>& listTrigg, std::vector<int>& listAssoc, int *binsWithTrigg, bool bMass, bool bUseLeading)
 {
     int iLeadingTrigg = -1;
     if (bUseLeading) {
@@ -105,7 +104,7 @@ void AliJHMRCorr::GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector
         if (bUseLeading) {
             if (i != iLeadingTrigg && iAssoc >= 0) listAssoc.push_back(i);
         } else {
-            if (fIsFullSim) {
+            if (fIsFullSim && bMass) {
                 if (iTrigg >= 0 && IsMassWindow(mass, iTrigg, 1)) listTrigg.push_back(i);
                 if (iAssoc >= 0 && IsMassWindow(mass, iAssoc, 0)) listAssoc.push_back(i);
             } else {
@@ -113,8 +112,12 @@ void AliJHMRCorr::GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector
                 if (iAssoc >= 0)  listAssoc.push_back(i);
             }
         }
-        //if (iTrigg >= 0 && IsMassWindow(mass, iTrigg, 1)) binsWithTrigg[iTrigg]++;
-        if (iTrigg >= 0) binsWithTrigg[iTrigg]++;
+        if (bMass) {
+            if (iTrigg >= 0 && IsMassWindow(mass, iTrigg, 1)) binsWithTrigg[iTrigg]++;
+        } else {
+            if (iTrigg >= 0) binsWithTrigg[iTrigg]++;
+        }
+
     }
 }
 

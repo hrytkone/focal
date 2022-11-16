@@ -1,4 +1,4 @@
-const bool bUseConstMassWindow = true;
+const bool bUseConstMassWindow = false;
 
 const int ndata_star = 2;
 const int ndata_focal = 1;
@@ -14,16 +14,18 @@ const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0, 8.0, 10.0, 15.0};
 const double pi0br = 1./0.98823;
 //const double pi0eff = 1.;
 
-const double effCorrTrigg[nTriggBins] = {1., 1., 1.};//, 1.};
+//const double effCorrTrigg[nTriggBins] = {1., 1., 1.};//, 1.};
+const double effCorrTrigg[nTriggBins] = {1./0.485133, 1./0.610642, 1./0.674529, 1./0.561265};
 //const double effCorrTrigg[nTriggBins] = {1./0.221901, 1./0.409597, 1./0.440636, 1./0.42808};
 //const double effCorrTrigg[nTriggBins] = {1./0.988, 1./0.988};
 
+
 const double massMin = 50.;
 const double massMax = 220.;
-const double massSigmaTrigg[nTriggBins] = {16.896, 16.8545, 17.8731, 11.8696};
-const double massSigmaAssoc[nAssocBins] = {26.3631, 20.0558, 16.896, 16.8545, 17.8731};
-const double massPeakPosTrigg[nTriggBins] = {140.115, 142.753, 144.739, 143.427};
-const double massPeakPosAssoc[nAssocBins] = {130.582, 135.952, 140.115, 142.753, 144.739};
+const double massSigmaTrigg[nTriggBins] = {27.4508, 28.5018, 24.3633, 20.5244};
+const double massSigmaAssoc[nAssocBins] = {28.8498, 25.1395, 27.4508, 28.5018, 24.3633};
+const double massPeakPosTrigg[nTriggBins] = {140.779, 143.724, 146.13, 146.865};
+const double massPeakPosAssoc[nAssocBins] = {130, 135.607, 140.779, 143.724, 146.13};
 
 // Input
 int nEvent;
@@ -37,6 +39,7 @@ TH1D *hMassAssocSide[nTriggBins][nAssocBins];
 
 TH2D *hCorrReal[nTriggBins][nAssocBins];
 TH2D *hCorrMeas[nTriggBins][nAssocBins];
+TH2D *hCorrMeasMixed[nTriggBins][nAssocBins];
 
 // Same event
 TH2D *hCorrMassMass[nTriggBins][nAssocBins];
@@ -118,6 +121,7 @@ void processDataFoCal();
 void LoadInput();
 void DoAnalysis();
 void MixedEventCorrection();
+double GetMixedEventNormalization(TH2D *h);
 void FitMassPeaks();
 void GetScaleFactorsVersion1();
 void GetScaleFactorsVersion2();

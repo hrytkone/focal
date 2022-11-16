@@ -1,27 +1,32 @@
 const int nset = 6;
-const int npt = 6;
+//const int npt = 6;
+const int npt = 10;
 
 //const TString filename = "etacut_4-5_shapecut_4-06.root";
 //const TString filename = "etacut_37-56.root";
 //const TString filename = "etacut_4-5_pthard-2.root";
-const TString filename = "etacut_41-55.root";
+const TString filename = "etacut_41-55_more-pt-bins.root";
 //const TString filename = "etacut_37-56_pthard-2.root";
 //const TString filename = "etacut_37-56_diff-pt-bins_1.root";
-const TString lowmassfilename = "low-mass_etacut_42-53.root";
+//const TString lowmassfilename = "low-mass_etacut_42-53.root";
+const TString lowmassfilename = "etacut_41-55_gamma_more-pt-bins.root";
 const TString legEta = "4.1 < #eta < 5.5";
-
 //------------------------------------------------------------------------------
 
 const TString legHeader[npt] = {
-    //"1 GeV < p_{T} < 2 GeV",
     //"2 GeV < p_{T} < 3 GeV",
-    //"3 GeV < p_{T} < 5 GeV",
-    //"5 GeV < p_{T} < 8 GeV",
-    //"8 GeV < p_{T} < 12 GeV",
-    //"12 GeV < p_{T} < 20 GeV"
-    "2 GeV < p_{T} < 3 GeV",
-    "3 GeV < p_{T} < 4 GeV",
-    "4 GeV < p_{T} < 8 GeV",
+    //"3 GeV < p_{T} < 4 GeV",
+    //"4 GeV < p_{T} < 8 GeV",
+    //"8 GeV < p_{T} < 10 GeV",
+    //"10 GeV < p_{T} < 15 GeV",
+    //"15 GeV < p_{T} < 20 GeV"
+    "2 GeV < p_{T} < 2.5 GeV",
+    "2.5 GeV < p_{T} < 3 GeV",
+    "3 GeV < p_{T} < 3.5 GeV",
+    "3.5 GeV < p_{T} < 4 GeV",
+    "4 GeV < p_{T} < 5 GeV",
+    "5 GeV < p_{T} < 6 GeV",
+    "6 GeV < p_{T} < 8 GeV",
     "8 GeV < p_{T} < 10 GeV",
     "10 GeV < p_{T} < 15 GeV",
     "15 GeV < p_{T} < 20 GeV"
@@ -43,7 +48,8 @@ const double xf[nset] = {0.85, 0.85, 0.85, 0.85, 0.85, 0.85};
 const double yi[nset] = {0.6, 0.6, 0.6, 0.6, 0.6, 0.6};
 const double yf[nset] = {0.87, 0.87, 0.87, 0.87, 0.87, 0.87};
 
-const double fitStartingPoint[npt] = {50., 50., 40., 50., 50., 50.};
+//const double fitStartingPoint[npt] = {50., 50., 40., 50., 50., 50.};
+const double fitStartingPoint[npt] = {50., 50., 40., 50., 50., 50., 50., 50., 50., 50.};
 
 //------------------------------------------------------------------------------
 
@@ -57,6 +63,7 @@ TLegend *leg[nset][npt];
 TCanvas *c1[nset];
 TCanvas *cStoB;
 TCanvas *cEff;
+TCanvas *cEffPtFunc;
 TLegend *leg2;
 
 TF1 *fFit[nset][npt];
@@ -72,13 +79,23 @@ double peakErr[npt][nset] = {0};
 double bgErr[npt][nset] = {0};
 double eff[npt][nset] = {0};
 double effErr[npt][nset] = {0};
+
+double effPtFunc[nset][npt] = {0};
+double effPtFuncErr[nset][npt] = {0};
+
 double peakPos[npt][nset] = {0};
 double peakPosErr[npt][nset] = {0};
 double asymmetry[nset] = {0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
 double asymmteryErr[nset] = {0};
+//double ptMid[npt] = {2.5, 3.5, 6., 9., 12.5, 17.5};
+//double ptMidErr[npt] = {0.5, 0.5, 2., 1., 2.5, 2.5};
+double ptMid[npt] = {2.25, 2.75, 3.25, 3.75, 4.5, 5.5, 7, 9, 12.5, 17.5};
+double ptMidErr[npt] = {0.25, 0.25, 0.25, 0.25, 0.5, 0.5, 1., 1., 2.5, 2.5};
+
 const int mColor[nset] = {kAzure, kViolet, kPink, kOrange, kSpring, kTeal};
 TGraphErrors *gSignalToBg[npt];
 TGraphErrors *gEfficiency[npt];
+TGraphErrors *gEffPtFunc[nset];
 
 void LoadData();
 void CreateLegends();
@@ -108,7 +125,7 @@ void PlotMassPeaks()
     CreateLegends();
     for (int j=0; j<nset; j++) {
         c1[j] = new TCanvas(Form("c%d", j), "", 900, 600);
-        c1[j]->Divide(3,2);
+        c1[j]->Divide(4,3);
         for (int i=0; i<npt; i++) {
             c1[j]->cd(i+1);
             gPad->SetLeftMargin(0.1);
@@ -162,6 +179,17 @@ void PlotMassPeaks()
     }
     leg2->Draw("SAME");
     cEff->SaveAs("efficiency.eps");
+
+    cEffPtFunc = new TCanvas("cEffPtFunc", "", 600, 600);
+    cEffPtFunc->cd();
+    for (int i=0; i<npt; i++) {
+        if (i==0)
+            gEffPtFunc[i]->Draw("PLA PMC PLC");
+        else
+            gEffPtFunc[i]->Draw("SAME PL PMC PLC");
+    }
+    //leg2->Draw("SAME");
+    cEffPtFunc->SaveAs("efficiency-pt.eps");
 
 }
 
@@ -330,15 +358,20 @@ void CreateGraphs()
         cout << "\npt = " << legHeader[i]<< endl;
         for (int j=0; j<nset; j++) {
             //eff[i][j] = fPeak[j][i]->Integral(110, 160)/hCounter->GetBinContent(i+1);
-            if (i==npt-1)
+            if (i==npt-1) {
                 eff[i][j] = hMassCluster[j][i]->Integral(hMassCluster[j][i]->FindBin(massmin[j][i]), hMassCluster[j][i]->FindBin(massmax[j][i]))/(hCounter->GetBinContent(i+1));
-            else
+                effPtFunc[j][i] = hMassCluster[j][i]->Integral(hMassCluster[j][i]->FindBin(massmin[j][i]), hMassCluster[j][i]->FindBin(massmax[j][i]))/(hCounter->GetBinContent(i+1));
+            } else {
                 eff[i][j] = (hMassCluster[j][i]->Integral(hMassCluster[j][i]->FindBin(massmin[j][i]), hMassCluster[j][i]->FindBin(massmax[j][i])) - fBg[j][i]->Integral(massmin[j][i], massmax[j][i])/hMassCluster[j][i]->GetBinWidth(0))/(hCounter->GetBinContent(i+1));
+                effPtFunc[j][i] = (hMassCluster[j][i]->Integral(hMassCluster[j][i]->FindBin(massmin[j][i]), hMassCluster[j][i]->FindBin(massmax[j][i])) - fBg[j][i]->Integral(massmin[j][i], massmax[j][i])/hMassCluster[j][i]->GetBinWidth(0))/(hCounter->GetBinContent(i+1));
+            }
+            cout << "mass min : " << hMassCluster[j][i]->FindBin(massmin[j][i]) << "\tmass max : " << hMassCluster[j][i]->FindBin(massmax[j][i]) << endl;
             cout << "asymmetry " << asymmetry[j] << "\tEff : " << eff[i][j] << endl;
             //eff[i][j] = hMassCluster[j][i]->Integral(hMassCluster[j][i]->FindBin(110), hMassCluster[j][i]->FindBin(160))/hCounter->GetBinContent(i+1);
             //double dPeak = fFit[j][i]->IntegralError(110, 160)/fFit[j][i]->Integral(110, 160);
             //double dTrue = hCounter->GetBinError(i+1)/hCounter->GetBinContent(i+1);
             effErr[i][j] = TMath::Sqrt(peakErr[j][i]*peakErr[j][i] + bgErr[j][i]*bgErr[j][i])/hCounter->GetBinContent(i+1);
+            effPtFuncErr[j][i] = TMath::Sqrt(peakErr[j][i]*peakErr[j][i] + bgErr[j][i]*bgErr[j][i])/hCounter->GetBinContent(i+1);
         }
         gEfficiency[i] = new TGraphErrors(nset, asymmetry, eff[i], asymmteryErr, effErr[i]);
         gEfficiency[i]->SetTitle(";#alpha;N_{#pi0}^{rec}/N_{#pi0}^{true}");
@@ -347,6 +380,16 @@ void CreateGraphs()
         gEfficiency[i]->GetYaxis()->SetRangeUser(0., 1.);
         gEfficiency[i]->SetMarkerStyle(20);
         //gEfficiency[i]->SetMarkerSize(0.5);
+    }
+
+    for (int i=0; i<nset; i++) {
+        gEffPtFunc[i] = new TGraphErrors(npt, ptMid, effPtFunc[i], ptMidErr, effPtFuncErr[i]);
+        gEffPtFunc[i]->SetTitle(";p_{T}(GeV/c);N_{#pi0}^{rec}/N_{#pi0}^{true}");
+        gEffPtFunc[i]->SetMarkerColor(mColor[i]);
+        gEffPtFunc[i]->SetLineColor(mColor[i]);
+        gEffPtFunc[i]->GetYaxis()->SetRangeUser(0., 1.);
+        gEffPtFunc[i]->SetMarkerStyle(20);
+        //gEffPtFunc[i]->SetMarkerSize(0.5);
     }
 }
 

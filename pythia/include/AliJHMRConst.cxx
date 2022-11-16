@@ -46,6 +46,8 @@ const double pi0eff = 0.9795;
 const double effCorrTrigg[NTRIGGBINS] = {0.485133, 0.610642, 0.674529, 0.561265};
 const double effCorrAssoc[NASSOCBINS] = {0.297458, 0.383115, 0.485133, 0.610642, 0.674529};
 
+//0.268352, 0.345582, 0.456811, 0.602277, 0.593319, 0.631285
+
 const double etacut = 0.;
 const double asymcut = 0.8;
 

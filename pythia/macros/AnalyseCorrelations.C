@@ -44,7 +44,8 @@ void processDataSTAR()
 void processDataFoCal()
 {
 	TString fInName[ndata_focal] = {
-        "/home/heimarry/Simulations/focal/analysis_output/2022-11-06/output_analysis.root"
+        //"/home/heimarry/Simulations/focal/analysis_output/20221114_no-weight_2m.root",
+        "/home/heimarry/Simulations/focal/analysis_output/20221114_wassoc_2m.root"
         //"/home/heimarry/Simulations/focal/pythia/fullsim_pthard-2_asym-08_bigger-windows_n1m_no-weights.root"
         //"/home/heimarry/Simulations/focal/pythia/full-sim_trigg-not-weighted_mixed.root"
         //"/home/heimarry/Simulations/focal/pythia/full-sim_eta-4-5_weighted.root"
@@ -55,7 +56,7 @@ void processDataFoCal()
 	};
 
 	TString fOutName[ndata_focal] = {
-		"analysis_FoCal_pp_fullsim.root"
+		"analysis_FoCal_pp_fullsim_mixed.root"
 	};
 
     TString dataname[ndata_focal] = {
@@ -68,8 +69,8 @@ void processDataFoCal()
 
 		LoadInput();
         FitMassPeaks();
-		GetScaleFactorsVersion1();
         MixedEventCorrection();
+		GetScaleFactorsVersion1();
 		DoAnalysis();
         DrawMassHistos(dataname[idata]);
 		fOut->Write();
@@ -118,6 +119,8 @@ void LoadInput()
             hCorrMassSideMixed[it][ia] = (TH2D*)fIn->Get(Form("CorrMassSide/hCorrMassSideMixed[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrMassSideMixed[it][ia]->Rebin2D(12);
             hCorrSideMassMixed[it][ia] = (TH2D*)fIn->Get(Form("CorrSideMass/hCorrSideMassMixed[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrSideMassMixed[it][ia]->Rebin2D(12);
             hCorrSideSideMixed[it][ia] = (TH2D*)fIn->Get(Form("CorrSideSide/hCorrSideSideMixed[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrSideSideMixed[it][ia]->Rebin2D(12);
+            hCorrMeasMixed[it][ia]     = (TH2D*)hCorrMassMassMixed[it][ia]->Clone(Form("hCorrMeasMixed[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
+
 	    }
 	}
 }
@@ -176,7 +179,6 @@ void DoAnalysis()
 
 void MixedEventCorrection()
 {
-    int binx = -1, biny = -1;
     double alpha = 0.;
     for (int it = 0; it < nTriggBins; it++) {
         for (int ia = 0; ia < nAssocBins; ia++) {
@@ -187,37 +189,47 @@ void MixedEventCorrection()
 
             if (tlow < aupp) continue;
 
-            binx = hCorrMassMassMixed[it][ia]->GetXaxis()->FindBin(0.);
-            biny = hCorrMassMassMixed[it][ia]->GetYaxis()->FindBin(0.);
-            alpha = 1./hCorrMassMassMixed[it][ia]->GetBinContent(binx, biny);
+            alpha = GetMixedEventNormalization(hCorrMeasMixed[it][ia]);
+            hCorrMeasMixed[it][ia]->Scale(alpha);
+            hCorrMeas[it][ia]->Divide(hCorrMeasMixed[it][ia]);
+
+            alpha = GetMixedEventNormalization(hCorrMassMassMixed[it][ia]);
             hCorrMassMassMixed[it][ia]->Scale(alpha);
             hCorrMassMass[it][ia]->Divide(hCorrMassMassMixed[it][ia]);
 
-            binx = hCorrMassSideMixed[it][ia]->GetXaxis()->FindBin(0.);
-            biny = hCorrMassSideMixed[it][ia]->GetYaxis()->FindBin(0.);
-            alpha = 1./hCorrMassSideMixed[it][ia]->GetBinContent(binx, biny);
+            alpha = GetMixedEventNormalization(hCorrMassSideMixed[it][ia]);
             hCorrMassSideMixed[it][ia]->Scale(alpha);
             hCorrMassSide[it][ia]->Divide(hCorrMassSideMixed[it][ia]);
 
-            binx = hCorrSideMassMixed[it][ia]->GetXaxis()->FindBin(0.);
-            biny = hCorrSideMassMixed[it][ia]->GetYaxis()->FindBin(0.);
-            alpha = 1./hCorrSideMassMixed[it][ia]->GetBinContent(binx, biny);
+            alpha = GetMixedEventNormalization(hCorrSideMassMixed[it][ia]);
             hCorrSideMassMixed[it][ia]->Scale(alpha);
             hCorrSideMass[it][ia]->Divide(hCorrSideMassMixed[it][ia]);
 
-            binx = hCorrSideSideMixed[it][ia]->GetXaxis()->FindBin(0.);
-            biny = hCorrSideSideMixed[it][ia]->GetYaxis()->FindBin(0.);
-            alpha = 1./hCorrSideSideMixed[it][ia]->GetBinContent(binx, biny);
+            alpha = GetMixedEventNormalization(hCorrSideSideMixed[it][ia]);
             hCorrSideSideMixed[it][ia]->Scale(alpha);
             hCorrSideSide[it][ia]->Divide(hCorrSideSideMixed[it][ia]);
         }
     }
 }
 
+double GetMixedEventNormalization(TH2D* h)
+{
+    double norm = 0;
+    int binx = h->GetXaxis()->FindBin(0.);
+    int biny = h->GetYaxis()->FindBin(0.);
+    norm += h->GetBinContent(binx, biny);
+    norm += h->GetBinContent(binx+1, biny);
+    norm += h->GetBinContent(binx-1, biny);
+    norm += h->GetBinContent(binx, biny+1);
+    norm += h->GetBinContent(binx, biny-1);
+    norm /= 5.;
+    return 1./norm;
+}
+
 void FitMassPeaks()
 {
     for (int it = 0; it < nTriggBins; it++) {
-        fFitTrigg[it] = new TF1(Form("fFitTrigg%d", it), FitFunction, 20, 500, 10);
+        fFitTrigg[it] = new TF1(Form("fFitTrigg%d", it), FitFunction, 10, 500, 10);
         fFitTrigg[it]->SetParameters(0., 0., 0., 0., 0., 1., 1., 135., 5., 10.);
         //fFitTrigg[it]->SetParLimits(4, 132., 137.);
         fFitTrigg[it]->SetParLimits(7, 130., 160.);
@@ -229,11 +241,11 @@ void FitMassPeaks()
         fFitTrigg[it]->FixParameter(9, 0.);
         fFitTrigg[it]->SetNpx(1000);
 
-        fPeakTrigg[it] = new TF1(Form("fPeakTrigg%d", it), FitPeak, 20, 500, 5);
+        fPeakTrigg[it] = new TF1(Form("fPeakTrigg%d", it), FitPeak, 10, 500, 5);
         fPeakTrigg[it]->SetLineColor(kBlue);
         fPeakTrigg[it]->SetNpx(1000);
 
-        fBgTrigg[it] = new TF1(Form("fBgTrigg%d", it), FitBackground, 20, 500, 5);
+        fBgTrigg[it] = new TF1(Form("fBgTrigg%d", it), FitBackground, 10, 500, 5);
         fBgTrigg[it]->SetLineColor(kBlack);
         fBgTrigg[it]->SetLineStyle(kDashed);
         fBgTrigg[it]->SetNpx(1000);
@@ -254,7 +266,7 @@ void FitMassPeaks()
             if (tlow < aupp) continue;
 
             // Assoc mass histrograms where trigger is from peak region
-            fFitAssocPeak[it][ia] = new TF1(Form("fFitAssocPeak%d-%d", it, ia), FitFunction, 50, 500, 10);
+            fFitAssocPeak[it][ia] = new TF1(Form("fFitAssocPeak%d-%d", it, ia), FitFunction, 20, 500, 10);
             fFitAssocPeak[it][ia]->SetParameters(0., 0., 0., 0., 0., 1., 1., 135., 5., 10.);
             //fFitAssocPeak[it]->SetParLimits(4, 132., 137.);
             fFitAssocPeak[it][ia]->SetParLimits(7, 130., 160.);
@@ -266,11 +278,11 @@ void FitMassPeaks()
             fFitAssocPeak[it][ia]->FixParameter(9, 0.);
             fFitAssocPeak[it][ia]->SetNpx(1000);
 
-            fPeakAssocPeak[it][ia] = new TF1(Form("fPeakAssocPeak%d-%d", it, ia), FitPeak, 50, 500, 5);
+            fPeakAssocPeak[it][ia] = new TF1(Form("fPeakAssocPeak%d-%d", it, ia), FitPeak, 20, 500, 5);
             fPeakAssocPeak[it][ia]->SetLineColor(kBlue);
             fPeakAssocPeak[it][ia]->SetNpx(1000);
 
-            fBgAssocPeak[it][ia]= new TF1(Form("fBgAssocPeak%d-%d", it, ia), FitBackground, 50, 500, 5);
+            fBgAssocPeak[it][ia]= new TF1(Form("fBgAssocPeak%d-%d", it, ia), FitBackground, 20, 500, 5);
             fBgAssocPeak[it][ia]->SetLineColor(kBlack);
             fBgAssocPeak[it][ia]->SetLineStyle(kDashed);
             fBgAssocPeak[it][ia]->SetNpx(1000);
@@ -346,7 +358,7 @@ void GetScaleFactorsVersion1()
             //alpha[it][ia] = fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/(fBgAssocPeak[it][ia]->Integral(40, 80) + fBgAssocPeak[it][ia]->Integral(210, 280));
             //beeta[it][ia]  = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/(fBgTrigg[it]->Integral(40, 80) + fBgTrigg[it]->Integral(210, 280));
             alpha[it][ia] = fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/fBgAssocPeak[it][ia]->Integral(300, 450);
-            beeta[it][ia]  = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/fBgTrigg[it]->Integral(300, 450);
+            beeta[it][ia] = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/fBgTrigg[it]->Integral(300, 450);
             yamma[it][ia] = alpha[it][ia]*beeta[it][ia];
             std::cout << "\t\tbin [ "  << assocPt[ia] << " " << assocPt[ia+1] << " ] : "
                       << "\talpha=" << alpha[it][ia]

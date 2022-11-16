@@ -141,9 +141,9 @@ int main(int argc, char *argv[]) {
 
         std::vector<int> listTriggReal, listAssocReal, listTriggPeak, listTriggSide, listAssocPeak, listAssocSide;
         int binsWithTriggReal[NTRIGGBINS+1] = {0}, binsWithTriggPeak[NTRIGGBINS+1] = {0}, binsWithTriggSide[NTRIGGBINS+1] = {0};
-        fCorr->GetTriggAssocLists(arrPi0Real, listTriggReal, listAssocReal, binsWithTriggReal, bUseLeading);
-        fCorr->GetTriggAssocLists(arrPi0Peak, listTriggPeak, listAssocPeak, binsWithTriggPeak, bUseLeading);
-        fCorr->GetTriggAssocLists(arrPi0Side, listTriggSide, listAssocSide, binsWithTriggSide, bUseLeading);
+        fCorr->GetTriggAssocLists(arrPi0Real, listTriggReal, listAssocReal, binsWithTriggReal, 1, bUseLeading);
+        fCorr->GetTriggAssocLists(arrPi0Peak, listTriggPeak, listAssocPeak, binsWithTriggPeak, 1, bUseLeading);
+        fCorr->GetTriggAssocLists(arrPi0Side, listTriggSide, listAssocSide, binsWithTriggSide, 0, bUseLeading);
 
         fCorr->FillPionMasses(arrPhotonFor, binsWithTriggPeak, binsWithTriggSide, det);
         //fCorr->FillPionMassesTrue(arrPi0Real, binsWithTriggReal, det);

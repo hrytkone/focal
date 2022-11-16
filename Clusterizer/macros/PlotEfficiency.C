@@ -1,5 +1,6 @@
 //const TString filename = "efficiency_asym-08_v1.3_calib.root";
-const TString filename = "efficiency_asym-08_v1.3_cc-12200.root";
+//const TString filename = "efficiency_asym-08_v1.3_cc-12200.root";
+const TString filename = "efficiency_xy.root";
 
 const int nPtBin = 6;
 double pt[nPtBin+1], limMin = 2, limMax = 20;
@@ -12,10 +13,16 @@ double etaBW = 0.05, etamin = 3.2, etamax = 5.8;
 TFile *fin;
 
 TH2D *hEtaPtTrue;
-TH2D *hEtaPtRec;
 TH2D *hPhiEtaTrue;
+TH2D *hEtaPtRec;
+
 TH2D *hPhiEta;
 TH2D *hPhiTheta;
+TH2D *hXY;
+
+TH2D *hPhiEtaGamma;
+TH2D *hPhiThetaGamma;
+TH2D *hXYGamma;
 
 TH2D *hEfficiency;
 TH1D *hEfficiency_py;
@@ -82,7 +89,7 @@ void PlotEfficiency()
 
     //hEtaMass->RebinY();
     hEtaMass[0]->GetXaxis()->SetRangeUser(3.2, 5.8);
-    hEtaMass[0]->GetYaxis()->SetRangeUser(0., 250.);
+    hEtaMass[0]->GetYaxis()->SetRangeUser(0., 400.);
     hEtaMass[0]->GetXaxis()->SetTitleSize(0.042);
     hEtaMass[0]->GetYaxis()->SetTitleSize(0.042);
     hEtaMass[0]->GetXaxis()->SetLabelSize(0.042);
@@ -94,25 +101,25 @@ void PlotEfficiency()
     TLine *lPionMass = new TLine(3.2, 135., 5.8, 135.);
     lPionMass->SetLineColor(kWhite);
     lPionMass->SetLineWidth(1);
-    lPionMass->SetLineStyle(9);
+    lPionMass->SetLineStyle(2);
     lPionMass->Draw("SAME");
 
-    TLine *lEtaMass = new TLine(3.2, 548., 5.8, 548.);
-    lEtaMass->SetLineColor(kWhite);
-    lEtaMass->SetLineWidth(1);
-    lEtaMass->SetLineStyle(9);
-    lEtaMass->Draw("SAME");
+    //TLine *lEtaMass = new TLine(3.2, 548., 5.8, 548.);
+    //lEtaMass->SetLineColor(kWhite);
+    //lEtaMass->SetLineWidth(1);
+    //lEtaMass->SetLineStyle(9);
+    //lEtaMass->Draw("SAME");
 
     TLatex textPion;
     textPion.SetTextColor(kWhite);
     textPion.SetTextSize(0.035);
-    textPion.DrawLatexNDC(.18,.28,"m_{#pi0}=135 MeV/c^{2}");
-    //c6->SaveAs("pion-mass.png");
+    textPion.DrawLatexNDC(.18,.39,"m_{#pi0}=135 MeV/c^{2}");
+    c6->SaveAs("pion-mass.pdf");
 
-    //TLatex textEta;
-    //textEta.SetTextColor(kWhite);
-    //textEta.SetTextSize(0.035);
-    //textEta.DrawLatexNDC(.18,.75,"m_{#eta}=548 MeV/c^{2}");
+    TLatex textEta;
+    textEta.SetTextColor(kWhite);
+    textEta.SetTextSize(0.035);
+    textEta.DrawLatexNDC(.18,.75,"m_{#eta}=548 MeV/c^{2}");
 
     //FitMassDistributions();
 
@@ -161,8 +168,10 @@ void PlotEfficiency()
     hPhiEta->ProjectionX()->Draw("HIST");
 
     // Theta-phi histogram plotting
-    TCanvas *c9 = new TCanvas("c9", "c9", 600, 600);
+    TCanvas *c9 = new TCanvas("c9", "c9", 1200, 600);
+    c9->Divide(2,1);
 
+    c9->cd(1);
     gPad->SetTheta(90.);
     gPad->SetPhi(0.);
     //gPad->DrawFrame(-0.049, -0.049, 0.049, 0.049);
@@ -192,6 +201,13 @@ void PlotEfficiency()
     ring2->SetFillStyle(0);
     ring2->Draw("same");
 
+    TEllipse *ring3 = new TEllipse(0, 0, 0.0667);
+    ring3->SetLineColor(kWhite);
+    ring3->SetLineWidth(2);
+    ring3->SetLineStyle(2);
+    ring3->SetFillStyle(0);
+    ring3->Draw("same");
+
     TLatex text;
     text.SetTextColor(kWhite);
     text.SetTextFont(62);
@@ -200,8 +216,91 @@ void PlotEfficiency()
     text.DrawLatexNDC(0.475, 0.625, "#eta = 4.6");
     gPad->Update();
 
+    c9->cd(2);
+    gPad->SetTheta(90.);
+    gPad->SetPhi(0.);
+    //gPad->DrawFrame(-0.049, -0.049, 0.049, 0.049);
+    gPad->DrawFrame(-0.07, -0.07, 0.07, 0.07);
+    hPhiThetaGamma->SetTitle(";#phi;#theta");
+    hPhiThetaGamma->GetYaxis()->SetRangeUser(0.,0.12);
+    hPhiThetaGamma->GetXaxis()->SetTitleSize(0.);
+    hPhiThetaGamma->GetYaxis()->SetTitleSize(0.);
+    hPhiThetaGamma->GetXaxis()->SetLabelOffset(999);
+    //hPhiThetaGamma->GetXaxis()->SetLabelSize(0.);
+    hPhiThetaGamma->GetYaxis()->SetLabelOffset(999);
+    //hPhiThetaGamma->GetYaxis()->SetLabelSize(0.);
+    //hPhiThetaGamma->Draw("surf1 pol");
+    hPhiThetaGamma->Draw("same col2 pol");
+    //hPhiThetaGamma->Draw("");
+
+    ring1->Draw("same");
+    ring2->Draw("same");
+    ring3->Draw("same");
+    text.DrawLatexNDC(0.475, 0.74, "#eta = 3.9");
+    text.DrawLatexNDC(0.475, 0.625, "#eta = 4.6");
+    gPad->Update();
 
     c9->SaveAs("phi-theta-pol.pdf");
+
+    // XY histogram plotting
+    TCanvas *c10 = new TCanvas("c10", "c10", 1200, 600);
+    c10->Divide(2,1);
+
+    c10->cd(1);
+    gPad->SetLogz();
+    hXY->SetTitle(";x(cm);y(cm)");
+    hXY->Rebin2D();
+    hXY->GetXaxis()->SetRangeUser(-49.9,49.9);
+    hXY->GetYaxis()->SetRangeUser(-49.9,49.9);
+    //hXY->GetXaxis()->SetTitleSize(0.);
+    //hXY->GetYaxis()->SetTitleSize(0.);
+    //hXY->GetXaxis()->SetLabelOffset(999);
+    //hXY->GetXaxis()->SetLabelSize(0.);
+    //hXY->GetYaxis()->SetLabelOffset(999);
+    //hXY->GetYaxis()->SetLabelSize(0.);
+    hXY->Draw("COLZ");
+
+    TEllipse *ring21 = new TEllipse(0, 0, 28.6184);
+    ring21->SetLineColor(kBlack);
+    ring21->SetLineWidth(2);
+    ring21->SetLineStyle(2);
+    ring21->SetFillStyle(0);
+    ring21->Draw("same");
+
+    TEllipse *ring22 = new TEllipse(0, 0, 14.2071);
+    ring22->SetLineColor(kBlack);
+    ring22->SetLineWidth(2);
+    ring22->SetLineStyle(2);
+    ring22->SetFillStyle(0);
+    ring22->Draw("same");
+
+    TLatex text2;
+    text2.SetTextColor(kBlack);
+    text2.SetTextFont(62);
+    text2.SetTextSize(0.052);
+    text2.DrawLatexNDC(0.475, 0.74, "#eta = 3.9");
+    text2.DrawLatexNDC(0.475, 0.625, "#eta = 4.6");
+    gPad->Update();
+
+    c10->cd(2);
+    gPad->SetLogz();
+    hXYGamma->SetTitle(";x(cm);y(cm)");
+    hXYGamma->Rebin2D();
+    hXYGamma->GetXaxis()->SetRangeUser(-49.9,49.9);
+    hXYGamma->GetYaxis()->SetRangeUser(-49.9,49.9);
+    //hXYGamma->GetXaxis()->SetTitleSize(0.);
+    //hXYGamma->GetYaxis()->SetTitleSize(0.);
+    //hXYGamma->GetXaxis()->SetLabelOffset(999);
+    //hXYGamma->GetXaxis()->SetLabelSize(0.);
+    //hXYGamma->GetYaxis()->SetLabelOffset(999);
+    //hXYGamma->GetYaxis()->SetLabelSize(0.);
+    hXYGamma->Draw("COLZ");
+    ring21->Draw("same");
+    ring22->Draw("same");
+    text2.DrawLatexNDC(0.475, 0.74, "#eta = 3.9");
+    text2.DrawLatexNDC(0.475, 0.625, "#eta = 4.6");
+
+    c10->SaveAs("xy_markings.pdf");
 }
 
 void LoadData()
@@ -221,6 +320,11 @@ void LoadData()
     hPtMass = (TH2D*)fin->Get("hPtMass");
     hPhiTheta = (TH2D*)fin->Get("hPhiTheta");
     hPhiEta = (TH2D*)fin->Get("hPhiEta");
+    hXY = (TH2D*)fin->Get("hXY");
+    hPhiThetaGamma = (TH2D*)fin->Get("hPhiThetaGamma");
+    hPhiEtaGamma = (TH2D*)fin->Get("hPhiEtaGamma");
+    hXYGamma = (TH2D*)fin->Get("hXYGamma");
+
     hPhiEtaTrue = (TH2D*)fin->Get("hPhiEtaTrue");
     for (int ipt=0; ipt<nPtBin; ipt++)
         hEtaMass[ipt] = (TH2D*)fin->Get(Form("hEtaMass_%d", ipt));
@@ -338,7 +442,7 @@ void SetStyle(Bool_t graypalette)
     gStyle->SetHistLineColor(kRed);
     gStyle->SetFuncWidth(1);
     gStyle->SetFuncColor(kRed);
-    gStyle->SetLineWidth(0);
+    gStyle->SetLineWidth(1);
     gStyle->SetLabelSize(0.042,"xyz");
     gStyle->SetLabelOffset(0.01,"y");
     gStyle->SetLabelOffset(0.01,"x");
@@ -349,7 +453,7 @@ void SetStyle(Bool_t graypalette)
     gStyle->SetTitleFillColor(kWhite);
     gStyle->SetTextSizePixels(26);
     gStyle->SetTextFont(42);
-    gStyle->SetTickLength(0.04,"X");  gStyle->SetTickLength(0.04,"Y");
+    //gStyle->SetTickLength(0.04,"X");  gStyle->SetTickLength(0.04,"Y");
 
     gStyle->SetLegendBorderSize(0);
     gStyle->SetLegendFillColor(kWhite);

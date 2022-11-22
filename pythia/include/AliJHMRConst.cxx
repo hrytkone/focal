@@ -24,11 +24,15 @@ const TString accFunc[NDET] = {
 //double assocPt[NASSOCBINS+1] = {2.0, 3.0, 4.0};
 double triggPt[NTRIGGBINS+1] = {4.0, 8.0, 10.0, 15.0, 20.0};
 double assocPt[NASSOCBINS+1] = {2.0, 3.0, 4.0, 8.0, 10.0, 15.0};
+//double triggPt[NTRIGGBINS+1] = {4.0, 1000.};
+//double assocPt[NASSOCBINS+1] = {4.0, 1000.};
+double leadingTriggPt[NLEADINGBINS+1] = {4.0, 5.0, 6.0, 8.0, 1000.};
 
 // For pure PYTHIA simulations
 //const double massWindowMin = 110.;
 //const double massWindowMax = 160.;
 
+// For full detector sim
 const double massWindowMin = 50.;
 const double massWindowMax = 220.;
 
@@ -41,12 +45,11 @@ const double massPeakPosTrigg[NTRIGGBINS] = {140.779, 143.724, 146.13, 146.865};
 const double massPeakPosAssoc[NASSOCBINS] = {130, 135.607, 140.779, 143.724, 146.13};
 
 const double pi0eff = 0.9795;
-//const double effCorrTrigg[NTRIGGBINS] = {0.47261, 0.590262, 0.649246, 0.477833};
-//const double effCorrAssoc[NASSOCBINS] = {0.2903, 0.385151, 0.47261, 0.590262, 0.649246};
 const double effCorrTrigg[NTRIGGBINS] = {0.485133, 0.610642, 0.674529, 0.561265};
 const double effCorrAssoc[NASSOCBINS] = {0.297458, 0.383115, 0.485133, 0.610642, 0.674529};
-
-//0.268352, 0.345582, 0.456811, 0.602277, 0.593319, 0.631285
+//const double effCorrTrigg[NTRIGGBINS] = {1.};
+//const double effCorrAssoc[NASSOCBINS] = {1.};
+const double effCorrLeadingTrigg[NLEADINGBINS] = {0.42, 0.53, 0.55, 0.6};
 
 const double etacut = 0.;
 const double asymcut = 0.8;

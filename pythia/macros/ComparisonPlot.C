@@ -16,21 +16,21 @@ const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0, 8.0, 10.0, 15.0};
 
 const double mSize = 1.;
 
-const int nset = 2;
+const int nset = 1;
 //TString infiles[nset] = {
 //    "analysis_STAR_pp.root"//,
 //	//"analysis_STAR_pAu.root"
 //};
 
 TString infiles[nset] = {
-    "analysis_FoCal_pp_fullsim_no-mixed.root",
-    "analysis_FoCal_pp_fullsim_mixed.root",
+    "analysis_FoCal_pp_fullsim_no-mixed.root"
+    //"analysis_FoCal_pp_fullsim_mixed.root",
     //"analysis_FoCal_pp_test-pythia.root"
 };
 
 TString legHeader[nset] = {
-    "p-p #sqrt{s} = 14 TeV",
-    "p-p #sqrt{s} = 14 TeV"//,
+    "p-p #sqrt{s} = 14 TeV"
+    //"p-p #sqrt{s} = 14 TeV"//,
     //"p-Au"
 };
 
@@ -138,10 +138,8 @@ void ConfigHistos()
                 leg[iset][itrigg][iassoc]->SetHeader(Form("#splitline{%s}{[%0.1f,%0.1f][%0.1f,%0.1f]}", legHeader[iset].Data(),triggPt[itrigg],triggPt[itrigg+1],assocPt[iassoc],assocPt[iassoc+1]));
                 leg[iset][itrigg][iassoc]->AddEntry(hCorrReal[0][0][0], "MC truth", "pe");
                 //leg[iset][itrigg][iassoc]->AddEntry(hCorrMeas[0][0][0], "GEANT3 sim", "pe");
-                //leg[iset][itrigg][iassoc]->AddEntry(hCorrMeas[0][0][0], "Before SB corr", "pe");
-                //leg[iset][itrigg][iassoc]->AddEntry(hCorrFinal[0][0][0], "After SB corr", "pe");
-                leg[iset][itrigg][iassoc]->AddEntry(hCorrMeas[0][0][0], "No mixed", "pe");
-                leg[iset][itrigg][iassoc]->AddEntry(hCorrMeas[1][0][0], "Mixed", "pe");
+                leg[iset][itrigg][iassoc]->AddEntry(hCorrMeas[0][0][0], "Before SB corr", "pe");
+                leg[iset][itrigg][iassoc]->AddEntry(hCorrFinal[0][0][0], "After SB corr", "pe");
             }
         }
     }
@@ -177,13 +175,13 @@ void DrawFiliPad()
                 cout << rangeMin << " " << rangeMax << endl;
                 TPad *p = fpad[iset][itrigg][iassoc]->GetPad(1);
                 p->SetTickx(); p->SetLogx(0); p->SetLogy(1); p->cd();
-//                hset(*hCorrReal[iset][itrigg][iassoc], "#Delta#phi", "1/N_{trigg}dN/d#phi", 1.1,1.0, 0.09,0.09, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
-                hset(*hCorrMeas[iset][itrigg][iassoc], "#Delta#phi", "1/N_{trigg}dN/d#Delta#phi", 1.1,1.2, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
+//                hset(*hCorrMeas[iset][itrigg][iassoc], "#Delta#phi", "1/N_{trigg}dN/d#Delta#phi", 1.1,1.2, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
+                hset(*hCorrReal[iset][itrigg][iassoc], "#Delta#phi", "arb. norm.", 1.1,1.2, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
                 hCorrReal[iset][itrigg][iassoc]->GetYaxis()->SetRangeUser(rangeMin, rangeMax);
+                hCorrReal[iset][itrigg][iassoc]->GetXaxis()->SetRangeUser(TMath::Pi()/2., 3.*TMath::Pi()/2.);
                 hCorrReal[iset][itrigg][iassoc]->Draw("P");
-                hCorrMeas[0][itrigg][iassoc]->Draw("SAME P");
-                hCorrMeas[1][itrigg][iassoc]->Draw("SAME P");
-                //hCorrFinal[iset][itrigg][iassoc]->Draw("SAME P");
+                hCorrMeas[iset][itrigg][iassoc]->Draw("SAME P");
+                hCorrFinal[iset][itrigg][iassoc]->Draw("SAME P");
                 leg[iset][itrigg][iassoc]->Draw("SAME");
                 t->Draw("SAME");
 
@@ -192,27 +190,27 @@ void DrawFiliPad()
                 p->SetTickx(); p->SetGridy(1); p->SetLogx(0), p->SetLogy(0); p->cd();
                 hset( *hRatioMeas[iset][itrigg][iassoc], "#Delta#phi", "Ratio",1.1,0.7, 0.09,0.09, 0.01,0.01, 0.08,0.08, 510,505);
                 hRatioMeas[iset][itrigg][iassoc]->GetYaxis()->SetRangeUser(-0.2, 1.8);
-                hRatioMeas[0][itrigg][iassoc]->Draw("P");
-                hRatioMeas[1][itrigg][iassoc]->Draw("P SAME");
-                //hRatioFinal[iset][itrigg][iassoc]->Draw("P SAME");
+                hRatioMeas[iset][itrigg][iassoc]->GetXaxis()->SetRangeUser(TMath::Pi()/2., 3.*TMath::Pi()/2.);
+                hRatioMeas[iset][itrigg][iassoc]->Draw("P");
+                hRatioFinal[iset][itrigg][iassoc]->Draw("P SAME");
             }
         }
     }
 
-    fpadPtComp = new Filipad(padID, 1.1, 0.35, 100, 100, 0.8, 1);
-    fpadPtComp->Draw();
-    padID++;
+    //fpadPtComp = new Filipad(padID, 1.1, 0.35, 100, 100, 0.8, 1);
+    //fpadPtComp->Draw();
+    //padID++;
 
-    // Upper pad
-    TPad *p = fpadPtComp->GetPad(1);
-    p->SetTickx(); p->SetLogx(0); p->SetLogy(1); p->cd();
-    hset(*hCorrReal[0][0][0], "#Delta#phi", "1/N_{trigg}dN/d#phi", 1.1,1.5, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
-    hCorrReal[0][0][0]->Draw("P");
-    hCorrReal[0][1][1]->Draw("SAME P");
+    //// Upper pad
+    //TPad *p = fpadPtComp->GetPad(1);
+    //p->SetTickx(); p->SetLogx(0); p->SetLogy(1); p->cd();
+    //hset(*hCorrReal[0][0][0], "#Delta#phi", "1/N_{trigg}dN/d#phi", 1.1,1.5, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
+    //hCorrReal[0][0][0]->Draw("P");
+    //hCorrReal[0][1][1]->Draw("SAME P");
 
-    // Lower pad
-    p = fpadPtComp->GetPad(2);
-    p->SetTickx(); p->SetGridy(1); p->SetLogx(0), p->SetLogy(0); p->cd();
-    hset( *hRatioPt, "#Delta#phi", "Ratio",1.1,0.9, 0.09,0.09, 0.01,0.01, 0.08,0.08, 510,505);
-    hRatioPt->Draw("P");
+    //// Lower pad
+    //p = fpadPtComp->GetPad(2);
+    //p->SetTickx(); p->SetGridy(1); p->SetLogx(0), p->SetLogy(0); p->cd();
+    //hset( *hRatioPt, "#Delta#phi", "Ratio",1.1,0.9, 0.09,0.09, 0.01,0.01, 0.08,0.08, 510,505);
+    //hRatioPt->Draw("P");
 }

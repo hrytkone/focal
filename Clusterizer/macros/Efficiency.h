@@ -1,13 +1,15 @@
-const TString outputname = "efficiency_xy";
-const double asymcut = 0.8;
+const TString outputname = "efficiency_gamma_no-cut";
+const double asymcut = 1.;
 
 const int nPtBin = 6;
 double pt[nPtBin+1], limMin = 2, limMax = 20;
 double logBW = (log(limMax) - log(limMin))/nPtBin;
 
-const int nEtaBin = 52;
+//const int nEtaBin = 52;
+const int nEtaBin = 30;
 double eta[nEtaBin+1];
-double etaBW = 0.05, etamin = 3.0, etamax = 5.8;
+//double etaBW = 0.05, etamin = 3.0, etamax = 5.8;
+double etaBW = 0.05, etamin = 4.0, etamax = 5.5;
 
 //const int nPhiBin = 52;
 const int nPhiBin = 104;

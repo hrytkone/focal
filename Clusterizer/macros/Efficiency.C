@@ -114,6 +114,7 @@ void FillTruePions()
         double trE = tr->E();
         double trPid = tr->GetID();
         double trMomType = tr->GetMotherType();
+        if (trEta < etamin || trEta > etamax) continue;
         if (trPid==111) {
             hEtaPtTrue->Fill(trEta, trPt);
             hEtaETrue->Fill(trEta, trE);

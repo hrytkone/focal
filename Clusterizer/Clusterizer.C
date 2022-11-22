@@ -33,6 +33,7 @@ void Clusterizer(TString simFolder, TString clusteringOutputFileDir, Int_t njobs
         int nev = fRunLoader->GetNumberOfEvents();
         cout << "\tN EVENTS : " << nev << endl;
         for (int ievt = 0; ievt < nev; ievt++) {
+            cout << "---------------------------------------------------------" << endl;
             LoadEvent(simFolder, ifolder, ievt);
             GetKinematics(nevtot);
             Clusterize(ifolder, ievt);
@@ -173,12 +174,12 @@ void CreateClusterMaps()
         clusterMap[segment] = new ObjectMap(nCols,nRows);
 
         if (!coarseClusterMap && !isPixel) {
-            cout << "\t\tCOARSE" << endl;
+            cout << "\t\tCOARSE\tnCols=" << nCols << "\tnRows=" << nRows << "\tFoCal size=" << geometry->GetFOCALSizeX() << "\tpad size=" << geometry->GetVirtualPadSize(segment) << endl;
             coarseClusterMap = new ObjectMap(nCols,nRows);
         }
 
         if (!fineClusterMap && isPixel) {
-            cout << "\t\tFINE" << endl;
+            cout << "\t\tFINE\tnCols=" << nCols << "\tnRows=" << nRows << "\tFoCal size=" << geometry->GetFOCALSizeX() << "\tpad size=" << geometry->GetVirtualPadSize(segment) << endl;
             fineClusterMap = new ObjectMap(nCols,nRows);
         }
 
@@ -196,7 +197,6 @@ void LoadClusterizerHit(TString inputfile)
     if (!fRunLoader) {
         cout << "ERROR : RunLoader not found for " << inputfile.Data() << endl;
     }
-
 
     if (!fRunLoader->GetAliRun()) fRunLoader->LoadgAlice();
     if (!fRunLoader->TreeE()) fRunLoader->LoadHeader();
@@ -766,7 +766,7 @@ void Clusterize(int ifolder, int ievt)
         cout << "  CREATING NEW CLUSTERS FROM LONELY COARSE ONES:" << endl;
 
     // Third: find coarse clusters with no fine one nearby and create new final cluster for each
-    for (Int_t c = nSubClusters; c < nSubClusters2; c++) {
+/**    for (Int_t c = nSubClusters; c < nSubClusters2; c++) {
 
         AliFOCALCluster * subCluster = (AliFOCALCluster*) subClusters->UncheckedAt(c);
 
@@ -812,7 +812,7 @@ void Clusterize(int ifolder, int ievt)
             cout << "\t\tSEMIFINAL_CLUSTER_FOUND_FROMCOARSE: " << Form("Seg=%i\tE=%f\tx=%f\ty=%f", -1, e1, x1, y1) << endl;
 
     } // end for final clusters
-
+**/
     if (fFOCALCluster->GetDebugMode())
         cout << "  REMOVE CLUSTERS WITH 0 ENERGY AND CREATE FINAL LIST" << endl;
     // Remove finalClusters 0 energy

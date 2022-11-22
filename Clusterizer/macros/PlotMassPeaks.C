@@ -1,35 +1,37 @@
 const int nset = 6;
-//const int npt = 6;
-const int npt = 10;
+const int npt = 6;
+//const int npt = 10;
 
 //const TString filename = "etacut_4-5_shapecut_4-06.root";
 //const TString filename = "etacut_37-56.root";
 //const TString filename = "etacut_4-5_pthard-2.root";
-const TString filename = "etacut_41-55_more-pt-bins.root";
+//const TString filename = "etacut_41-55.root";
+const TString filename = "etacut_41-55_pi0-gun.root";
 //const TString filename = "etacut_37-56_pthard-2.root";
 //const TString filename = "etacut_37-56_diff-pt-bins_1.root";
-//const TString lowmassfilename = "low-mass_etacut_42-53.root";
-const TString lowmassfilename = "etacut_41-55_gamma_more-pt-bins.root";
+const TString lowmassfilename = "low-mass_etacut_42-53.root";
+//const TString lowmassfilename = "etacut_41-55_gamma_more-pt-bins.root";
 const TString legEta = "4.1 < #eta < 5.5";
 //------------------------------------------------------------------------------
 
 const TString legHeader[npt] = {
-    //"2 GeV < p_{T} < 3 GeV",
-    //"3 GeV < p_{T} < 4 GeV",
-    //"4 GeV < p_{T} < 8 GeV",
-    //"8 GeV < p_{T} < 10 GeV",
-    //"10 GeV < p_{T} < 15 GeV",
-    //"15 GeV < p_{T} < 20 GeV"
-    "2 GeV < p_{T} < 2.5 GeV",
-    "2.5 GeV < p_{T} < 3 GeV",
-    "3 GeV < p_{T} < 3.5 GeV",
-    "3.5 GeV < p_{T} < 4 GeV",
-    "4 GeV < p_{T} < 5 GeV",
-    "5 GeV < p_{T} < 6 GeV",
-    "6 GeV < p_{T} < 8 GeV",
+    "2 GeV < p_{T} < 3 GeV",
+    "3 GeV < p_{T} < 4 GeV",
+    "4 GeV < p_{T} < 8 GeV",
     "8 GeV < p_{T} < 10 GeV",
     "10 GeV < p_{T} < 15 GeV",
     "15 GeV < p_{T} < 20 GeV"
+
+    //"2 GeV < p_{T} < 2.5 GeV",
+    //"2.5 GeV < p_{T} < 3 GeV",
+    //"3 GeV < p_{T} < 3.5 GeV",
+    //"3.5 GeV < p_{T} < 4 GeV",
+    //"4 GeV < p_{T} < 5 GeV",
+    //"5 GeV < p_{T} < 6 GeV",
+    //"6 GeV < p_{T} < 8 GeV",
+    //"8 GeV < p_{T} < 10 GeV",
+    //"10 GeV < p_{T} < 15 GeV",
+    //"15 GeV < p_{T} < 20 GeV"
 };
 
 //------------------------------------------------------------------------------
@@ -48,8 +50,8 @@ const double xf[nset] = {0.85, 0.85, 0.85, 0.85, 0.85, 0.85};
 const double yi[nset] = {0.6, 0.6, 0.6, 0.6, 0.6, 0.6};
 const double yf[nset] = {0.87, 0.87, 0.87, 0.87, 0.87, 0.87};
 
-//const double fitStartingPoint[npt] = {50., 50., 40., 50., 50., 50.};
-const double fitStartingPoint[npt] = {50., 50., 40., 50., 50., 50., 50., 50., 50., 50.};
+const double fitStartingPoint[npt] = {50., 50., 40., 50., 50., 50.};
+//const double fitStartingPoint[npt] = {50., 50., 40., 50., 50., 50., 50., 50., 50., 50.};
 
 //------------------------------------------------------------------------------
 
@@ -87,12 +89,12 @@ double peakPos[npt][nset] = {0};
 double peakPosErr[npt][nset] = {0};
 double asymmetry[nset] = {0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
 double asymmteryErr[nset] = {0};
-//double ptMid[npt] = {2.5, 3.5, 6., 9., 12.5, 17.5};
-//double ptMidErr[npt] = {0.5, 0.5, 2., 1., 2.5, 2.5};
-double ptMid[npt] = {2.25, 2.75, 3.25, 3.75, 4.5, 5.5, 7, 9, 12.5, 17.5};
-double ptMidErr[npt] = {0.25, 0.25, 0.25, 0.25, 0.5, 0.5, 1., 1., 2.5, 2.5};
+double ptMid[npt] = {2.5, 3.5, 6., 9., 12.5, 17.5};
+double ptMidErr[npt] = {0.5, 0.5, 2., 1., 2.5, 2.5};
+//double ptMid[npt] = {2.25, 2.75, 3.25, 3.75, 4.5, 5.5, 7, 9, 12.5, 17.5};
+//double ptMidErr[npt] = {0.25, 0.25, 0.25, 0.25, 0.5, 0.5, 1., 1., 2.5, 2.5};
 
-const int mColor[nset] = {kAzure, kViolet, kPink, kOrange, kSpring, kTeal};
+const int mColor[npt] = {kAzure, kViolet, kPink, kOrange, kSpring, kTeal};//, kBlack, kBlack, kBlack, kBlack};
 TGraphErrors *gSignalToBg[npt];
 TGraphErrors *gEfficiency[npt];
 TGraphErrors *gEffPtFunc[nset];
@@ -125,7 +127,7 @@ void PlotMassPeaks()
     CreateLegends();
     for (int j=0; j<nset; j++) {
         c1[j] = new TCanvas(Form("c%d", j), "", 900, 600);
-        c1[j]->Divide(4,3);
+        c1[j]->Divide(3,2);
         for (int i=0; i<npt; i++) {
             c1[j]->cd(i+1);
             gPad->SetLeftMargin(0.1);
@@ -136,7 +138,7 @@ void PlotMassPeaks()
             double max = hMassCluster[j][i]->GetBinContent(hMassCluster[j][i]->GetMaximumBin());
             hMassCluster[j][i]->GetXaxis()->SetRangeUser(0., 650.);
             hMassCluster[j][i]->GetYaxis()->SetRangeUser(0., max+0.2*max);
-            hMassClusterBg[j][i]->Draw("HIST E");
+            //hMassClusterBg[j][i]->Draw("HIST E");
             hMassCluster[j][i]->Draw("HIST E");
             //hMassClusterMixed[j][i]->Draw("PE SAME");
             fBg[j][i]->Draw("SAME");
@@ -182,7 +184,7 @@ void PlotMassPeaks()
 
     cEffPtFunc = new TCanvas("cEffPtFunc", "", 600, 600);
     cEffPtFunc->cd();
-    for (int i=0; i<npt; i++) {
+    for (int i=0; i<nset; i++) {
         if (i==0)
             gEffPtFunc[i]->Draw("PLA PMC PLC");
         else
@@ -320,7 +322,10 @@ void FitMassPeaks()
             peakPos[i][j] = fitPar[7];
             peakPosErr[i][j] = fFit[i][j]->GetParError(7);
 
-            bgErr[i][j] = fBg[i][j]->IntegralError(massmin[i][j], massmax[i][j], r->GetParams(), r->GetCovarianceMatrix().GetMatrixArray());
+            //if (r!=NULL)
+            //    bgErr[i][j] = fBg[i][j]->IntegralError(massmin[i][j], massmax[i][j], r->GetParams(), r->GetCovarianceMatrix().GetMatrixArray());
+            //else
+                bgErr[i][j] = 0.;
 
             //cout << "\nHistogram : \t" << hMassCluster[i][j]->Integral(hMassCluster[i][j]->FindBin(110), hMassCluster[i][j]->FindBin(160)) << endl;
             //cout << "Fit : \t" << fFit[i][j]->Integral(110, 160)/hMassCluster[i][j]->GetBinWidth(0) << endl;
@@ -377,7 +382,7 @@ void CreateGraphs()
         gEfficiency[i]->SetTitle(";#alpha;N_{#pi0}^{rec}/N_{#pi0}^{true}");
         gEfficiency[i]->SetMarkerColor(mColor[i]);
         gEfficiency[i]->SetLineColor(mColor[i]);
-        gEfficiency[i]->GetYaxis()->SetRangeUser(0., 1.);
+        gEfficiency[i]->GetYaxis()->SetRangeUser(0., 1.5);
         gEfficiency[i]->SetMarkerStyle(20);
         //gEfficiency[i]->SetMarkerSize(0.5);
     }

@@ -1,6 +1,10 @@
 //const TString filename = "efficiency_asym-08_v1.3_calib.root";
 //const TString filename = "efficiency_asym-08_v1.3_cc-12200.root";
-const TString filename = "efficiency_xy.root";
+//const TString filename = "efficiency_xy.root";
+//const TString filename = "efficiency_pi0-gun_no-asym-cut.root";
+//const TString filename = "efficiency_pi0-gun.root";
+const TString filename = "efficiency_gamma_no-cut.root";
+//const TString filename = "efficiency_pythiamb_asym-08_eta-40-55.root";
 
 const int nPtBin = 6;
 double pt[nPtBin+1], limMin = 2, limMax = 20;
@@ -54,7 +58,7 @@ void PlotEfficiency()
     LoadData();
     TCanvas *c1 = new TCanvas("c1", "c1", 600, 600);
     c1->SetLogz();
-    hEfficiency->SetTitle(";#eta;p_{T}");
+    hEfficiency->SetTitle("Efficiency ;#eta;p_{T}");
     hEfficiency->Draw("COLZ");
 
     TCanvas *c2 = new TCanvas("c2", "c2", 600, 600);
@@ -66,7 +70,7 @@ void PlotEfficiency()
 
     TCanvas *c3 = new TCanvas("c3", "c3", 600, 600);
     c3->SetLogx();
-    hEtaPtTrue_py->SetTitle(";p_{T};efficiency");
+    hEtaPtTrue_py->SetTitle("p_{T}^{true} vs p_{T}^{rec};p_{T};efficiency");
     hEtaPtTrue_py->Draw("PE");
     hEtaPtRec_py->Draw("PE SAME");
 
@@ -100,7 +104,7 @@ void PlotEfficiency()
 
     TLine *lPionMass = new TLine(3.2, 135., 5.8, 135.);
     lPionMass->SetLineColor(kWhite);
-    lPionMass->SetLineWidth(1);
+    lPionMass->SetLineWidth(2);
     lPionMass->SetLineStyle(2);
     lPionMass->Draw("SAME");
 
@@ -112,14 +116,14 @@ void PlotEfficiency()
 
     TLatex textPion;
     textPion.SetTextColor(kWhite);
-    textPion.SetTextSize(0.035);
+    textPion.SetTextSize(0.045);
     textPion.DrawLatexNDC(.18,.39,"m_{#pi0}=135 MeV/c^{2}");
     c6->SaveAs("pion-mass.pdf");
 
-    TLatex textEta;
-    textEta.SetTextColor(kWhite);
-    textEta.SetTextSize(0.035);
-    textEta.DrawLatexNDC(.18,.75,"m_{#eta}=548 MeV/c^{2}");
+    //TLatex textEta;
+    //textEta.SetTextColor(kWhite);
+    //textEta.SetTextSize(0.035);
+    //textEta.DrawLatexNDC(.18,.75,"m_{#eta}=548 MeV/c^{2}");
 
     //FitMassDistributions();
 
@@ -244,6 +248,7 @@ void PlotEfficiency()
 
     // XY histogram plotting
     TCanvas *c10 = new TCanvas("c10", "c10", 1200, 600);
+    //TCanvas *c10 = new TCanvas("c10", "c10", 600, 600);
     c10->Divide(2,1);
 
     c10->cd(1);
@@ -252,12 +257,6 @@ void PlotEfficiency()
     hXY->Rebin2D();
     hXY->GetXaxis()->SetRangeUser(-49.9,49.9);
     hXY->GetYaxis()->SetRangeUser(-49.9,49.9);
-    //hXY->GetXaxis()->SetTitleSize(0.);
-    //hXY->GetYaxis()->SetTitleSize(0.);
-    //hXY->GetXaxis()->SetLabelOffset(999);
-    //hXY->GetXaxis()->SetLabelSize(0.);
-    //hXY->GetYaxis()->SetLabelOffset(999);
-    //hXY->GetYaxis()->SetLabelSize(0.);
     hXY->Draw("COLZ");
 
     TEllipse *ring21 = new TEllipse(0, 0, 28.6184);
@@ -286,8 +285,8 @@ void PlotEfficiency()
     gPad->SetLogz();
     hXYGamma->SetTitle(";x(cm);y(cm)");
     hXYGamma->Rebin2D();
-    hXYGamma->GetXaxis()->SetRangeUser(-49.9,49.9);
-    hXYGamma->GetYaxis()->SetRangeUser(-49.9,49.9);
+    //hXYGamma->GetXaxis()->SetRangeUser(-49.9,49.9);
+    //hXYGamma->GetYaxis()->SetRangeUser(-49.9,49.9);
     //hXYGamma->GetXaxis()->SetTitleSize(0.);
     //hXYGamma->GetYaxis()->SetTitleSize(0.);
     //hXYGamma->GetXaxis()->SetLabelOffset(999);
@@ -295,12 +294,12 @@ void PlotEfficiency()
     //hXYGamma->GetYaxis()->SetLabelOffset(999);
     //hXYGamma->GetYaxis()->SetLabelSize(0.);
     hXYGamma->Draw("COLZ");
-    ring21->Draw("same");
-    ring22->Draw("same");
-    text2.DrawLatexNDC(0.475, 0.74, "#eta = 3.9");
-    text2.DrawLatexNDC(0.475, 0.625, "#eta = 4.6");
+    //ring21->Draw("same");
+    //ring22->Draw("same");
+    //text2.DrawLatexNDC(0.475, 0.74, "#eta = 3.9");
+    //text2.DrawLatexNDC(0.475, 0.625, "#eta = 4.6");
 
-    c10->SaveAs("xy_markings.pdf");
+    c10->SaveAs("xy_markings.png");
 }
 
 void LoadData()
@@ -428,16 +427,16 @@ void SetStyle(Bool_t graypalette)
     if(graypalette) gStyle->SetPalette(8,0);
     //else gStyle->SetPalette(1);
     gStyle->SetCanvasColor(10);
-    gStyle->SetCanvasBorderMode(0);
+    //gStyle->SetCanvasBorderMode(0);
     gStyle->SetFrameLineWidth(2);
     gStyle->SetFrameFillColor(kWhite);
     gStyle->SetPadColor(10);
     //gStyle->SetPadTickX(0);
     //gStyle->SetPadTickY(0);
-    gStyle->SetPadBottomMargin(0.1);
-    gStyle->SetPadLeftMargin(0.15);
+    gStyle->SetPadBottomMargin(0.12);
+    gStyle->SetPadLeftMargin(0.12);
     gStyle->SetPadTopMargin(0.1);
-    gStyle->SetPadRightMargin(0.05);
+    gStyle->SetPadRightMargin(0.12);
     gStyle->SetHistLineWidth(1);
     gStyle->SetHistLineColor(kRed);
     gStyle->SetFuncWidth(1);

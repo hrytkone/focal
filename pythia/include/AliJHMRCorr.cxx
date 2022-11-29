@@ -440,7 +440,6 @@ void AliJHMRCorr::FillPionMassesLeading(TClonesArray *arrPhoton, TClonesArray *a
 {
     if (listTrigg.size()<1) return;
     AliJBaseTrack *lvTrigg = (AliJBaseTrack*)arrPi0->At(listTrigg[0]);
-    if (listTrigg.size()>1) cout << "More than one trigger!" << endl;
 
     int nPhoton = arrPhoton->GetEntriesFast();
     for (int i = 1; i < nPhoton; i++) {
@@ -456,10 +455,7 @@ void AliJHMRCorr::FillPionMassesLeading(TClonesArray *arrPhoton, TClonesArray *a
             double pT = lvSum.Pt();
             int iTriggBin = GetBin(triggPt, NTRIGGBINS, pT);
             int iAssocBin = GetBin(assocPt, NASSOCBINS, pT);
-            if (iTriggBin >= 0 && pT==lvTrigg->Pt() && mass==1000.*lvTrigg->M()) {
-                cout << isPeakTriggLarger << " " << listTrigg[0] << " mass=" << mass << " pT=" << pT << endl;
-                histos->hPi0MassTrigg[iTriggBin]->Fill(mass);
-            }
+            if (iTriggBin >= 0 && pT==lvTrigg->Pt() && mass==1000.*lvTrigg->M()) histos->hPi0MassTrigg[iTriggBin]->Fill(mass);
             if (iAssocBin >= 0 && isPeakTriggLarger) histos->hPi0MassAssocPeak[iTriggBin][iAssocBin]->Fill(mass);
             if (iAssocBin >= 0 && !isPeakTriggLarger) histos->hPi0MassAssocSide[iTriggBin][iAssocBin]->Fill(mass);
         }

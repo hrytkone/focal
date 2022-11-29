@@ -145,13 +145,6 @@ int main(int argc, char *argv[]) {
         fCorr->GetTriggAssocLists(arrPi0Peak, listTriggPeak, listAssocPeak, binsWithTriggPeak, 1);
         fCorr->GetTriggAssocLists(arrPi0Side, listTriggSide, listAssocSide, binsWithTriggSide, 0);
 
-        for (int i=0; i<arrPi0Side->GetEntriesFast(); i++) {
-            AliJBaseTrack *lv = (AliJBaseTrack*)arrPi0Side->At(i);
-            double pT = lv->Pt();
-            double mass = 1000.*lv->M();
-            cout << "mass=" << mass << "\tpT=" << pT << endl;
-        }
-
         if (bUseLeading) {
             int isPeakTriggLarger = fCorr->GetLargerTrigg(arrPi0Peak, listTriggPeak, arrPi0Side, listTriggSide);
             if (isPeakTriggLarger==1)

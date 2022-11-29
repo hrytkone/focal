@@ -37,16 +37,17 @@ bool AliJHMRCorr::IsMassWindow(double mass, int ibin, bool isTriggBin)
 
 bool AliJHMRCorr::IsSideband(double mass)
 {
-    if (fIsFullSim)
+    //if (fIsFullSim)
         return (mass > sidebandMin && mass < sidebandMax) ? true : false;
-    else
-        return ((mass > 40. && mass < 80.) || (mass > 210. && mass < 280.)) ? true : false;
+    //else
+    //    return ((mass > 40. && mass < 80.) || (mass > 210. && mass < 280.)) ? true : false;
 }
 
 // Return 1 if trigger from peak has larger pT than trigger from sideband, 0 if sideband
 // trigger pT is larger
 int AliJHMRCorr::GetLargerTrigg(TClonesArray *arrPi0Peak, std::vector<int> listTriggPeak, TClonesArray *arrPi0Side, std::vector<int> listTriggSide)
 {
+    if (!listTriggPeak.size() && !listTriggSide.size()) return -1; // no trigger in either
     if (!listTriggPeak.size()) return 0;
     if (!listTriggSide.size()) return 1;
     AliJBaseTrack *lvTriggPeak = (AliJBaseTrack*)arrPi0Peak->At(listTriggPeak[0]);
@@ -88,7 +89,10 @@ void AliJHMRCorr::GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector
     int iLeadingTrigg = -1;
     if (fUseLeading) {
         iLeadingTrigg = GetLeadingTriggerIndex(arrPi0Candidates, bMass);
-        if (iLeadingTrigg > -1) listTrigg.push_back(iLeadingTrigg);
+        if (iLeadingTrigg > -1) {
+            listTrigg.push_back(iLeadingTrigg);
+            binsWithTrigg[0]++;
+        }
     }
 
     int nPi0Candidates = arrPi0Candidates->GetEntriesFast();
@@ -113,13 +117,12 @@ void AliJHMRCorr::GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector
                 if (iTrigg >= 0) listTrigg.push_back(i);
                 if (iAssoc >= 0) listAssoc.push_back(i);
             }
+            if (bMass) {
+                if (iTrigg >= 0 && IsMassWindow(mass, iTrigg, 1)) binsWithTrigg[iTrigg]++;
+            } else {
+                if (iTrigg >= 0) binsWithTrigg[iTrigg]++;
+            }
         }
-        if (bMass) {
-            if (iTrigg >= 0 && IsMassWindow(mass, iTrigg, 1)) binsWithTrigg[iTrigg]++;
-        } else {
-            if (iTrigg >= 0) binsWithTrigg[iTrigg]++;
-        }
-
     }
 }
 
@@ -258,7 +261,7 @@ void AliJHMRCorr::ConstructTrueCorrComponents(TClonesArray *arrPi0, std::vector<
             double etaAssoc = lvAssoc->Eta();
             int iAssocBin = GetBin(assocPt, NASSOCBINS, ptAssoc);
 
-            if (triggPt[iTriggBin] < assocPt[iAssocBin+1]) continue;
+            if (!fUseLeading && triggPt[iTriggBin] < assocPt[iAssocBin+1]) continue;
 
             //if (bUseWeight) wAssoc = 1./fPhotonAcceptanceEfficiency->Eval(ptAssoc);
             if (bUseWeight) wAssoc = 1./pi0eff;
@@ -425,10 +428,40 @@ void AliJHMRCorr::FillPionMasses(TClonesArray *arrPhoton, int binsWithTriggPeak[
             int iAssocBin = GetBin(assocPt, NASSOCBINS, pT);
             if (iTriggBin >= 0) histos->hPi0MassTrigg[iTriggBin]->Fill(mass);
             for (int it = 0; it < NTRIGGBINS; it++) {
-                if (triggPt[it] < assocPt[iAssocBin+1] && !fUseLeading) continue;
+                if (triggPt[it] < assocPt[iAssocBin+1]) continue;
                 if (binsWithTriggPeak[it] > 0 && iAssocBin >= 0) histos->hPi0MassAssocPeak[it][iAssocBin]->Fill(mass);
                 if (binsWithTriggSide[it] > 0 && iAssocBin >= 0) histos->hPi0MassAssocSide[it][iAssocBin]->Fill(mass);
             }
+        }
+    }
+}
+
+void AliJHMRCorr::FillPionMassesLeading(TClonesArray *arrPhoton, TClonesArray *arrPi0, std::vector<int> listTrigg, detector idet, bool isPeakTriggLarger)
+{
+    if (listTrigg.size()<1) return;
+    AliJBaseTrack *lvTrigg = (AliJBaseTrack*)arrPi0->At(listTrigg[0]);
+    if (listTrigg.size()>1) cout << "More than one trigger!" << endl;
+
+    int nPhoton = arrPhoton->GetEntriesFast();
+    for (int i = 1; i < nPhoton; i++) {
+        AliJBaseTrack *lv1 = (AliJBaseTrack*)arrPhoton->At(i);
+        if (!fIsFullSim && IsPhotonRemoved(lv1->E())) continue;
+        for (int j = 0; j < i; j++) {
+            AliJBaseTrack *lv2 = (AliJBaseTrack*)arrPhoton->At(j);
+            if (GetAsymmetry(arrPhoton, lv1, lv2)>asymcut) continue;
+            if (!fIsFullSim && IsPhotonRemoved(lv2->E())) continue;
+            AliJBaseTrack lvSum = GetPhotonSumVector(arrPhoton, lv1, lv2);
+            if (lvSum.Eta()<detEta[idet][0]+etacut || lvSum.Eta()>detEta[idet][1]-etacut) continue;
+            double mass = 1000.*lvSum.M();
+            double pT = lvSum.Pt();
+            int iTriggBin = GetBin(triggPt, NTRIGGBINS, pT);
+            int iAssocBin = GetBin(assocPt, NASSOCBINS, pT);
+            if (iTriggBin >= 0 && pT==lvTrigg->Pt() && mass==1000.*lvTrigg->M()) {
+                cout << isPeakTriggLarger << " " << listTrigg[0] << " mass=" << mass << " pT=" << pT << endl;
+                histos->hPi0MassTrigg[iTriggBin]->Fill(mass);
+            }
+            if (iAssocBin >= 0 && isPeakTriggLarger) histos->hPi0MassAssocPeak[iTriggBin][iAssocBin]->Fill(mass);
+            if (iAssocBin >= 0 && !isPeakTriggLarger) histos->hPi0MassAssocSide[iTriggBin][iAssocBin]->Fill(mass);
         }
     }
 }

@@ -37,6 +37,10 @@ public:
             fRand = new TRandom3();
             fUseLeading = bUseLeading;
             fIsFullSim = isFullSim;
+
+            fLeta = -1.;
+            fLphi = -1.;
+            fLpt  = -1.;
         }
 
     virtual ~AliJHMRCorr(){ }
@@ -63,10 +67,11 @@ public:
     bool IsMassWindow(double mass);
     bool IsMassWindow(double mass, int ibin, bool isTriggBin);
     bool IsSideband(double mass);
+    bool IsLeadingTrigger(double mass, double pt);
 
     void FillRealTriggers(TClonesArray *arrRealPi0, std::vector<int>& listTrigg);
     void FillPionMasses(TClonesArray *arrPhoton, int binsWithTriggPeak[NTRIGGBINS], int binsWithTriggSide[NTRIGGBINS], detector idet);
-    void FillPionMassesLeading(TClonesArray *arrPhoton, TClonesArray *arrPi0Candidates, std::vector<int> listTrigg, TH1D *hMass, detector idet);
+    void FillPionMassesLeading(TClonesArray *arrPhoton, TClonesArray *arrPi0, std::vector<int> listTrigg, detector idet, bool isPeakTriggLarger);
     void FillPionMassesTrue(TClonesArray *arrPi0, int binsWithTriggReal[NTRIGGBINS], detector idet);
     void FillAsymmetry(TClonesArray *arrPhoton, detector idet);
 
@@ -74,6 +79,10 @@ protected:
 
     bool fUseLeading; // use leading particle correlation
     bool fIsFullSim;  // choose if data is pythia monte carlo data or from geant simulation
+
+    double fLeta;     // These are to find out the leading trigger when filling mass histos for assoc
+    double fLphi;     // These are to find out the leading trigger when filling mass histos for assoc
+    double fLpt;      // These are to find out the leading trigger when filling mass histos for assoc
 
     TF1 *fPhotonEfficiency;
     TF1 *fPhotonAcceptanceEfficiency;

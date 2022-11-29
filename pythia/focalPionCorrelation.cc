@@ -145,8 +145,19 @@ int main(int argc, char *argv[]) {
         fCorr->GetTriggAssocLists(arrPi0Peak, listTriggPeak, listAssocPeak, binsWithTriggPeak, 1);
         fCorr->GetTriggAssocLists(arrPi0Side, listTriggSide, listAssocSide, binsWithTriggSide, 0);
 
+        for (int i=0; i<arrPi0Side->GetEntriesFast(); i++) {
+            AliJBaseTrack *lv = (AliJBaseTrack*)arrPi0Side->At(i);
+            double pT = lv->Pt();
+            double mass = 1000.*lv->M();
+            cout << "mass=" << mass << "\tpT=" << pT << endl;
+        }
+
         if (bUseLeading) {
-            fCorr->FillPionMasses(arrPhotonFor, binsWithTriggPeak, binsWithTriggSide, det);
+            int isPeakTriggLarger = fCorr->GetLargerTrigg(arrPi0Peak, listTriggPeak, arrPi0Side, listTriggSide);
+            if (isPeakTriggLarger==1)
+                fCorr->FillPionMassesLeading(arrPhotonFor, arrPi0Peak, listTriggPeak, det, isPeakTriggLarger);
+            if (isPeakTriggLarger==0)
+                fCorr->FillPionMassesLeading(arrPhotonFor, arrPi0Side, listTriggSide, det, isPeakTriggLarger);
         } else {
             fCorr->FillPionMasses(arrPhotonFor, binsWithTriggPeak, binsWithTriggSide, det);
         }
@@ -157,17 +168,18 @@ int main(int argc, char *argv[]) {
         fCorr->DoCorrelations(arrPi0Real, listTriggReal, listAssocReal, fHistos->hCorrFor, 0);
         fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, listAssocPeak, fHistos->hCorrMeas, 0);
         fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, listAssocPeak, fHistos->hCorrMassMass, 1);
-        fCorr->DoCorrelations(arrPi0Side, listTriggSide, listAssocSide, fHistos->hCorrSideSide, 0);
         if (bUseLeading) {
             int isPeakTriggLarger = fCorr->GetLargerTrigg(arrPi0Peak, listTriggPeak, arrPi0Side, listTriggSide);
             if (isPeakTriggLarger) {
                 fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0Side, listAssocSide, fHistos->hCorrMassSide, 0, 0);
             } else {
                 fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, fHistos->hCorrSideMass, 0, 1);
+                fCorr->DoCorrelations(arrPi0Side, listTriggSide, listAssocSide, fHistos->hCorrSideSide, 0);
             }
         } else {
             fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0Side, listAssocSide, fHistos->hCorrMassSide, 0, 0);
             fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, fHistos->hCorrSideMass, 0, 1);
+            fCorr->DoCorrelations(arrPi0Side, listTriggSide, listAssocSide, fHistos->hCorrSideSide, 0);
         }
 
         // Construct & save true correlation components f_SS, f_SB, f_BS, f_BB

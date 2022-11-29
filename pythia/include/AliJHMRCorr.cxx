@@ -455,9 +455,12 @@ void AliJHMRCorr::FillPionMassesLeading(TClonesArray *arrPhoton, TClonesArray *a
             double pT = lvSum.Pt();
             int iTriggBin = GetBin(triggPt, NTRIGGBINS, pT);
             int iAssocBin = GetBin(assocPt, NASSOCBINS, pT);
-            if (iTriggBin >= 0 && pT==lvTrigg->Pt() && mass==1000.*lvTrigg->M()) histos->hPi0MassTrigg[iTriggBin]->Fill(mass);
-            if (iAssocBin >= 0 && isPeakTriggLarger) histos->hPi0MassAssocPeak[iTriggBin][iAssocBin]->Fill(mass);
-            if (iAssocBin >= 0 && !isPeakTriggLarger) histos->hPi0MassAssocSide[iTriggBin][iAssocBin]->Fill(mass);
+            if (iTriggBin >= 0 && pT==lvTrigg->Pt() && mass==1000.*lvTrigg->M()) {
+                histos->hPi0MassTrigg[iTriggBin]->Fill(mass);
+            } else {
+                if (iAssocBin >= 0 && isPeakTriggLarger) histos->hPi0MassAssocPeak[iTriggBin][iAssocBin]->Fill(mass);
+                if (iAssocBin >= 0 && !isPeakTriggLarger) histos->hPi0MassAssocSide[iTriggBin][iAssocBin]->Fill(mass);
+            }
         }
     }
 }

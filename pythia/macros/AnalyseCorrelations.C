@@ -44,9 +44,10 @@ void processDataSTAR()
 void processDataFoCal()
 {
 	TString fInName[ndata_focal] = {
+        "/home/heimarry/Simulations/focal/analysis_output/2022-11-29_full-sim_leading/output_merged.root"
         //"/home/heimarry/Simulations/focal/analysis_output/20221128_ptmin-1/output.root"
         //"/home/heimarry/Simulations/focal/analysis_output/20221114_no-weight_2m.root",
-	    "/home/heimarry/Simulations/focal/analysis_output/2022-11-22_pp-focal/output_merged.root"
+	    //"/home/heimarry/Simulations/focal/analysis_output/2022-11-22_pp-focal/output_merged.root"
         //"/home/heimarry/Simulations/focal/analysis_output/20221114_wassoc_2m.root"
         //"/home/heimarry/Simulations/focal/pythia/fullsim_pthard-2_asym-08_bigger-windows_n1m_no-weights.root"
         //"/home/heimarry/Simulations/focal/pythia/full-sim_trigg-not-weighted_mixed.root"
@@ -58,7 +59,7 @@ void processDataFoCal()
 	};
 
 	TString fOutName[ndata_focal] = {
-		"analysis_FoCal_pp_check-new_pythia8.root"
+		"analysis_FoCal_pp_full-sim_leading.root"
 	};
 
     TString dataname[ndata_focal] = {
@@ -71,7 +72,7 @@ void processDataFoCal()
 
 		LoadInput();
         FitMassPeaks();
-        MixedEventCorrection();
+        //MixedEventCorrection();
 		GetScaleFactorsVersion1();
 		DoAnalysis();
         DrawMassHistos(dataname[idata]);
@@ -103,7 +104,7 @@ void LoadInput()
 	        double alow = assocPt[ia];
 	        double aupp = assocPt[ia+1];
 
-	        if (tlow < aupp) continue;
+	        if (!useLeading && tlow < aupp) continue;
 
 	        hMassAssocPeak[it][ia] = (TH1D*)fIn->Get(Form("Masses/hPi0MassAssocPeak[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hMassAssocPeak[it][ia]->Rebin(4);
             //hMassAssocPeak[it][ia]->Scale(1., "width");
@@ -136,7 +137,7 @@ void DoAnalysis()
             double alow = assocPt[ia];
             double aupp = assocPt[ia+1];
 
-            if (tlow < aupp) continue;
+            if (!useLeading && tlow < aupp) continue;
 
             hCorrRealProj[it][ia] = hCorrReal[it][ia]->ProjectionX();
             hCorrRealProj[it][ia]->Scale(1.0/nRealTrigg[it], "width");
@@ -189,7 +190,7 @@ void MixedEventCorrection()
             double alow = assocPt[ia];
             double aupp = assocPt[ia+1];
 
-            if (tlow < aupp) continue;
+            if (!useLeading && tlow < aupp) continue;
 
             alpha = GetMixedEventNormalization(hCorrMeasMixed[it][ia]);
             hCorrMeasMixed[it][ia]->Scale(alpha);
@@ -265,7 +266,7 @@ void FitMassPeaks()
             double alow = assocPt[ia];
             double aupp = assocPt[ia+1];
 
-            if (tlow < aupp) continue;
+            if (!useLeading && tlow < aupp) continue;
 
             // Assoc mass histrograms where trigger is from peak region
             fFitAssocPeak[it][ia] = new TF1(Form("fFitAssocPeak%d-%d", it, ia), FitFunction, 20, 500, 10);
@@ -356,7 +357,7 @@ void GetScaleFactorsVersion1()
                 massWindowMax = massPeakPosAssoc[it]+3.*massSigmaAssoc[it];
             }
 
-            if (tlow < aupp) continue;
+            if (!useLeading && tlow < aupp) continue;
             //alpha[it][ia] = fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/(fBgAssocPeak[it][ia]->Integral(40, 80) + fBgAssocPeak[it][ia]->Integral(210, 280));
             //beeta[it][ia]  = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/(fBgTrigg[it]->Integral(40, 80) + fBgTrigg[it]->Integral(210, 280));
             alpha[it][ia] = fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/fBgAssocPeak[it][ia]->Integral(300, 450);
@@ -400,7 +401,7 @@ void GetScaleFactorsVersion2()
                 massWindowMax = massPeakPosAssoc[it]+3.*massSigmaAssoc[it];
             }
 
-            if (tlow < aupp) continue;
+            if (!useLeading && tlow < aupp) continue;
             alpha[it][ia] = fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/(fBgAssocPeak[it][ia]->Integral(40, 80) + fBgAssocPeak[it][ia]->Integral(210, 280));
             beeta[it][ia]  = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/(fBgTrigg[it]->Integral(40, 80) + fBgTrigg[it]->Integral(210, 280)) * fPeakAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/fPeakAssocSide[it][ia]->Integral(massWindowMin, massWindowMax);
             yamma[it][ia] = beeta[it][ia] * fBgAssocSide[it][ia]->Integral(massWindowMin, massWindowMax)/(fBgAssocSide[it][ia]->Integral(40, 80) + fBgAssocSide[it][ia]->Integral(210, 280));
@@ -476,7 +477,7 @@ void DrawMassHistos(TString dataname)
                 massWindowMax = massPeakPosAssoc[it]+3.*massSigmaAssoc[it];
             }
 
-            if (tlow < aupp) continue;
+            if (!useLeading && tlow < aupp) continue;
 
             // Trigger from mass region
             cMassAssocPeak[it][ia] = new TCanvas(Form("cMassAssocPeak%d:%d",it,ia), Form("cMassAssocPeak%d:%d",it,ia), 600, 600);

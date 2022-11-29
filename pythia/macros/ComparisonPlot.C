@@ -5,14 +5,20 @@ void LoadData();
 void ConfigHistos();
 void DrawFiliPad();
 
-const int nTriggBins = 4;
-const int nAssocBins = 5;
+const bool useLeading = 1;
+
+const int nTriggBins = 1;
+const int nAssocBins = 1;
 //const double triggPt[nTriggBins+1] = {1.0, 2.0, 2.5, 3.0};
 //const double assocPt[nAssocBins+1] = {0.5, 1.0, 1.5, 2.0, 2.5};
 //const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
 //const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
-const double triggPt[nTriggBins+1] = {4.0, 8.0, 10.0, 15.0, 20.0};
-const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0, 8.0, 10.0, 15.0};
+//const double triggPt[nTriggBins+1] = {4.0, 8.0, 10.0, 15.0, 20.0};
+//const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0, 8.0, 10.0, 15.0};
+
+// LEADING PARTICLE
+const double triggPt[nTriggBins+1] = {2.0, 10000.0};;
+const double assocPt[nAssocBins+1] = {2.0, 10000.0};;
 
 const double mSize = 1.;
 
@@ -24,7 +30,8 @@ const int nset = 1;
 
 TString infiles[nset] = {
     //"analysis_FoCal_pp_fullsim_no-mixed.root"
-    "analysis_FoCal_pp_check.root"
+    "analysis_FoCal_pp_full-sim_leading.root"
+    //"analysis_FoCal_pp_check.root"
     //"analysis_FoCal_pp_fullsim_mixed.root",
     //"analysis_FoCal_pp_test-pythia.root"
 };
@@ -68,7 +75,7 @@ void LoadData()
                 double alow = assocPt[iassoc];
     	        double aupp = assocPt[iassoc+1];
 
-    	        if (tlow < aupp) continue;
+    	        if (!useLeading && tlow < aupp) continue;
 
                 hCorrReal[iset][itrigg][iassoc]  = (TH1D*)fin[iset]->Get(Form("hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp));  //hCorrReal[iset][itrigg][iassoc]->Rebin(6);
                 hCorrFinal[iset][itrigg][iassoc] = (TH1D*)fin[iset]->Get(Form("hCorrFinal[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));   //hCorrFinal[iset][itrigg][iassoc]->Rebin(6);
@@ -96,7 +103,7 @@ void ConfigHistos()
                 double alow = assocPt[iassoc];
                 double aupp = assocPt[iassoc+1];
 
-                if (tlow < aupp) continue;
+                if (!useLeading && tlow < aupp) continue;
 
                 hCorrReal[iset][itrigg][iassoc]->SetLineColor(kBlack);
                 hCorrReal[iset][itrigg][iassoc]->SetMarkerColor(kBlack);
@@ -160,7 +167,7 @@ void DrawFiliPad()
                 double alow = assocPt[iassoc];
                 double aupp = assocPt[iassoc+1];
 
-                if (tlow < aupp) continue;
+                if (!useLeading && tlow < aupp) continue;
 
 //                fpad[iset][itrigg][iassoc] = new Filipad(padID, 1.1, 0.5, 100, 100, 0.7, 1);
                 fpad[iset][itrigg][iassoc] = new Filipad(padID, 1.1, 0.35, 100, 100, 0.8, 1);
@@ -176,10 +183,10 @@ void DrawFiliPad()
                 cout << rangeMin << " " << rangeMax << endl;
                 TPad *p = fpad[iset][itrigg][iassoc]->GetPad(1);
                 p->SetTickx(); p->SetLogx(0); p->SetLogy(1); p->cd();
-//                hset(*hCorrMeas[iset][itrigg][iassoc], "#Delta#phi", "1/N_{trigg}dN/d#Delta#phi", 1.1,1.2, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
-                hset(*hCorrReal[iset][itrigg][iassoc], "#Delta#phi", "arb. norm.", 1.1,1.2, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
+                hset(*hCorrMeas[iset][itrigg][iassoc], "#Delta#phi", "1/N_{trigg}dN/d#Delta#phi", 1.1,1.2, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
+//                hset(*hCorrReal[iset][itrigg][iassoc], "#Delta#phi", "arb. norm.", 1.1,1.2, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
                 hCorrReal[iset][itrigg][iassoc]->GetYaxis()->SetRangeUser(rangeMin, rangeMax);
-                hCorrReal[iset][itrigg][iassoc]->GetXaxis()->SetRangeUser(TMath::Pi()/2., 3.*TMath::Pi()/2.);
+//                hCorrReal[iset][itrigg][iassoc]->GetXaxis()->SetRangeUser(TMath::Pi()/2., 3.*TMath::Pi()/2.);
                 hCorrReal[iset][itrigg][iassoc]->Draw("P");
                 hCorrMeas[iset][itrigg][iassoc]->Draw("SAME P");
                 hCorrFinal[iset][itrigg][iassoc]->Draw("SAME P");

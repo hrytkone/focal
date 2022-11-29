@@ -14,8 +14,8 @@ const int nLeadingBins = 10;
 //const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0, 8.0, 10.0, 15.0};
 
 // Leading trigger
-const double triggPt[nTriggBins+1] = {2.0, 10000.0};
-const double assocPt[nAssocBins+1] = {2.0, 10000.0};
+const double triggPt[nTriggBins+1] = {4.0, 10000.0};
+const double assocPt[nAssocBins+1] = {4.0, 10000.0};
 
 const double pi0br = 1./0.98823;
 //const double pi0eff = 1.;
@@ -24,7 +24,7 @@ const double pi0br = 1./0.98823;
 //const double effCorrTrigg[nTriggBins] = {1./0.485133, 1./0.610642, 1./0.674529, 1./0.561265};
 //const double effCorrTrigg[nTriggBins] = {1./0.221901, 1./0.409597, 1./0.440636, 1./0.42808};
 //const double effCorrTrigg[nTriggBins] = {1./0.988, 1./0.988};
-const double effCorrTrigg[nTriggBins] = {1./0.294749}; // LEADING TRIGG 2 GeV/c < pTassoc < pTtrigg
+const double effCorrTrigg[nTriggBins] = {1./0.43981}; // LEADING TRIGG 2 GeV/c < pTassoc < pTtrigg
 
 //const double massMin = 110.;
 //const double massMax = 160.;

@@ -6,7 +6,7 @@
 
 #define NDET 4
 #define NTRIGGBINS 1
-#define NASSOCBINS 1
+#define NASSOCBINS 2
 #define NLEADINGBINS 10
 #define NMASSBINS 6
 #define NINCPTBIN 150
@@ -24,16 +24,16 @@ extern const double sidebandMax;
 
 // mass peak sigmas & peak positions for each pT bin
 // DEPENDS ON ETA AND ASYM CUTS
-//extern const double massSigmaTrigg[NTRIGGBINS];
-//extern const double massSigmaAssoc[NASSOCBINS];
-//extern const double massPeakPosTrigg[NTRIGGBINS];
-//extern const double massPeakPosAssoc[NASSOCBINS];
+extern const double massSigmaTrigg[NTRIGGBINS];
+extern const double massSigmaAssoc[NASSOCBINS];
+extern const double massPeakPosTrigg[NTRIGGBINS];
+extern const double massPeakPosAssoc[NASSOCBINS];
 
 // FOR LEADING TRIGGER CASE
-extern const double massSigmaTrigg[NLEADINGBINS];
-extern const double massSigmaAssoc[NLEADINGBINS];
-extern const double massPeakPosTrigg[NLEADINGBINS];
-extern const double massPeakPosAssoc[NLEADINGBINS];
+//extern const double massSigmaTrigg[NLEADINGBINS];
+//extern const double massSigmaAssoc[NLEADINGBINS];
+//extern const double massPeakPosTrigg[NLEADINGBINS];
+//extern const double massPeakPosAssoc[NLEADINGBINS];
 
 extern const double pi0eff; // FOR MC SIMULATION
 extern const double effCorrTrigg[NTRIGGBINS]; // FOR GEANT SIMUALTION

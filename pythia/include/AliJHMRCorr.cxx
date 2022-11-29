@@ -83,10 +83,10 @@ int AliJHMRCorr::ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0C
     return nTrue;
 }
 
-void AliJHMRCorr::GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector<int>& listTrigg, std::vector<int>& listAssoc, int *binsWithTrigg, bool bMass, bool bUseLeading)
+void AliJHMRCorr::GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector<int>& listTrigg, std::vector<int>& listAssoc, int *binsWithTrigg, bool bMass)
 {
     int iLeadingTrigg = -1;
-    if (bUseLeading) {
+    if (fUseLeading) {
         iLeadingTrigg = GetLeadingTriggerIndex(arrPi0Candidates, bMass);
         if (iLeadingTrigg > -1) listTrigg.push_back(iLeadingTrigg);
     }
@@ -98,8 +98,10 @@ void AliJHMRCorr::GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector
         double mass = 1000.*lvPion->M();
         int iTrigg = GetBin(triggPt, NTRIGGBINS, pT);
         int iAssoc = GetBin(assocPt, NASSOCBINS, pT);
-        if (bUseLeading) {
+        if (fUseLeading) {
             if (fIsFullSim && bMass) {
+                int ibin = GetBin(leadingPt, NLEADINGBINS, pT);
+                if (i != iLeadingTrigg && iAssoc >= 0 && IsMassWindow(mass, ibin, 1)) listAssoc.push_back(i);
             } else {
                 if (i != iLeadingTrigg && iAssoc >= 0) listAssoc.push_back(i);
             }
@@ -121,7 +123,7 @@ void AliJHMRCorr::GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector
     }
 }
 
-void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vector<int> listAssoc, TH2D *hCorr[NTRIGGBINS][NASSOCBINS], bool bUseLeading, bool bUseWeight)
+void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vector<int> listAssoc, TH2D *hCorr[NTRIGGBINS][NASSOCBINS], bool bUseWeight)
 {
     double wTrigg = 1.0;
     double wAssoc = 1.0;
@@ -155,12 +157,12 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrig
             int iAssocBin = GetBin(assocPt, NASSOCBINS, ptAssoc);
             int iLeadingBin = GetBin(leadingPt, NLEADINGBINS, ptAssoc);
 
-            if (!bUseLeading && triggPt[iTriggBin] < assocPt[iAssocBin+1]) continue;
+            if (!fUseLeading && triggPt[iTriggBin] < assocPt[iAssocBin+1]) continue;
 
             //if (bUseWeight) wAssoc = 1./fPhotonAcceptanceEfficiency->Eval(ptAssoc);
             if (bUseWeight && !fIsFullSim) wAssoc = 1./pi0eff;
             if (bUseWeight && fIsFullSim) {
-                if (bUseLeading)
+                if (fUseLeading)
                     wAssoc = 1./effCorrLeading[iLeadingBin];
                 else
                     wAssoc = 1./effCorrAssoc[iAssocBin];
@@ -173,7 +175,7 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrig
     }
 }
 
-void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> listTrigg, TClonesArray *arrPi0Assoc, std::vector<int> listAssoc, TH2D *hCorr[NTRIGGBINS][NASSOCBINS], bool bUseLeading, bool bUseWeightTrigg, bool bUseWeightAssoc)
+void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> listTrigg, TClonesArray *arrPi0Assoc, std::vector<int> listAssoc, TH2D *hCorr[NTRIGGBINS][NASSOCBINS], bool bUseWeightTrigg, bool bUseWeightAssoc)
 {
     double wTrigg = 1.0;
     double wAssoc = 1.0;
@@ -206,12 +208,12 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> lis
             int iAssocBin = GetBin(assocPt, NASSOCBINS, ptAssoc);
             int iLeadingBin = GetBin(leadingPt, NLEADINGBINS, ptAssoc);
 
-            if (!bUseLeading && triggPt[iTriggBin] < assocPt[iAssocBin+1]) continue;
+            if (!fUseLeading && triggPt[iTriggBin] < assocPt[iAssocBin+1]) continue;
 
             //if (bUseWeightAssoc) wAssoc = 1./fPhotonAcceptanceEfficiency->Eval(ptAssoc);
             if (bUseWeightAssoc && !fIsFullSim) wAssoc = 1./pi0eff;
             if (bUseWeightAssoc && fIsFullSim) {
-                if (bUseLeading)
+                if (fUseLeading)
                     wAssoc = 1./effCorrLeading[iLeadingBin];
                 else
                     wAssoc = 1./effCorrAssoc[iAssocBin];
@@ -423,7 +425,7 @@ void AliJHMRCorr::FillPionMasses(TClonesArray *arrPhoton, int binsWithTriggPeak[
             int iAssocBin = GetBin(assocPt, NASSOCBINS, pT);
             if (iTriggBin >= 0) histos->hPi0MassTrigg[iTriggBin]->Fill(mass);
             for (int it = 0; it < NTRIGGBINS; it++) {
-                if (triggPt[it] < assocPt[iAssocBin+1]) continue;
+                if (triggPt[it] < assocPt[iAssocBin+1] && !fUseLeading) continue;
                 if (binsWithTriggPeak[it] > 0 && iAssocBin >= 0) histos->hPi0MassAssocPeak[it][iAssocBin]->Fill(mass);
                 if (binsWithTriggSide[it] > 0 && iAssocBin >= 0) histos->hPi0MassAssocSide[it][iAssocBin]->Fill(mass);
             }

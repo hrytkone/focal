@@ -5,11 +5,9 @@
 #include "TString.h"
 
 #define NDET 4
-#define NTRIGGBINS 4
-#define NASSOCBINS 5
-//#define NTRIGGBINS 1
-//#define NASSOCBINS 1
-#define NLEADINGBINS 4
+#define NTRIGGBINS 1
+#define NASSOCBINS 1
+#define NLEADINGBINS 10
 #define NMASSBINS 6
 #define NINCPTBIN 150
 #define NINCETABIN 150
@@ -26,15 +24,21 @@ extern const double sidebandMax;
 
 // mass peak sigmas & peak positions for each pT bin
 // DEPENDS ON ETA AND ASYM CUTS
-extern const double massSigmaTrigg[NTRIGGBINS];
-extern const double massSigmaAssoc[NASSOCBINS];
-extern const double massPeakPosTrigg[NTRIGGBINS];
-extern const double massPeakPosAssoc[NASSOCBINS];
+//extern const double massSigmaTrigg[NTRIGGBINS];
+//extern const double massSigmaAssoc[NASSOCBINS];
+//extern const double massPeakPosTrigg[NTRIGGBINS];
+//extern const double massPeakPosAssoc[NASSOCBINS];
+
+// FOR LEADING TRIGGER CASE
+extern const double massSigmaTrigg[NLEADINGBINS];
+extern const double massSigmaAssoc[NLEADINGBINS];
+extern const double massPeakPosTrigg[NLEADINGBINS];
+extern const double massPeakPosAssoc[NLEADINGBINS];
 
 extern const double pi0eff; // FOR MC SIMULATION
 extern const double effCorrTrigg[NTRIGGBINS]; // FOR GEANT SIMUALTION
 extern const double effCorrAssoc[NASSOCBINS]; // FOR GEANT SIMUALTION
-extern const double effCorrLeadingTrigg[NLEADINGBINS]; // FOR GEANT SIMUALTION
+extern const double effCorrLeading[NLEADINGBINS]; // FOR GEANT SIMUALTION
 
 extern const double etacut;
 extern const double asymcut;
@@ -44,7 +48,7 @@ extern const TString accFunc[NDET];
 
 extern double triggPt[NTRIGGBINS+1];
 extern double assocPt[NASSOCBINS+1];
-extern double leadingTriggPt[NLEADINGBINS+1];
+extern double leadingPt[NLEADINGBINS+1];
 
 extern const double kJPi;
 extern const double kJTwoPi;

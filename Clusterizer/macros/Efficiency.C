@@ -101,6 +101,8 @@ void InitOutput()
     hPhiEtaGamma = new TH2D("hPhiEtaGamma", "hPhiEtaGamma", nPhiBin, phimin, phimax, nEtaBin, eta);
     hPhiThetaGamma = new TH2D("hPhiThetaGamma", "hPhiThetaGamma", nPhiBin, phimin, phimax, nThetaBin, thetamin, thetamax);
     hXYGamma = new TH2D("hXYGamma", "hXYGamma", nXYBin, xymin, xymax, nXYBin, xymin, xymax);
+
+    hEtaEff = new TH2D("hEtaEff", "hEtaEff", 100, 3.2, 5.5, 100, 3.2, 5.5);
 }
 
 void FillTruePions()
@@ -129,6 +131,7 @@ void FillRecPions(TClonesArray *clusters)
 {
     int nclust = clusters->GetEntriesFast();
     double z = 706.62;
+
     for (int i = 1; i < nclust; i++) {
         AliJBaseTrack *lv1 = (AliJBaseTrack*)clusters->At(i);
         for (int j = 0; j < i; j++) {
@@ -143,6 +146,7 @@ void FillRecPions(TClonesArray *clusters)
                 //cout << "\nX1=" << lv1->X() << "\tX2=" << lv2->X() << "\tXrec=" << lvSum.X() << endl;
                 //cout << "Y1=" << lv1->Y() << "\tY2=" << lv2->Y() << "\tYrec=" << lvSum.Y() << endl;
                 double mass = 1000.*lvSum.M();
+
                 hPtMass->Fill(lvSum.Pt(), mass);
                 hEtaMass[ptbin]->Fill(lvSum.Eta(), mass);
                 if (mass > 110. && mass < 160.) {

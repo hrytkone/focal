@@ -44,8 +44,10 @@ void processDataSTAR()
 void processDataFoCal()
 {
 	TString fInName[ndata_focal] = {
+        //"/home/heimarry/Simulations/focal/analysis_output/20221128_ptmin-1/output.root"
         //"/home/heimarry/Simulations/focal/analysis_output/20221114_no-weight_2m.root",
-        "/home/heimarry/Simulations/focal/analysis_output/20221114_wassoc_2m.root"
+	    "/home/heimarry/Simulations/focal/analysis_output/2022-11-22_pp-focal/output_merged.root"
+        //"/home/heimarry/Simulations/focal/analysis_output/20221114_wassoc_2m.root"
         //"/home/heimarry/Simulations/focal/pythia/fullsim_pthard-2_asym-08_bigger-windows_n1m_no-weights.root"
         //"/home/heimarry/Simulations/focal/pythia/full-sim_trigg-not-weighted_mixed.root"
         //"/home/heimarry/Simulations/focal/pythia/full-sim_eta-4-5_weighted.root"
@@ -56,7 +58,7 @@ void processDataFoCal()
 	};
 
 	TString fOutName[ndata_focal] = {
-		"analysis_FoCal_pp_fullsim_mixed.root"
+		"analysis_FoCal_pp_check-new_pythia8.root"
 	};
 
     TString dataname[ndata_focal] = {

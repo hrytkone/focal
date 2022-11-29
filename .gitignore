@@ -10,6 +10,7 @@ STAR-data
 *.pdf
 *.eps
 *.png
+*.gif
 *.o
 Clusterizer/*.log
 nanoDict*

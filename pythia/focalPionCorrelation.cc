@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
     Pythia pythia;
 
     AliJHMRHist *fHistos = new AliJHMRHist();
-    fHistos->CreateHistos(fOut, det);
+    fHistos->CreateHistos(fOut, det, bUseLeading);
 
     AliJHMRPythiaCatalyst *fCatalyst = new AliJHMRPythiaCatalyst(pythia.event, fHistos);
     AliJHMRGeantCatalyst *fCatalystG = new AliJHMRGeantCatalyst(siminput, fHistos);
@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
 
         fHistos->hCounter->Fill(0.5); // number of events
 
-        if (bDebugOn)
+        //if (bDebugOn)
             std::cout << "\nEvent " << iEvent << std::endl;
 
         if (bUseSim) { // Get stuff from detector simulation file
@@ -127,7 +127,7 @@ int main(int argc, char *argv[]) {
         }
 
         int nTrueFromPeak = fCorr->ReconstructPions(arrPhotonFor, arrPi0Peak, det, 1);
-        fCorr->ReconstructPions(arrPhotonFor, arrPi0Side, det, 0);
+        //fCorr->ReconstructPions(arrPhotonFor, arrPi0Side, det, 0);
 
         fHistos->FillPtEta(kJDecayPhoton, arrPhotonFor);
         fHistos->FillPtEta(kJPi0, arrPi0Real);
@@ -155,20 +155,20 @@ int main(int argc, char *argv[]) {
         fCorr->FillAsymmetry(arrPhotonFor, det);
 
         fCorr->DoCorrelations(arrPi0Real, listTriggReal, listAssocReal, fHistos->hCorrFor, bUseLeading, 0);
-        fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, listAssocPeak, fHistos->hCorrMeas, bUseLeading, 0);
-        fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, listAssocPeak, fHistos->hCorrMassMass, bUseLeading, 1);
-        fCorr->DoCorrelations(arrPi0Side, listTriggSide, listAssocSide, fHistos->hCorrSideSide, bUseLeading, 0);
-        if (bUseLeading) {
-            int isPeakTriggLarger = fCorr->GetLargerTrigg(arrPi0Peak, listTriggPeak, arrPi0Side, listTriggSide);
-            if (isPeakTriggLarger) {
-                fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0Side, listAssocSide, fHistos->hCorrMassSide, bUseLeading, 1, 0);
-            } else {
-                fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, fHistos->hCorrSideMass, bUseLeading, 0, 1);
-            }
-        } else {
-            fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0Side, listAssocSide, fHistos->hCorrMassSide, bUseLeading, 1, 0);
-            fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, fHistos->hCorrSideMass, bUseLeading, 0, 1);
-        }
+        //fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, listAssocPeak, fHistos->hCorrMeas, bUseLeading, 0);
+        //fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, listAssocPeak, fHistos->hCorrMassMass, bUseLeading, 1);
+        //fCorr->DoCorrelations(arrPi0Side, listTriggSide, listAssocSide, fHistos->hCorrSideSide, bUseLeading, 0);
+        //if (bUseLeading) {
+        //    int isPeakTriggLarger = fCorr->GetLargerTrigg(arrPi0Peak, listTriggPeak, arrPi0Side, listTriggSide);
+        //    if (isPeakTriggLarger) {
+        //        fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0Side, listAssocSide, fHistos->hCorrMassSide, bUseLeading, 1, 0);
+        //    } else {
+        //        fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, fHistos->hCorrSideMass, bUseLeading, 0, 1);
+        //    }
+        //} else {
+        //    fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0Side, listAssocSide, fHistos->hCorrMassSide, bUseLeading, 1, 0);
+        //    fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, fHistos->hCorrSideMass, bUseLeading, 0, 1);
+        //}
 
         // Construct & save true correlation components f_SS, f_SB, f_BS, f_BB
         fCorr->ConstructTrueCorrComponents(arrPi0Peak, listTriggPeak, listAssocPeak, 0);

@@ -31,6 +31,8 @@ public:
         histos(inhistos) {
             fPhotonEfficiency = new TF1("fPhotonEfficiency", "TMath::Exp(-3.20093/x)"); // Parameters from fit to efficiency (PhotonEfficiency.C)
             fPhotonAcceptanceEfficiency = new TF1("fPhotonAcceptanceEfficiency", accFunc[det].Data()); // Parameters from fit (CheckMissingPionsRatio.C)
+            std::cout << "Correlations are calculated in " << detEta[det][0]+etacut << " < eta < " << detEta[det][1]-etacut << std::endl;
+            std::cout << "(etacut=" << etacut << ")" << std::endl;
             std::cout << "Using acceptance function " << accFunc[det].Data() << std::endl;
             fRand = new TRandom3();
             fIsFullSim = isFullSim;
@@ -48,7 +50,7 @@ public:
     bool IsPhotonRemoved(TClonesArray *arrPhoton, AliJBaseTrack *lv1, AliJBaseTrack *lv2);
     double GetAsymmetry(TClonesArray *arrPhoton, AliJBaseTrack *lv1, AliJBaseTrack *lv2);
     AliJBaseTrack GetPhotonSumVector(TClonesArray *arrayPhoton, AliJBaseTrack *lv1, AliJBaseTrack *lv2);
-    int GetLeadingTriggerIndex(TClonesArray *arrPi0);
+    int GetLeadingTriggerIndex(TClonesArray *arrPi0, bool bUseSim);
     int GetLargerTrigg(TClonesArray *arrPi0Peak, std::vector<int> listTriggPeak, TClonesArray *arrPi0Side, std::vector<int> listTriggSide);
 
     void DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vector<int> listAssoc, TH2D *hCorr[NTRIGGBINS][NASSOCBINS], bool bUseLeading, bool bUseWeight);

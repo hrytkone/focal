@@ -28,6 +28,7 @@ void CreateMassHistos(TString inputfile)
             float clustPhi = clust->GetPhi();
             float clustX = clust->GetX();
             float clustY = clust->GetY();
+            float clustZ = clust->GetZ();
             float clustE = clust->GetE();
             float clustEHCAL = clust->GetEHCAL();
             float clustPt = clust->GetPt();

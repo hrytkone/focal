@@ -3,7 +3,8 @@
 //const TString filename = "efficiency_xy.root";
 //const TString filename = "efficiency_pi0-gun_no-asym-cut.root";
 //const TString filename = "efficiency_pi0-gun.root";
-const TString filename = "efficiency_gamma_no-cut.root";
+const TString filename = "efficiency_pythiamb_asym-08_param-min-1.root";
+//const TString filename = "efficiency_pythiamb_asym-1.root";
 //const TString filename = "efficiency_pythiamb_asym-08_eta-40-55.root";
 
 const int nPtBin = 6;
@@ -27,6 +28,8 @@ TH2D *hXY;
 TH2D *hPhiEtaGamma;
 TH2D *hPhiThetaGamma;
 TH2D *hXYGamma;
+
+TH2D *hEtaEff;
 
 TH2D *hEfficiency;
 TH1D *hEfficiency_py;
@@ -300,6 +303,10 @@ void PlotEfficiency()
     //text2.DrawLatexNDC(0.475, 0.625, "#eta = 4.6");
 
     c10->SaveAs("xy_markings.png");
+
+    TCanvas *c11 = new TCanvas("c11", "c11", 600, 600);
+    hEtaEff->SetTitle(";#eta_{rec};#eta_{true}");
+    hEtaEff->Draw("COLZ");
 }
 
 void LoadData()
@@ -323,6 +330,8 @@ void LoadData()
     hPhiThetaGamma = (TH2D*)fin->Get("hPhiThetaGamma");
     hPhiEtaGamma = (TH2D*)fin->Get("hPhiEtaGamma");
     hXYGamma = (TH2D*)fin->Get("hXYGamma");
+
+    hEtaEff = (TH2D*)fin->Get("hEtaEff");
 
     hPhiEtaTrue = (TH2D*)fin->Get("hPhiEtaTrue");
     for (int ipt=0; ipt<nPtBin; ipt++)
@@ -450,7 +459,7 @@ void SetStyle(Bool_t graypalette)
     gStyle->SetTitleOffset(0.75,"y");
     gStyle->SetTitleOffset(1.2,"x");
     gStyle->SetTitleFillColor(kWhite);
-    gStyle->SetTextSizePixels(26);
+    //gStyle->SetTextSizePixels(26);
     gStyle->SetTextFont(42);
     //gStyle->SetTickLength(0.04,"X");  gStyle->SetTickLength(0.04,"Y");
 

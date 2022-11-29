@@ -1,6 +1,6 @@
 #include "AliJHMRHist.h"
 
-void AliJHMRHist::CreateHistos(TFile *output, detector labelDet) {
+void AliJHMRHist::CreateHistos(TFile *output, detector labelDet, bool bUseLeading) {
 
     double etaRange = 0;
     int nEtaBin = 0;
@@ -56,7 +56,7 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet) {
             double alow = assocPt[j];
             double aupp = assocPt[j+1];
 
-            if (tlow < aupp) continue;
+            if (tlow < aupp && !bUseLeading) continue;
 
             dirMasses->cd();
             hPi0MassAssocPeak[i][j] = new TH1D(Form("hPi0MassAssocPeak[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),

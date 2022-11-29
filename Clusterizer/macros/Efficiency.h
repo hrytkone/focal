@@ -1,15 +1,15 @@
-const TString outputname = "efficiency_gamma_no-cut";
-const double asymcut = 1.;
+const TString outputname = "efficiency_pythiamb_asym-08_param-min-1";
+const double asymcut = 0.8;
 
 const int nPtBin = 6;
 double pt[nPtBin+1], limMin = 2, limMax = 20;
 double logBW = (log(limMax) - log(limMin))/nPtBin;
 
-//const int nEtaBin = 52;
-const int nEtaBin = 30;
+const int nEtaBin = 56;
+//const int nEtaBin = 30;
 double eta[nEtaBin+1];
-//double etaBW = 0.05, etamin = 3.0, etamax = 5.8;
-double etaBW = 0.05, etamin = 4.0, etamax = 5.5;
+double etaBW = 0.05, etamin = 3.0, etamax = 5.8;
+//double etaBW = 0.05, etamin = 3.2, etamax = 5.5;
 
 //const int nPhiBin = 52;
 const int nPhiBin = 104;
@@ -46,6 +46,7 @@ TH2D *hPhiEtaTrue;
 TH2D *hPhiEta;
 TH2D *hPhiTheta;
 TH2D *hXY;
+TH2D *hEtaEff;
 
 TH2D *hPhiEtaGamma;
 TH2D *hPhiThetaGamma;

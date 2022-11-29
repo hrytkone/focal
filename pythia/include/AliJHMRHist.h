@@ -27,7 +27,7 @@ class AliJHMRHist {
         AliJHMRHist& operator=(const AliJHMRHist& obj);
 
         // create histograms
-        void CreateHistos(TFile *output, detector labelDet);
+        void CreateHistos(TFile *output, detector labelDet, bool bUseLeading);
         void FillPtEta(particleType itype, TClonesArray * arrParticles);
 
         TH1D *hCounter;

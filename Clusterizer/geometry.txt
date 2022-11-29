@@ -36,8 +36,8 @@ COMMAND_INSERT_PIX_AT_L9
   COMPOSITION_FM_S5        SiStripY    0     0     5.    5.      0.05
   COMPOSITION_FM_S6        G10         0     0     5.    5.      0.05
 # PIXEL readout
-  NX_PIX_TOWER                  15
-  NY_PIX_TOWER                  3
+  GLOBAL_NX_PIX_TOWER            15
+  GLOBAL_NY_PIX_TOWER            3
   GLOBAL_PIX_OffsetX             1.2
   GLOBAL_PIX_OffsetY             0.09
   GLOBAL_PIX_SKIN                0.004

@@ -23,7 +23,8 @@ const int nset = 1;
 //};
 
 TString infiles[nset] = {
-    "analysis_FoCal_pp_fullsim_no-mixed.root"
+    //"analysis_FoCal_pp_fullsim_no-mixed.root"
+    "analysis_FoCal_pp_check.root"
     //"analysis_FoCal_pp_fullsim_mixed.root",
     //"analysis_FoCal_pp_test-pythia.root"
 };

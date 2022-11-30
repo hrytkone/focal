@@ -75,6 +75,8 @@ public:
     void FillPionMassesTrue(TClonesArray *arrPi0, int binsWithTriggReal[NTRIGGBINS], detector idet);
     void FillAsymmetry(TClonesArray *arrPhoton, detector idet);
 
+    bool CheckAssocPhotonPair(int iTrigg, int iAssoc);
+
 protected:
 
     bool fUseLeading; // use leading particle correlation
@@ -88,6 +90,8 @@ protected:
     TF1 *fPhotonAcceptanceEfficiency;
     TRandom3 *fRand;
     AliJHMRHist *histos;
+
+    std::vector<std::vector<int>> photonId; // IDs of the photon pairs for pi0 candidates
 };
 
 #endif

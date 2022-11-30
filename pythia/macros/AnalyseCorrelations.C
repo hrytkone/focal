@@ -44,7 +44,7 @@ void processDataSTAR()
 void processDataFoCal()
 {
 	TString fInName[ndata_focal] = {
-        "/home/heimarry/Simulations/focal/analysis_output/2022-11-29_full-sim_leading-4_1/output_merged.root"
+        "/home/heimarry/Simulations/focal/analysis_output/2022-11-30_full-sim.root"
         //"/home/heimarry/Simulations/focal/analysis_output/20221128_ptmin-1/output.root"
         //"/home/heimarry/Simulations/focal/analysis_output/20221114_no-weight_2m.root",
 	    //"/home/heimarry/Simulations/focal/analysis_output/2022-11-22_pp-focal/output_merged.root"
@@ -59,7 +59,7 @@ void processDataFoCal()
 	};
 
 	TString fOutName[ndata_focal] = {
-		"analysis_FoCal_pp_full-sim_leading.root"
+		"analysis_FoCal_pp_full-sim.root"
 	};
 
     TString dataname[ndata_focal] = {
@@ -269,7 +269,7 @@ void FitMassPeaks()
             if (!useLeading && tlow < aupp) continue;
 
             // Assoc mass histrograms where trigger is from peak region
-            fFitAssocPeak[it][ia] = new TF1(Form("fFitAssocPeak%d-%d", it, ia), FitFunction, 20, 500, 10);
+            fFitAssocPeak[it][ia] = new TF1(Form("fFitAssocPeak%d-%d", it, ia), FitFunction, 50, 500, 10);
             fFitAssocPeak[it][ia]->SetParameters(0., 0., 0., 0., 0., 1., 1., 135., 5., 10.);
             //fFitAssocPeak[it]->SetParLimits(4, 132., 137.);
             fFitAssocPeak[it][ia]->SetParLimits(7, 130., 160.);

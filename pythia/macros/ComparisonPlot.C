@@ -8,7 +8,7 @@ void DrawFiliPad();
 const bool useLeading = 1;
 
 const int nTriggBins = 1;
-const int nAssocBins = 1;
+const int nAssocBins = 2;
 //const double triggPt[nTriggBins+1] = {1.0, 2.0, 2.5, 3.0};
 //const double assocPt[nAssocBins+1] = {0.5, 1.0, 1.5, 2.0, 2.5};
 //const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
@@ -17,8 +17,8 @@ const int nAssocBins = 1;
 //const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0, 8.0, 10.0, 15.0};
 
 // LEADING PARTICLE
-const double triggPt[nTriggBins+1] = {2.0, 10000.0};;
-const double assocPt[nAssocBins+1] = {2.0, 10000.0};;
+const double triggPt[nTriggBins+1] = {4.0, 10000.0};;
+const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};;
 
 const double mSize = 1.;
 
@@ -30,7 +30,7 @@ const int nset = 1;
 
 TString infiles[nset] = {
     //"analysis_FoCal_pp_fullsim_no-mixed.root"
-    "analysis_FoCal_pp_full-sim_leading.root"
+    "analysis_FoCal_pp_full-sim.root"
     //"analysis_FoCal_pp_check.root"
     //"analysis_FoCal_pp_fullsim_mixed.root",
     //"analysis_FoCal_pp_test-pythia.root"
@@ -50,6 +50,7 @@ TH1D *hCorrFinal[nset][nTriggBins][nAssocBins];
 TH1D *hCorrMeas[nset][nTriggBins][nAssocBins];
 TH1D *hRatioFinal[nset][nTriggBins][nAssocBins];
 TH1D *hRatioMeas[nset][nTriggBins][nAssocBins];
+TH1D *hRatioSBMeas[nset][nTriggBins][nAssocBins];
 TH1D *hRatioPt;
 TLegend *leg[nset][nTriggBins][nAssocBins];
 
@@ -86,6 +87,8 @@ void LoadData()
                 hRatioFinal[iset][itrigg][iassoc]->Divide(hCorrFinal[iset][itrigg][iassoc]);
                 hRatioMeas[iset][itrigg][iassoc] = (TH1D*)hCorrReal[iset][itrigg][iassoc]->Clone(Form("hRatioMeas[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp));
                 hRatioMeas[iset][itrigg][iassoc]->Divide(hCorrMeas[iset][itrigg][iassoc]);
+                hRatioSBMeas[iset][itrigg][iassoc] = (TH1D*)hCorrFinal[iset][itrigg][iassoc]->Clone(Form("hRatioSBMeas[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp));
+                hRatioSBMeas[iset][itrigg][iassoc]->Divide(hCorrMeas[iset][itrigg][iassoc]);
 			}
 		}
 	}
@@ -140,6 +143,11 @@ void ConfigHistos()
 
                 hRatioMeas[iset][itrigg][iassoc]->SetMarkerStyle(20);
                 hRatioMeas[iset][itrigg][iassoc]->SetMarkerSize(mSize);
+
+                hRatioSBMeas[iset][itrigg][iassoc]->SetLineColor(kViolet);
+                hRatioSBMeas[iset][itrigg][iassoc]->SetMarkerColor(kViolet);
+                hRatioSBMeas[iset][itrigg][iassoc]->SetMarkerStyle(20);
+                hRatioSBMeas[iset][itrigg][iassoc]->SetMarkerSize(mSize);
 
                 leg[iset][itrigg][iassoc] = new TLegend(0.58, 0.45, 0.85, 0.75);
                 leg[iset][itrigg][iassoc]->SetFillStyle(0); leg[iset][itrigg][iassoc]->SetBorderSize(0); leg[iset][itrigg][iassoc]->SetTextSize(0.05);
@@ -198,9 +206,10 @@ void DrawFiliPad()
                 p->SetTickx(); p->SetGridy(1); p->SetLogx(0), p->SetLogy(0); p->cd();
                 hset( *hRatioMeas[iset][itrigg][iassoc], "#Delta#phi", "Ratio",1.1,0.7, 0.09,0.09, 0.01,0.01, 0.08,0.08, 510,505);
                 hRatioMeas[iset][itrigg][iassoc]->GetYaxis()->SetRangeUser(-0.2, 1.8);
-                hRatioMeas[iset][itrigg][iassoc]->GetXaxis()->SetRangeUser(TMath::Pi()/2., 3.*TMath::Pi()/2.);
+                //hRatioMeas[iset][itrigg][iassoc]->GetXaxis()->SetRangeUser(TMath::Pi()/2., 3.*TMath::Pi()/2.);
                 hRatioMeas[iset][itrigg][iassoc]->Draw("P");
                 hRatioFinal[iset][itrigg][iassoc]->Draw("P SAME");
+                hRatioSBMeas[iset][itrigg][iassoc]->Draw("P SAME");
             }
         }
     }

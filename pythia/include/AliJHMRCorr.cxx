@@ -78,6 +78,10 @@ int AliJHMRCorr::ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0C
             if (bIsInWindow) {
                 new ((*arrPi0Candidates)[nCandidate++]) AliJBaseTrack(lvSum);
                 if (lvSum.GetLabel()==1) nTrue++;
+                if (bMass) {
+                    std::vector<int> pair = {i,j};
+                    photonId.push_back(pair);
+                }
             }
         }
     }
@@ -171,11 +175,17 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrig
                     wAssoc = 1./effCorrAssoc[iAssocBin];
             }
 
+
             double dphi = GetDeltaPhi(phiTrigg, phiAssoc);
             double deta = etaTrigg - etaAssoc;
-            hCorr[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
+            if (CheckAssocPhotonPair(iTrigg, iAssoc))
+                hCorr[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
+            else
+                histos->hCorrReject[iTriggBin][iAssocBin]->Fill(dphi, deta);
+
         }
     }
+    photonId.clear();
 }
 
 void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> listTrigg, TClonesArray *arrPi0Assoc, std::vector<int> listAssoc, TH2D *hCorr[NTRIGGBINS][NASSOCBINS], bool bUseWeightTrigg, bool bUseWeightAssoc)
@@ -502,4 +512,22 @@ void AliJHMRCorr::FillAsymmetry(TClonesArray *arrPhoton, detector idet)
                 histos->hEnergyAsymTrue->Fill(asym);
         }
     }
+}
+
+// Return true if trigger and associated pi0s do not have common photons,
+// false if either of the associated pi0 photons is used to reconstruct the
+// trigger
+bool AliJHMRCorr::CheckAssocPhotonPair(int iTrigg, int iAssoc)
+{
+    if (photonId.size()<1) return true; // do not check pairs from side band
+    std::vector<int> triggPairs = photonId[iTrigg];
+    std::vector<int> assocPairs = photonId[iAssoc];
+    for (int i = 0; i < 2; i++) {
+        int triggId = triggPairs[i];
+        for (int j = 0; j < 2; j++) {
+            int assocId = assocPairs[j];
+            if (triggId==assocId) return false;
+        }
+    }
+    return true;
 }

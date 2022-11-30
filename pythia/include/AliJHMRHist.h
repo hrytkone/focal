@@ -45,7 +45,8 @@ class AliJHMRHist {
 
         TH2D *hCorrMid[NTRIGGBINS][NASSOCBINS];
         TH2D *hCorrFor[NTRIGGBINS][NASSOCBINS];
-        TH2D *hCorrMeas[NTRIGGBINS][NASSOCBINS]; // This is not weighted
+        TH2D *hCorrMeas[NTRIGGBINS][NASSOCBINS];   // This is not weighted
+        TH2D *hCorrReject[NTRIGGBINS][NASSOCBINS]; // Control histogram for rejected pairs in mass-mass situation
         TH2D *hCorrChargedMid[NTRIGGBINS][NASSOCBINS];
         TH2D *hCorrChargedFor[NTRIGGBINS][NASSOCBINS];
 
@@ -75,6 +76,7 @@ class AliJHMRHist {
         TDirectory *dirCorrMid;
         TDirectory *dirCorrFor;
         TDirectory *dirCorrMeas;
+        TDirectory *dirCorrReject;
         TDirectory *dirCorrChargedMid;
         TDirectory *dirCorrChargedFor;
         TDirectory *dirCorrMassMass;

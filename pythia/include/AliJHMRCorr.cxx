@@ -130,7 +130,7 @@ void AliJHMRCorr::GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector
     }
 }
 
-void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vector<int> listAssoc, TH2D *hCorr[NTRIGGBINS][NASSOCBINS], bool bUseWeight)
+void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vector<int> listAssoc, TH2D *hCorr[NTRIGGBINS][NASSOCBINS], bool bMassWindowTrigg, bool bUseWeight)
 {
     double wTrigg = 1.0;
     double wAssoc = 1.0;
@@ -175,17 +175,19 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrig
                     wAssoc = 1./effCorrAssoc[iAssocBin];
             }
 
-
             double dphi = GetDeltaPhi(phiTrigg, phiAssoc);
             double deta = etaTrigg - etaAssoc;
-            if (CheckAssocPhotonPair(iTrigg, iAssoc))
-                hCorr[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
-            else
-                histos->hCorrReject[iTriggBin][iAssocBin]->Fill(dphi, deta);
 
+            if (bMassWindowTrigg) {
+                if (CheckAssocPhotonPair(iTrigg, iAssoc))
+                    hCorr[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
+                else
+                    histos->hCorrReject[iTriggBin][iAssocBin]->Fill(dphi, deta);
+            } else {
+                hCorr[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
+            }
         }
     }
-    photonId.clear();
 }
 
 void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> listTrigg, TClonesArray *arrPi0Assoc, std::vector<int> listAssoc, TH2D *hCorr[NTRIGGBINS][NASSOCBINS], bool bUseWeightTrigg, bool bUseWeightAssoc)
@@ -285,9 +287,8 @@ void AliJHMRCorr::ConstructTrueCorrComponents(TClonesArray *arrPi0, std::vector<
                 histos->hCorrSignalBg[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
             if (lvTrigg->GetLabel()==0 && lvAssoc->GetLabel()==1)
                 histos->hCorrBgSignal[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
-            if (lvTrigg->GetLabel()==0 && lvAssoc->GetLabel()==0) {
+            if (lvTrigg->GetLabel()==0 && lvAssoc->GetLabel()==0)
                 histos->hCorrBgBg[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
-            }
         }
     }
 }

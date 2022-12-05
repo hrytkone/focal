@@ -7,18 +7,18 @@ void DrawFiliPad();
 
 const bool useLeading = 1;
 
-const int nTriggBins = 1;
+const int nTriggBins = 2;
 const int nAssocBins = 2;
 //const double triggPt[nTriggBins+1] = {1.0, 2.0, 2.5, 3.0};
 //const double assocPt[nAssocBins+1] = {0.5, 1.0, 1.5, 2.0, 2.5};
-//const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
-//const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
+const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
+const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
 //const double triggPt[nTriggBins+1] = {4.0, 8.0, 10.0, 15.0, 20.0};
 //const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0, 8.0, 10.0, 15.0};
 
 // LEADING PARTICLE
-const double triggPt[nTriggBins+1] = {4.0, 10000.0};;
-const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};;
+//const double triggPt[nTriggBins+1] = {4.0, 10000.0};;
+//const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};;
 
 const double mSize = 1.;
 
@@ -30,7 +30,7 @@ const int nset = 1;
 
 TString infiles[nset] = {
     //"analysis_FoCal_pp_fullsim_no-mixed.root"
-    "analysis_FoCal_pp_full-sim.root"
+    "analysis_FoCal_pp.root"
     //"analysis_FoCal_pp_check.root"
     //"analysis_FoCal_pp_fullsim_mixed.root",
     //"analysis_FoCal_pp_test-pythia.root"
@@ -78,9 +78,9 @@ void LoadData()
 
     	        if (!useLeading && tlow < aupp) continue;
 
-                hCorrReal[iset][itrigg][iassoc]  = (TH1D*)fin[iset]->Get(Form("hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp));  //hCorrReal[iset][itrigg][iassoc]->Rebin(6);
-                hCorrFinal[iset][itrigg][iassoc] = (TH1D*)fin[iset]->Get(Form("hCorrFinal[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));   //hCorrFinal[iset][itrigg][iassoc]->Rebin(6);
-                hCorrMeas[iset][itrigg][iassoc]  = (TH1D*)fin[iset]->Get(Form("hCorrMeas[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp)); //hCorrMeas[iset][itrigg][iassoc]->Rebin(6);
+                hCorrReal[iset][itrigg][iassoc]  = (TH1D*)fin[iset]->Get(Form("hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp));  //hCorrReal[iset][itrigg][iassoc]->Rebin(4);
+                hCorrFinal[iset][itrigg][iassoc] = (TH1D*)fin[iset]->Get(Form("hCorrFinal[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));   //hCorrFinal[iset][itrigg][iassoc]->Rebin(4);
+                hCorrMeas[iset][itrigg][iassoc]  = (TH1D*)fin[iset]->Get(Form("hCorrMeas[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp)); //hCorrMeas[iset][itrigg][iassoc]->Rebin(4);
 
                 // Calculate ratios
                 hRatioFinal[iset][itrigg][iassoc] = (TH1D*)hCorrReal[iset][itrigg][iassoc]->Clone(Form("hRatioFinal[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp));

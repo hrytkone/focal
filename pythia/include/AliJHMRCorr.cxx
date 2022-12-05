@@ -130,7 +130,7 @@ void AliJHMRCorr::GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector
     }
 }
 
-void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vector<int> listAssoc, TH2D *hCorr[NTRIGGBINS][NASSOCBINS], bool bMassWindowTrigg, bool bUseWeight)
+void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vector<int> listAssoc, TH2D *hCorr[NTRIGGBINS][NASSOCBINS], bool bTrueCorr, bool bMassWindowTrigg, bool bUseWeight)
 {
     double wTrigg = 1.0;
     double wAssoc = 1.0;
@@ -178,14 +178,12 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrig
             double dphi = GetDeltaPhi(phiTrigg, phiAssoc);
             double deta = etaTrigg - etaAssoc;
 
-            if (bMassWindowTrigg) {
-                if (CheckAssocPhotonPair(iTrigg, iAssoc))
-                    hCorr[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
-                else
-                    histos->hCorrReject[iTriggBin][iAssocBin]->Fill(dphi, deta);
-            } else {
+            if (CheckAssocPhotonPair(iTrigg, iAssoc, bMassWindowTrigg) || bTrueCorr)
                 hCorr[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
-            }
+            else if (bMassWindowTrigg)
+                histos->hCorrRejectMassMass[iTriggBin][iAssocBin]->Fill(dphi, deta);
+            else
+                histos->hCorrRejectSideSide[iTriggBin][iAssocBin]->Fill(dphi, deta);
         }
     }
 }
@@ -281,7 +279,7 @@ void AliJHMRCorr::ConstructTrueCorrComponents(TClonesArray *arrPi0, std::vector<
             double dphi = GetDeltaPhi(phiTrigg, phiAssoc);
             double deta = etaTrigg - etaAssoc;
 
-            if (CheckAssocPhotonPair(iTrigg, iAssoc)) continue;
+            if (!CheckAssocPhotonPair(iTrigg, iAssoc, 1)) continue;
 
             if (lvTrigg->GetLabel()==1 && lvAssoc->GetLabel()==1)
                 histos->hCorrSignalSignal[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
@@ -520,11 +518,18 @@ void AliJHMRCorr::FillAsymmetry(TClonesArray *arrPhoton, detector idet)
 // Return true if trigger and associated pi0s do not have common photons,
 // false if either of the associated pi0 photons is used to reconstruct the
 // trigger
-bool AliJHMRCorr::CheckAssocPhotonPair(int iTrigg, int iAssoc)
+bool AliJHMRCorr::CheckAssocPhotonPair(int iTrigg, int iAssoc, bool bMassWindow)
 {
-    if (photonId.size()<1) return true; // do not check pairs from side band
-    std::vector<int> triggPairs = photonId[iTrigg];
-    std::vector<int> assocPairs = photonId[iAssoc];
+    if (photonId.size()<1) return true;
+    std::vector<int> triggPairs;
+    std::vector<int> assocPairs;
+    if (bMassWindow) {
+        triggPairs = photonId[iTrigg];
+        assocPairs = photonId[iAssoc];
+    } else {
+        triggPairs = sidebandId[iTrigg];
+        assocPairs = sidebandId[iAssoc];
+    }
     for (int i = 0; i < 2; i++) {
         int triggId = triggPairs[i];
         for (int j = 0; j < 2; j++) {

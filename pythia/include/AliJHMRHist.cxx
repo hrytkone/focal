@@ -86,10 +86,14 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet, bool bUseLeadin
             hCorrMeas[i][j]->Sumw2();
 
             dirCorrReject->cd();
-            hCorrReject[i][j] = new TH2D(Form("hCorrReject[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
-                                      Form("hCorrReject[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+            hCorrRejectMassMass[i][j] = new TH2D(Form("hCorrRejectMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                      Form("hCorrRejectMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
                                       nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
-            hCorrReject[i][j]->Sumw2();
+            hCorrRejectMassMass[i][j]->Sumw2();
+            hCorrRejectSideSide[i][j] = new TH2D(Form("hCorrRejectSideSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                      Form("hCorrRejectSideSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                      nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
+            hCorrRejectSideSide[i][j]->Sumw2();
 
 
             dirCorrChargedMid->cd();

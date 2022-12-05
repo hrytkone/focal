@@ -407,7 +407,7 @@ void DrawFiliPad()
         }
     }
 
-    /**for (int itrigg = 0; itrigg < nTriggBins; itrigg++) {
+    for (int itrigg = 0; itrigg < nTriggBins; itrigg++) {
         double tlow = triggPt[itrigg];
         double tupp = triggPt[itrigg+1];
         for (int iassoc = 0; iassoc < nAssocBins; iassoc++) {
@@ -442,5 +442,5 @@ void DrawFiliPad()
             hCorrSideSideProj[itrigg][iassoc]->Scale(1./hCorrSideSideProj[itrigg][iassoc]->GetEntries());
             hCorrBBProj[itrigg][iassoc]->Draw("SAME HIST E");
         }
-    }**/
+    }
 }

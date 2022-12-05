@@ -78,10 +78,11 @@ int AliJHMRCorr::ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0C
             if (bIsInWindow) {
                 new ((*arrPi0Candidates)[nCandidate++]) AliJBaseTrack(lvSum);
                 if (lvSum.GetLabel()==1) nTrue++;
-                if (bMass) {
-                    std::vector<int> pair = {i,j};
+                std::vector<int> pair = {i,j};
+                if (bMass)
                     photonId.push_back(pair);
-                }
+                else
+                    sidebandId.push_back(pair);                    
             }
         }
     }

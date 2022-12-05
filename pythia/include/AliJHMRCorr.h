@@ -77,6 +77,7 @@ public:
 
     bool CheckAssocPhotonPair(int iTrigg, int iAssoc, bool bMassWindow);
     void ClearPhotonPairVector() { photonId.clear(); }
+    void ClearSidebandPairVector() { sidebandId.clear(); }
 
 protected:
 

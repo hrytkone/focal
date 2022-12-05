@@ -180,6 +180,7 @@ int main(int argc, char *argv[]) {
         // Construct & save true correlation components f_SS, f_SB, f_BS, f_BB
         fCorr->ConstructTrueCorrComponents(arrPi0Peak, listTriggPeak, listAssocPeak, 0);
         fCorr->ClearPhotonPairVector();
+        fCorr->ClearSidebandPairVector();
 
         // Mixed event : take triggers from this event, associated from previous
         if (poolsize > 0) {

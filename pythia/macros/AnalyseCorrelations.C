@@ -44,7 +44,7 @@ void processDataSTAR()
 void processDataFoCal()
 {
 	TString fInName[ndata_focal] = {
-        "/home/heimarry/Simulations/focal/analysis_output/2022-12-01_pp-focal/output_merged.root"
+        "/home/heimarry/Simulations/focal/analysis_output/2022-12-05_pp-focal.root"
         //"/home/heimarry/Simulations/focal/analysis_output/20221128_ptmin-1/output.root"
         //"/home/heimarry/Simulations/focal/analysis_output/20221114_no-weight_2m.root",
         //"/home/heimarry/Simulations/focal/analysis_output/2022-11-22_pp-focal/output_merged.root"

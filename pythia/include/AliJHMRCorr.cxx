@@ -281,6 +281,8 @@ void AliJHMRCorr::ConstructTrueCorrComponents(TClonesArray *arrPi0, std::vector<
             double dphi = GetDeltaPhi(phiTrigg, phiAssoc);
             double deta = etaTrigg - etaAssoc;
 
+            if (CheckAssocPhotonPair(iTrigg, iAssoc)) continue;
+
             if (lvTrigg->GetLabel()==1 && lvAssoc->GetLabel()==1)
                 histos->hCorrSignalSignal[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
             if (lvTrigg->GetLabel()==1 && lvAssoc->GetLabel()==0)

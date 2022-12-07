@@ -1,4 +1,4 @@
-const TString outputname = "efficiency_pythiamb_asym-08_param-min-1";
+const TString outputname = "efficiency_pythiamb_asym-08";
 const double asymcut = 0.8;
 
 const int nPtBin = 6;

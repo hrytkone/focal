@@ -1,11 +1,4 @@
-//const TString filename = "efficiency_asym-08_v1.3_calib.root";
-//const TString filename = "efficiency_asym-08_v1.3_cc-12200.root";
-//const TString filename = "efficiency_xy.root";
-//const TString filename = "efficiency_pi0-gun_no-asym-cut.root";
-//const TString filename = "efficiency_pi0-gun.root";
-const TString filename = "efficiency_pythiamb_asym-08_param-min-1.root";
-//const TString filename = "efficiency_pythiamb_asym-1.root";
-//const TString filename = "efficiency_pythiamb_asym-08_eta-40-55.root";
+const TString filename = "efficiency_pythiamb_asym-08.root";
 
 const int nPtBin = 6;
 double pt[nPtBin+1], limMin = 2, limMax = 20;

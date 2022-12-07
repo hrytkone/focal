@@ -1,38 +1,30 @@
 const int nset = 6;
-//const int npt = 6;
-const int npt = 10;
+const int npt = 6;
+//const int npt = 10;
 
-//const TString filename = "etacut_4-5_shapecut_4-06.root";
-//const TString filename = "etacut_37-56.root";
-//const TString filename = "etacut_4-5_pthard-2.root";
-//const TString filename = "etacut_41-55.root";
-//const TString filename = "etacut_41-55_pi0-gun.root";
-const TString filename = "etacut_41-55_leading-trigg-eff_1.root";
-//const TString filename = "etacut_37-56_pthard-2.root";
-//const TString filename = "etacut_37-56_diff-pt-bins_1.root";
-//const TString lowmassfilename = "low-mass_etacut_42-53.root";
+const TString filename = "etacut_35-55.root";
 const TString lowmassfilename = "etacut_41-55_gamma_more-pt-bins.root";
 const TString legEta = "4.1 < #eta < 5.5";
 //------------------------------------------------------------------------------
 
 const TString legHeader[npt] = {
-    //"2 GeV < p_{T} < 3 GeV",
-    //"3 GeV < p_{T} < 4 GeV",
-    //"4 GeV < p_{T} < 8 GeV",
-    //"8 GeV < p_{T} < 10 GeV",
-    //"10 GeV < p_{T} < 15 GeV",
-    //"15 GeV < p_{T} < 20 GeV"
-
-    "2 GeV < p_{T} < 2.5 GeV",
-    "2.5 GeV < p_{T} < 3 GeV",
-    "3 GeV < p_{T} < 3.5 GeV",
-    "3.5 GeV < p_{T} < 4 GeV",
-    "4 GeV < p_{T} < 5 GeV",
-    "5 GeV < p_{T} < 6 GeV",
-    "6 GeV < p_{T} < 8 GeV",
+    "2 GeV < p_{T} < 3 GeV",
+    "3 GeV < p_{T} < 4 GeV",
+    "4 GeV < p_{T} < 8 GeV",
     "8 GeV < p_{T} < 10 GeV",
     "10 GeV < p_{T} < 15 GeV",
     "15 GeV < p_{T} < 20 GeV"
+
+    //"2 GeV < p_{T} < 2.5 GeV",
+    //"2.5 GeV < p_{T} < 3 GeV",
+    //"3 GeV < p_{T} < 3.5 GeV",
+    //"3.5 GeV < p_{T} < 4 GeV",
+    //"4 GeV < p_{T} < 5 GeV",
+    //"5 GeV < p_{T} < 6 GeV",
+    //"6 GeV < p_{T} < 8 GeV",
+    //"8 GeV < p_{T} < 10 GeV",
+    //"10 GeV < p_{T} < 15 GeV",
+    //"15 GeV < p_{T} < 20 GeV"
 };
 
 //------------------------------------------------------------------------------
@@ -51,8 +43,8 @@ const double xf[nset] = {0.85, 0.85, 0.85, 0.85, 0.85, 0.85};
 const double yi[nset] = {0.6, 0.6, 0.6, 0.6, 0.6, 0.6};
 const double yf[nset] = {0.87, 0.87, 0.87, 0.87, 0.87, 0.87};
 
-//const double fitStartingPoint[npt] = {50., 50., 40., 50., 50., 50.};
-const double fitStartingPoint[npt] = {50., 50., 40., 50., 50., 50., 50., 50., 50., 50.};
+const double fitStartingPoint[npt] = {50., 50., 40., 50., 50., 50.};
+//const double fitStartingPoint[npt] = {50., 50., 40., 50., 50., 50., 50., 50., 50., 50.};
 
 //------------------------------------------------------------------------------
 
@@ -90,12 +82,12 @@ double peakPos[npt][nset] = {0};
 double peakPosErr[npt][nset] = {0};
 double asymmetry[nset] = {0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
 double asymmteryErr[nset] = {0};
-//double ptMid[npt] = {2.5, 3.5, 6., 9., 12.5, 17.5};
-//double ptMidErr[npt] = {0.5, 0.5, 2., 1., 2.5, 2.5};
-double ptMid[npt] = {2.25, 2.75, 3.25, 3.75, 4.5, 5.5, 7, 9, 12.5, 17.5};
-double ptMidErr[npt] = {0.25, 0.25, 0.25, 0.25, 0.5, 0.5, 1., 1., 2.5, 2.5};
+double ptMid[npt] = {2.5, 3.5, 6., 9., 12.5, 17.5};
+double ptMidErr[npt] = {0.5, 0.5, 2., 1., 2.5, 2.5};
+//double ptMid[npt] = {2.25, 2.75, 3.25, 3.75, 4.5, 5.5, 7, 9, 12.5, 17.5};
+//double ptMidErr[npt] = {0.25, 0.25, 0.25, 0.25, 0.5, 0.5, 1., 1., 2.5, 2.5};
 
-const int mColor[npt] = {kAzure, kViolet, kPink, kOrange, kSpring, kTeal, kBlack, kBlack-1, kBlack-2, kBlack-3};
+const int mColor[npt] = {kAzure, kViolet, kPink, kOrange, kSpring, kTeal};//, kBlack, kBlack-1, kBlack-2, kBlack-3};
 TGraphErrors *gSignalToBg[npt];
 TGraphErrors *gEfficiency[npt];
 TGraphErrors *gEffPtFunc[nset];
@@ -233,7 +225,7 @@ void LoadData()
         }
     }
 
-    finLowMassBg = TFile::Open(lowmassfilename.Data());
+    /**finLowMassBg = TFile::Open(lowmassfilename.Data());
     for (int iasym=0; iasym<nset; iasym++) {
         for (int ipt=0; ipt<npt; ipt++) {
             hMassClusterBg[iasym][ipt] = (TH1D*)finLowMassBg->Get(Form("hMassCluster_%d_%d", iasym, ipt));
@@ -248,7 +240,7 @@ void LoadData()
 
             //hMassCluster[iasym][ipt]->Add(hMassClusterBg[iasym][ipt], -1.);
         }
-    }
+    }**/
 }
 
 void CreateLegends()

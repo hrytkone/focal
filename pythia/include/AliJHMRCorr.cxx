@@ -82,7 +82,7 @@ int AliJHMRCorr::ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0C
                 if (bMass)
                     photonId.push_back(pair);
                 else
-                    sidebandId.push_back(pair);                    
+                    sidebandId.push_back(pair);
             }
         }
     }
@@ -438,11 +438,15 @@ void AliJHMRCorr::FillPionMasses(TClonesArray *arrPhoton, int binsWithTriggPeak[
             double pT = lvSum.Pt();
             int iTriggBin = GetBin(triggPt, NTRIGGBINS, pT);
             int iAssocBin = GetBin(assocPt, NASSOCBINS, pT);
-            if (iTriggBin >= 0) histos->hPi0MassTrigg[iTriggBin]->Fill(mass);
-            for (int it = 0; it < NTRIGGBINS; it++) {
-                if (triggPt[it] < assocPt[iAssocBin+1]) continue;
-                if (binsWithTriggPeak[it] > 0 && iAssocBin >= 0) histos->hPi0MassAssocPeak[it][iAssocBin]->Fill(mass);
-                if (binsWithTriggSide[it] > 0 && iAssocBin >= 0) histos->hPi0MassAssocSide[it][iAssocBin]->Fill(mass);
+
+            if (iTriggBin >= 0) {
+                histos->hPi0MassTrigg[iTriggBin]->Fill(mass);
+            } else {                
+                for (int it = 0; it < NTRIGGBINS; it++) {
+                    if (triggPt[it] < assocPt[iAssocBin+1]) continue;
+                    if (binsWithTriggPeak[it] > 0 && iAssocBin >= 0) histos->hPi0MassAssocPeak[it][iAssocBin]->Fill(mass);
+                    if (binsWithTriggSide[it] > 0 && iAssocBin >= 0) histos->hPi0MassAssocSide[it][iAssocBin]->Fill(mass);
+                }
             }
         }
     }

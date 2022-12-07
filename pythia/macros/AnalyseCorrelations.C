@@ -44,7 +44,7 @@ void processDataSTAR()
 void processDataFoCal()
 {
 	TString fInName[ndata_focal] = {
-        "/home/heimarry/Simulations/focal/analysis_output/2022-12-05_pp-focal.root"
+        "/home/heimarry/Simulations/focal/analysis_output/2022-12-05_pp-focal_3.root"
         //"/home/heimarry/Simulations/focal/analysis_output/20221128_ptmin-1/output.root"
         //"/home/heimarry/Simulations/focal/analysis_output/20221114_no-weight_2m.root",
         //"/home/heimarry/Simulations/focal/analysis_output/2022-11-22_pp-focal/output_merged.root"
@@ -106,9 +106,9 @@ void LoadInput()
 
 	        if (!useLeading && tlow < aupp) continue;
 
-	        hMassAssocPeak[it][ia] = (TH1D*)fIn->Get(Form("Masses/hPi0MassAssocPeak[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hMassAssocPeak[it][ia]->Rebin(4);
+	        hMassAssocPeak[it][ia] = (TH1D*)fIn->Get(Form("Masses/hPi0MassAssocPeak[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); //hMassAssocPeak[it][ia]->Rebin(4);
             //hMassAssocPeak[it][ia]->Scale(1., "width");
-	        hMassAssocSide[it][ia] = (TH1D*)fIn->Get(Form("Masses/hPi0MassAssocSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hMassAssocSide[it][ia]->Rebin(4);
+	        hMassAssocSide[it][ia] = (TH1D*)fIn->Get(Form("Masses/hPi0MassAssocSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); //hMassAssocSide[it][ia]->Rebin(4);
             //hMassAssocSide[it][ia]->Scale(1., "width");
 
 	        hCorrReal[it][ia]     = (TH2D*)fIn->Get(Form("CorrFor/hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));           //hCorrReal[it][ia]->Rebin2D(12);
@@ -118,10 +118,10 @@ void LoadInput()
 	        hCorrSideSide[it][ia] = (TH2D*)fIn->Get(Form("CorrSideSide/hCorrSideSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); //hCorrSideSide[it][ia]->Rebin2D(12);
             hCorrMeas[it][ia]     = (TH2D*)hCorrMassMass[it][ia]->Clone(Form("hCorrMeas[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
 
-            hCorrMassMassMixed[it][ia] = (TH2D*)fIn->Get(Form("CorrMassMass/hCorrMassMassMixed[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrMassMassMixed[it][ia]->Rebin2D(12);
-            hCorrMassSideMixed[it][ia] = (TH2D*)fIn->Get(Form("CorrMassSide/hCorrMassSideMixed[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrMassSideMixed[it][ia]->Rebin2D(12);
-            hCorrSideMassMixed[it][ia] = (TH2D*)fIn->Get(Form("CorrSideMass/hCorrSideMassMixed[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrSideMassMixed[it][ia]->Rebin2D(12);
-            hCorrSideSideMixed[it][ia] = (TH2D*)fIn->Get(Form("CorrSideSide/hCorrSideSideMixed[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); hCorrSideSideMixed[it][ia]->Rebin2D(12);
+            hCorrMassMassMixed[it][ia] = (TH2D*)fIn->Get(Form("CorrMassMass/hCorrMassMassMixed[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); //hCorrMassMassMixed[it][ia]->Rebin2D(12);
+            hCorrMassSideMixed[it][ia] = (TH2D*)fIn->Get(Form("CorrMassSide/hCorrMassSideMixed[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); //hCorrMassSideMixed[it][ia]->Rebin2D(12);
+            hCorrSideMassMixed[it][ia] = (TH2D*)fIn->Get(Form("CorrSideMass/hCorrSideMassMixed[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); //hCorrSideMassMixed[it][ia]->Rebin2D(12);
+            hCorrSideSideMixed[it][ia] = (TH2D*)fIn->Get(Form("CorrSideSide/hCorrSideSideMixed[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); //hCorrSideSideMixed[it][ia]->Rebin2D(12);
             hCorrMeasMixed[it][ia]     = (TH2D*)hCorrMassMassMixed[it][ia]->Clone(Form("hCorrMeasMixed[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
 
 	    }
@@ -140,7 +140,7 @@ void DoAnalysis()
             if (!useLeading && tlow < aupp) continue;
 
             hCorrRealProj[it][ia] = hCorrReal[it][ia]->ProjectionX();
-            //hCorrRealProj[it][ia]->Scale(1.0/nRealTrigg[it], "width");
+            hCorrRealProj[it][ia]->Scale(1.0/nRealTrigg[it], "width");
             //hCorrRealProj[it][ia]->Scale(1.0/hCorrRealProj[it][ia]->GetEntries(), "width");
 
             hCorrMassMassProj[it][ia] = hCorrMassMass[it][ia]->ProjectionX();
@@ -156,11 +156,11 @@ void DoAnalysis()
 
             hCorr[it][ia] = (TH1D*)hCorrMassMassProj[it][ia]->Clone(Form("hCorrFinal[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
             hCorr[it][ia]->Add(hCorrMassSideProj[it][ia], -1);
-            hCorr[it][ia]->Add(hCorrSideMassProj[it][ia], -1);
+            //hCorr[it][ia]->Add(hCorrSideMassProj[it][ia], -1);
             hCorr[it][ia]->Add(hCorrSideSideProj[it][ia]);
 
             // Take efficiencies into account
-            //hCorr[it][ia]->Scale(1.0/st[it], "width");
+            hCorr[it][ia]->Scale(1.0/st[it], "width");
             //hCorr[it][ia]->Scale(1.0/hCorr[it][ia]->GetEntries(), "width");
 
             double massWindowMin, massWindowMax;
@@ -173,7 +173,7 @@ void DoAnalysis()
             }
             hCorrMeasProj[it][ia] = hCorrMeas[it][ia]->ProjectionX();
             //hCorrMeasProj[it][ia]->Scale(1.0/fFitTrigg[it]->Integral(massWindowMin, massWindowMax), "width");
-            //hCorrMeasProj[it][ia]->Scale(1.0/hMassTrigg[it]->Integral(hMassTrigg[it]->GetXaxis()->FindBin(massWindowMin), hMassTrigg[it]->GetXaxis()->FindBin(massWindowMax)), "width");
+            hCorrMeasProj[it][ia]->Scale(1.0/hMassTrigg[it]->Integral(hMassTrigg[it]->GetXaxis()->FindBin(massWindowMin), hMassTrigg[it]->GetXaxis()->FindBin(massWindowMax)), "width");
             //hCorrMeasProj[it][ia]->Scale(1.0/hCorrMeasProj[it][ia]->GetEntries(), "width");
         }
     }
@@ -339,7 +339,7 @@ void GetScaleFactorsVersion1()
         }
         //st[it] = fPeakTrigg[it]->Integral(massWindowMin, massWindowMax);
         st[it]  = hMassTrigg[it]->Integral(hMassTrigg[it]->GetXaxis()->FindBin(massWindowMin), hMassTrigg[it]->GetXaxis()->FindBin(massWindowMax)) - fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/hMassTrigg[it]->GetBinWidth(0);
-        st[it] *= effCorrTrigg[it]*pi0br;
+        //st[it] *= effCorrTrigg[it]*pi0br;
         stobtrigg[it] = fPeakTrigg[it]->Integral(massWindowMin, massWindowMax)/fFitTrigg[it]->Integral(massWindowMin, massWindowMax);
         std::cout << "\n\tbin [ " << triggPt[it] << " " << triggPt[it+1] << " ] : \treal=" << nRealTrigg[it] << "\treconst=" << st[it] << "\trec=" << stfit[it] << "\trec/real=" << st[it]/nRealTrigg[it] << std::endl;
         std::cout << "\tS/(S+B) : " << stobtrigg[it] << std::endl;
@@ -358,10 +358,10 @@ void GetScaleFactorsVersion1()
             }
 
             if (!useLeading && tlow < aupp) continue;
-            alpha[it][ia] = fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/(fBgAssocPeak[it][ia]->Integral(40, 80) + fBgAssocPeak[it][ia]->Integral(210, 280));
-            beeta[it][ia]  = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/(fBgTrigg[it]->Integral(40, 80) + fBgTrigg[it]->Integral(210, 280));
-            //alpha[it][ia] = fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/fBgAssocPeak[it][ia]->Integral(300, 450);
-            //beeta[it][ia] = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/fBgTrigg[it]->Integral(300, 450);
+            //alpha[it][ia]  = fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/(fBgAssocPeak[it][ia]->Integral(40, 80) + fBgAssocPeak[it][ia]->Integral(210, 280));
+            //beeta[it][ia]  = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/(fBgTrigg[it]->Integral(40, 80) + fBgTrigg[it]->Integral(210, 280));
+            alpha[it][ia] = fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/fBgAssocPeak[it][ia]->Integral(300, 450);
+            beeta[it][ia] = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/fBgTrigg[it]->Integral(300, 450);
             yamma[it][ia] = alpha[it][ia]*beeta[it][ia];
             std::cout << "\t\tbin [ "  << assocPt[ia] << " " << assocPt[ia+1] << " ] : "
                       << "\talpha=" << alpha[it][ia]

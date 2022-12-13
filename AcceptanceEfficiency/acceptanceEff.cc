@@ -24,7 +24,7 @@ int GetEtaBin(double eta, int idet);
 using namespace Pythia8;
 
 const double detEta[NDET][2] = {
-    {3.2, 5.8}, // FoCal
+    {3.5, 5.8}, // FoCal
     {2.6, 4.0}  // STAR
 };
 

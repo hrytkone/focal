@@ -9,10 +9,11 @@ const bool useLeading = 1;
 
 const int nTriggBins = 2;
 const int nAssocBins = 2;
-//const double triggPt[nTriggBins+1] = {1.0, 2.0, 2.5, 3.0};
-//const double assocPt[nAssocBins+1] = {0.5, 1.0, 1.5, 2.0, 2.5};
+
 const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
 const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
+//const double triggPt[nTriggBins+1] = {8.0, 20.0};
+//const double assocPt[nAssocBins+1] = {3.0, 4.0, 8.0};
 //const double triggPt[nTriggBins+1] = {4.0, 8.0, 10.0, 15.0, 20.0};
 //const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0, 8.0, 10.0, 15.0};
 
@@ -78,9 +79,9 @@ void LoadData()
 
     	        if (!useLeading && tlow < aupp) continue;
 
-                hCorrReal[iset][itrigg][iassoc]  = (TH1D*)fin[iset]->Get(Form("hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp));  //hCorrReal[iset][itrigg][iassoc]->Rebin(4);
-                hCorrFinal[iset][itrigg][iassoc] = (TH1D*)fin[iset]->Get(Form("hCorrFinal[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));   //hCorrFinal[iset][itrigg][iassoc]->Rebin(4);
-                hCorrMeas[iset][itrigg][iassoc]  = (TH1D*)fin[iset]->Get(Form("hCorrMeas[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp)); //hCorrMeas[iset][itrigg][iassoc]->Rebin(4);
+                hCorrReal[iset][itrigg][iassoc]  = (TH1D*)fin[iset]->Get(Form("hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp));  hCorrReal[iset][itrigg][iassoc]->Rebin(4);
+                hCorrFinal[iset][itrigg][iassoc] = (TH1D*)fin[iset]->Get(Form("hCorrFinal[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));   hCorrFinal[iset][itrigg][iassoc]->Rebin(4);
+                hCorrMeas[iset][itrigg][iassoc]  = (TH1D*)fin[iset]->Get(Form("hCorrMeas[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp)); hCorrMeas[iset][itrigg][iassoc]->Rebin(4);
 
                 // Calculate ratios
                 hRatioFinal[iset][itrigg][iassoc] = (TH1D*)hCorrReal[iset][itrigg][iassoc]->Clone(Form("hRatioFinal[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp));
@@ -163,8 +164,8 @@ void ConfigHistos()
 
 void DrawFiliPad()
 {
-    //TText *t = new TText(.58,0.79,"PYTHIA8 simulation");
-    TText *t = new TText(.58,0.79,"Simulation");
+    TText *t = new TText(.58,0.79,"PYTHIA8 simulation");
+    //TText *t = new TText(.58,0.79," FOCAL simulation");
     t->SetNDC();
     int padID = 0;
     for (int iset = 0; iset < nset; iset++) {
@@ -191,7 +192,7 @@ void DrawFiliPad()
                 cout << rangeMin << " " << rangeMax << endl;
                 TPad *p = fpad[iset][itrigg][iassoc]->GetPad(1);
                 p->SetTickx(); p->SetLogx(0); p->SetLogy(1); p->cd();
-                hset(*hCorrMeas[iset][itrigg][iassoc], "#Delta#phi", "1/N_{trigg}dN/d#Delta#phi", 1.1,1.2, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
+                hset(*hCorrReal[iset][itrigg][iassoc], "#Delta#phi", "1/N_{trigg}dN/d#Delta#phi", 1.1,1.2, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
 //                hset(*hCorrReal[iset][itrigg][iassoc], "#Delta#phi", "arb. norm.", 1.1,1.2, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
                 hCorrReal[iset][itrigg][iassoc]->GetYaxis()->SetRangeUser(rangeMin, rangeMax);
 //                hCorrReal[iset][itrigg][iassoc]->GetXaxis()->SetRangeUser(TMath::Pi()/2., 3.*TMath::Pi()/2.);

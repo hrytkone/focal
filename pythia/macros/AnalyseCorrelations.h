@@ -6,10 +6,11 @@ const int ndata_focal = 1;
 const int nTriggBins = 2;
 const int nAssocBins = 2;
 const int nLeadingBins = 10;
-//const double triggPt[nTriggBins+1] = {1.0, 2.0, 2.5, 3.0};
-//const double assocPt[nAssocBins+1] = {0.5, 1.0, 1.5, 2.0, 2.5};
+
 const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
 const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
+//const double triggPt[nTriggBins+1] = {8.0, 20.0};
+//const double assocPt[nAssocBins+1] = {3.0, 4.0, 8.0};
 //const double triggPt[nTriggBins+1] = {4.0, 8.0, 10.0, 15.0, 20.0};
 //const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0, 8.0, 10.0, 15.0};
 
@@ -30,8 +31,8 @@ const double effCorrTrigg[nTriggBins] = {1., 1.};
 const double massMin = 110.;
 const double massMax = 160.;
 
-//const double massMin = 50.;
-//const double massMax = 220.;
+//const double massMin = 60.;
+//const double massMax = 210.;
 const double massSigmaTrigg[nTriggBins] = {27.4508};//, 28.5018, 24.3633, 20.5244};
 const double massSigmaAssoc[nAssocBins] = {28.8498, 25.1395};//, 27.4508, 28.5018, 24.3633};
 const double massPeakPosTrigg[nTriggBins] = {140.779};//, 143.724, 146.13, 146.865};
@@ -46,6 +47,7 @@ TH1D *hRealTriggCounter;
 TH1D *hMassTrigg[nTriggBins];
 TH1D *hMassAssocPeak[nTriggBins][nAssocBins];
 TH1D *hMassAssocSide[nTriggBins][nAssocBins];
+TH1D *hMassAssocSum[nTriggBins][nAssocBins];
 
 TH2D *hCorrReal[nTriggBins][nAssocBins];
 TH2D *hCorrMeas[nTriggBins][nAssocBins];
@@ -67,6 +69,7 @@ TH2D *hCorrSideSideMixed[nTriggBins][nAssocBins];
 double parTrigg[8];
 double parAssocPeak[9];
 double parAssocSide[9];
+double parAssocSum[9];
 double fitConstantVal[nTriggBins] = {0};
 
 double triggMean[nTriggBins] = {0};
@@ -95,6 +98,10 @@ TF1 *fBgAssocPeak[nTriggBins][nAssocBins];
 TF1 *fFitAssocSide[nTriggBins][nAssocBins];
 TF1 *fPeakAssocSide[nTriggBins][nAssocBins];
 TF1 *fBgAssocSide[nTriggBins][nAssocBins];
+
+TF1 *fFitAssocSum[nTriggBins][nAssocBins];
+TF1 *fPeakAssocSum[nTriggBins][nAssocBins];
+TF1 *fBgAssocSum[nTriggBins][nAssocBins];
 
 TH1D *hCorrRealProj[nTriggBins][nAssocBins];
 TH1D *hCorrMeasProj[nTriggBins][nAssocBins];
@@ -135,6 +142,7 @@ double GetMixedEventNormalization(TH2D *h);
 void FitMassPeaks();
 void GetScaleFactorsVersion1();
 void GetScaleFactorsVersion2();
+void GetScaleFactorsVersion3();
 
 double FitPeak(double *x, double *p);
 double FitBackground(double *x, double *p);

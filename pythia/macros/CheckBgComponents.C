@@ -58,14 +58,12 @@ TLegend *leg3[nTriggBins][nAssocBins];
 void LoadData(TString input);
 void ConfigHistos();
 void DrawFiliPad();
-void CreateLegends();
 
-void PlotComponents(TString sInputName = "input.root")
+void CheckBgComponents(TString sInputName = "input.root")
 {
     gStyle->SetOptStat(0);
     LoadData(sInputName);
     ConfigHistos();
-    CreateLegends();
     DrawFiliPad();
 }
 
@@ -220,79 +218,8 @@ void ConfigHistos()
                 hCorrBBProj[itrigg][iassoc]->SetLineColor(kBlue-7);
                 hCorrBBProj[itrigg][iassoc]->SetMarkerStyle(kDot);
                 hCorrBBProj[itrigg][iassoc]->SetLineWidth(2);
-
-                // RATIOS
-                hTrueVsMeasured[itrigg][iassoc] = (TH1D*)hCorrTrueProj[itrigg][iassoc]->Clone(Form("hTrueVsMeasured[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
-                hTrueVsMeasured[itrigg][iassoc]->Divide(hCorrMassMassProj[itrigg][iassoc]);
-                hSSVsMeasured[itrigg][iassoc] = (TH1D*)hCorrSSProj[itrigg][iassoc]->Clone(Form("hSSVsMeasured[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
-                hSSVsMeasured[itrigg][iassoc]->Divide(hCorrMassMassProj[itrigg][iassoc]);
-                hSSVsTrue[itrigg][iassoc] = (TH1D*)hCorrSSProj[itrigg][iassoc]->Clone(Form("hSSVsTrue[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
-                hSSVsTrue[itrigg][iassoc]->Divide(hCorrTrueProj[itrigg][iassoc]);
-                hSSVsTrue[itrigg][iassoc]->SetLineColor(kMagenta-3);
-
-                hSBVsMeasured[itrigg][iassoc] = (TH1D*)hCorrSBProj[itrigg][iassoc]->Clone(Form("hSBVsMeasured[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
-                hSBVsMeasured[itrigg][iassoc]->Divide(hCorrMassMassProj[itrigg][iassoc]);
-                hBSVsMeasured[itrigg][iassoc] = (TH1D*)hCorrBSProj[itrigg][iassoc]->Clone(Form("hSBVsMeasured[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
-                hBSVsMeasured[itrigg][iassoc]->Divide(hCorrMassMassProj[itrigg][iassoc]);
-                hBBVsMeasured[itrigg][iassoc] = (TH1D*)hCorrBBProj[itrigg][iassoc]->Clone(Form("hSBVsMeasured[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
-                hBBVsMeasured[itrigg][iassoc]->Divide(hCorrMassMassProj[itrigg][iassoc]);
             }
         }
-}
-
-void CreateLegends()
-{
-    for (int itrigg = 0; itrigg < nTriggBins; itrigg++) {
-        double tlow = triggPt[itrigg];
-        double tupp = triggPt[itrigg+1];
-        for (int iassoc = 0; iassoc < nAssocBins; iassoc++) {
-            double alow = assocPt[iassoc];
-            double aupp = assocPt[iassoc+1];
-
-            if (!useLeading && tlow < aupp) continue;
-
-            if (plotCloseup) {
-                leg1[itrigg][iassoc] = new TLegend(0.25, 0.65, 0.85, 0.78);
-                leg1[itrigg][iassoc]->SetNColumns(3);
-                leg1[itrigg][iassoc]->SetFillStyle(0); leg1[itrigg][iassoc]->SetBorderSize(0); leg1[itrigg][iassoc]->SetTextSize(0.05);
-                leg1[itrigg][iassoc]->SetHeader(Form("%s, [%0.1f,%0.1f][%0.1f,%0.1f]", legHeader.Data(),triggPt[itrigg],triggPt[itrigg+1],assocPt[iassoc],assocPt[iassoc+1]));
-
-                leg2[itrigg][iassoc] = new TLegend(0.25, 0.3, 0.9, 0.55);
-                leg2[itrigg][iassoc]->SetNColumns(2);
-                leg2[itrigg][iassoc]->SetFillStyle(0); leg2[itrigg][iassoc]->SetBorderSize(0); leg2[itrigg][iassoc]->SetTextSize(0.06);
-
-                leg3[itrigg][iassoc] = new TLegend(0.25, 0.6, 0.85, 0.78);
-                leg3[itrigg][iassoc]->SetFillStyle(0); leg3[itrigg][iassoc]->SetBorderSize(0); leg3[itrigg][iassoc]->SetTextSize(0.05);
-                leg3[itrigg][iassoc]->SetNColumns(3);
-                leg3[itrigg][iassoc]->SetHeader(Form("%s, [%0.1f,%0.1f][%0.1f,%0.1f]", legHeader.Data(),triggPt[itrigg],triggPt[itrigg+1],assocPt[iassoc],assocPt[iassoc+1]));
-            } else {
-                leg1[itrigg][iassoc] = new TLegend(0.5, 0.4, 0.78, 0.75);
-                leg1[itrigg][iassoc]->SetFillStyle(0); leg1[itrigg][iassoc]->SetBorderSize(0); leg1[itrigg][iassoc]->SetTextSize(0.05);
-                leg1[itrigg][iassoc]->SetHeader(Form("#splitline{%s}{[%0.1f,%0.1f][%0.1f,%0.1f]}", legHeader.Data(),triggPt[itrigg],triggPt[itrigg+1],assocPt[iassoc],assocPt[iassoc+1]));
-
-                leg2[itrigg][iassoc] = new TLegend(0.6, 0.3, 0.9, 0.6);
-                leg2[itrigg][iassoc]->SetFillStyle(0); leg2[itrigg][iassoc]->SetBorderSize(0); leg2[itrigg][iassoc]->SetTextSize(0.06);
-
-                leg3[itrigg][iassoc] = new TLegend(0.5, 0.5, 0.9, 0.75);
-                leg3[itrigg][iassoc]->SetFillStyle(0); leg3[itrigg][iassoc]->SetBorderSize(0); leg3[itrigg][iassoc]->SetTextSize(0.05);
-                leg3[itrigg][iassoc]->SetNColumns(3);
-                leg3[itrigg][iassoc]->SetHeader(Form("#splitline{%s}{[%0.1f,%0.1f][%0.1f,%0.1f]}", legHeader.Data(),triggPt[itrigg],triggPt[itrigg+1],assocPt[iassoc],assocPt[iassoc+1]));
-            }
-            leg1[itrigg][iassoc]->AddEntry(hCorrTrueProj[itrigg][iassoc], "MC truth", "le");
-            leg1[itrigg][iassoc]->AddEntry(hCorrMassMassProj[itrigg][iassoc], "f_{mass,mass}", "le");
-            leg1[itrigg][iassoc]->AddEntry(hCorrSSProj[itrigg][iassoc], "f_{true,true}", "le");
-
-            leg2[itrigg][iassoc]->AddEntry(hTrueVsMeasured[itrigg][iassoc], "MC truth / f(mass,mass)", "le");
-            leg2[itrigg][iassoc]->AddEntry(hSSVsMeasured[itrigg][iassoc], "f(true,true) / f(mass,mass)", "le");
-            leg2[itrigg][iassoc]->AddEntry(hSSVsTrue[itrigg][iassoc], "f(true,true) / MC truth", "le");
-
-            leg3[itrigg][iassoc]->AddEntry(hCorrMassMassProj[itrigg][iassoc], "f_{mass,mass}", "le");
-            leg3[itrigg][iassoc]->AddEntry(hCorrSSProj[itrigg][iassoc], "f_{true,true}", "le");
-            leg3[itrigg][iassoc]->AddEntry(hCorrSBProj[itrigg][iassoc], "f_{true,fake}", "le");
-            leg3[itrigg][iassoc]->AddEntry(hCorrBSProj[itrigg][iassoc], "f_{fake,true}", "le");
-            leg3[itrigg][iassoc]->AddEntry(hCorrBBProj[itrigg][iassoc], "f_{fake,fake}", "le");
-        }
-    }
 }
 
 void DrawFiliPad()
@@ -303,111 +230,8 @@ void DrawFiliPad()
     else
         t = new TText(.5,0.79,"PYTHIA8 simulation");
     t->SetNDC();
-    int padID = 0;
-    for (int itrigg = 0; itrigg < nTriggBins; itrigg++) {
-        double tlow = triggPt[itrigg];
-        double tupp = triggPt[itrigg+1];
-        for (int iassoc = 0; iassoc < nAssocBins; iassoc++) {
-            double alow = assocPt[iassoc];
-            double aupp = assocPt[iassoc+1];
-
-            if (!useLeading && tlow < aupp) continue;
-
-//                fpad[itrigg][iassoc] = new Filipad(padID, 1.1, 0.5, 100, 100, 0.7, 1);
-            fpad[itrigg][iassoc] = new Filipad(padID, 1.1, 0.35, 100, 100, 0.8, 1);
-            fpad[itrigg][iassoc]->Draw();
-            padID++;
-
-            // Upper pad
-            int minBin = hCorrSSProj[itrigg][iassoc]->GetMinimumBin();
-            int maxBin = hCorrMassMassProj[itrigg][iassoc]->GetMaximumBin();
-            double rangeMin = hCorrSSProj[itrigg][iassoc]->GetBinContent(minBin) - 0.2*hCorrSSProj[itrigg][iassoc]->GetBinContent(minBin);
-            double rangeMax = hCorrMassMassProj[itrigg][iassoc]->GetBinContent(maxBin) + hCorrMassMassProj[itrigg][iassoc]->GetBinContent(maxBin);
-            if (rangeMin<=0) rangeMin = 0.0008;
-            if (itrigg==1 && iassoc==1) {
-                rangeMin = 0.5;
-                rangeMax *= 2.;
-            }
-            if (plotCloseup) {
-                rangeMax = hCorrMassMassProj[itrigg][iassoc]->GetBinContent(maxBin) + 10.*hCorrMassMassProj[itrigg][iassoc]->GetBinContent(maxBin);
-            }
-            TPad *p = fpad[itrigg][iassoc]->GetPad(1);
-            p->SetTickx(); p->SetLogx(0); p->SetLogy(1); p->cd();
-            hset(*hCorrTrueProj[itrigg][iassoc], "#Delta#phi", "counts", 1.1,1.2, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
-            hCorrTrueProj[itrigg][iassoc]->GetYaxis()->SetRangeUser(rangeMin, rangeMax);
-            hCorrTrueProj[itrigg][iassoc]->Draw("HIST E");
-            hCorrMassMassProj[itrigg][iassoc]->Draw("SAME HIST E");
-            hCorrSSProj[itrigg][iassoc]->Draw("SAME HIST E");
-            leg1[itrigg][iassoc]->Draw("SAME");
-            t->Draw("SAME");
-
-            // Lower pad
-            p = fpad[itrigg][iassoc]->GetPad(2);
-            p->SetTickx(); p->SetGridy(1); p->SetLogx(0), p->SetLogy(0); p->cd();
-            hset( *hTrueVsMeasured[itrigg][iassoc], "#Delta#phi", "Ratio",1.1,0.7, 0.09,0.09, 0.01,0.01, 0.08,0.08, 510,505);
-            if (plotCloseup)
-                hTrueVsMeasured[itrigg][iassoc]->GetYaxis()->SetRangeUser(-0.8, 1.1);
-            else
-                hTrueVsMeasured[itrigg][iassoc]->GetYaxis()->SetRangeUser(-0.8, 1.8);
-            hTrueVsMeasured[itrigg][iassoc]->Draw("HIST E");
-            hSSVsMeasured[itrigg][iassoc]->Draw("HIST E SAME");
-            hSSVsTrue[itrigg][iassoc]->Draw("HIST E SAME");
-            leg2[itrigg][iassoc]->Draw("SAME");
-        }
-    }
 
     for (int itrigg = 0; itrigg < nTriggBins; itrigg++) {
-        double tlow = triggPt[itrigg];
-        double tupp = triggPt[itrigg+1];
-        for (int iassoc = 0; iassoc < nAssocBins; iassoc++) {
-            double alow = assocPt[iassoc];
-            double aupp = assocPt[iassoc+1];
-
-            if (!useLeading && tlow < aupp) continue;
-
-//                fpad[itrigg][iassoc] = new Filipad(padID, 1.1, 0.5, 100, 100, 0.7, 1);
-            fpadcomp[itrigg][iassoc] = new Filipad(padID, 1.1, 0.35, 100, 100, 0.8, 1);
-            fpadcomp[itrigg][iassoc]->Draw();
-            padID++;
-
-            // Upper pad
-            int minBin = hCorrSSProj[itrigg][iassoc]->GetMinimumBin();
-            int maxBin = hCorrMassMassProj[itrigg][iassoc]->GetMaximumBin();
-            double rangeMin = 0.5;
-            double rangeMax = hCorrMassMassProj[itrigg][iassoc]->GetBinContent(maxBin) + 10.*hCorrMassMassProj[itrigg][iassoc]->GetBinContent(maxBin);
-            if (rangeMin<=0) rangeMin = 0.0008;
-            if (itrigg==0 && iassoc==0) {
-                rangeMin = 1;
-                rangeMax *= 3.;
-            }
-            if (plotCloseup) {
-                rangeMax = hCorrMassMassProj[itrigg][iassoc]->GetBinContent(maxBin) + 100.*hCorrMassMassProj[itrigg][iassoc]->GetBinContent(maxBin);
-            }
-            TPad *p = fpadcomp[itrigg][iassoc]->GetPad(1);
-            p->SetTickx(); p->SetLogx(0); p->SetLogy(1); p->cd();
-            hset(*hCorrMassMassProj[itrigg][iassoc], "#Delta#phi", "counts", 1.1,1.2, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
-            hCorrMassMassProj[itrigg][iassoc]->GetYaxis()->SetRangeUser(rangeMin, rangeMax);
-            hCorrMassMassProj[itrigg][iassoc]->Draw("HIST E");
-            hCorrSSProj[itrigg][iassoc]->Draw("SAME HIST E");
-            hCorrSBProj[itrigg][iassoc]->Draw("SAME HIST E");
-            hCorrBSProj[itrigg][iassoc]->Draw("SAME HIST E");
-            hCorrBBProj[itrigg][iassoc]->Draw("SAME HIST E");
-            leg3[itrigg][iassoc]->Draw("SAME");
-            t->Draw("SAME");
-
-            // Lower pad
-            p = fpadcomp[itrigg][iassoc]->GetPad(2);
-            p->SetTickx(); p->SetGridy(1); p->SetLogx(0), p->SetLogy(0); p->cd();
-            hset( *hSSVsMeasured[itrigg][iassoc], "#Delta#phi", "f_{..,..}/f_{mass,mass}",1.1,0.7, 0.09,0.09, 0.01,0.01, 0.08,0.08, 510,505);
-            hSSVsMeasured[itrigg][iassoc]->GetYaxis()->SetRangeUser(-0.2, .95);
-            hSSVsMeasured[itrigg][iassoc]->Draw("HIST E");
-            hSBVsMeasured[itrigg][iassoc]->Draw("SAME HIST E");
-            hBSVsMeasured[itrigg][iassoc]->Draw("SAME HIST E");
-            hBBVsMeasured[itrigg][iassoc]->Draw("SAME HIST E");
-        }
-    }
-
-    /**for (int itrigg = 0; itrigg < nTriggBins; itrigg++) {
         double tlow = triggPt[itrigg];
         double tupp = triggPt[itrigg+1];
         for (int iassoc = 0; iassoc < nAssocBins; iassoc++) {
@@ -417,30 +241,30 @@ void DrawFiliPad()
             if (!useLeading && tlow < aupp) continue;
 
             TCanvas *c1 = new TCanvas(Form("c_%d-%d", itrigg, iassoc), "", 800, 800);
-            c1->Divide(2,2);
+            c1->Divide(2,2,0.0001,0.0001);
 
             c1->cd(1);
             hCorrSSProj[itrigg][iassoc]->Draw("HIST E");
 
             c1->cd(2);
             hCorrMassSideProj[itrigg][iassoc]->Draw("HIST E");
-            hCorrMassSideProj[itrigg][iassoc]->Scale(1./hCorrMassSideProj[itrigg][iassoc]->GetEntries());
             hCorrSBProj[itrigg][iassoc]->Draw("SAME HIST E");
-            hCorrSBProj[itrigg][iassoc]->Scale(1./hCorrSBProj[itrigg][iassoc]->GetEntries());
             hCorrBBProj[itrigg][iassoc]->Draw("SAME HIST E");
 
             c1->cd(3);
             hCorrSideMassProj[itrigg][iassoc]->Draw("HIST E");
-            hCorrSideMassProj[itrigg][iassoc]->Scale(1./hCorrSideSideProj[itrigg][iassoc]->GetEntries());
             hCorrBSProj[itrigg][iassoc]->Draw("SAME HIST E");
-            hCorrBSProj[itrigg][iassoc]->Scale(1./hCorrBSProj[itrigg][iassoc]->GetEntries());
             hCorrBBProj[itrigg][iassoc]->Draw("SAME HIST E");
-            hCorrBBProj[itrigg][iassoc]->Scale(1./hCorrBBProj[itrigg][iassoc]->GetEntries());
 
             c1->cd(4);
+            //gPad->SetLogy();
+            //hCorrSideSideProj[itrigg][iassoc]->Scale(1./hCorrSideSideProj[itrigg][iassoc]->GetEntries());
+            int rangeMin = hCorrSideSideProj[itrigg][iassoc]->GetNbinsX()/2.;
+            int rangeMax = hCorrSideSideProj[itrigg][iassoc]->GetNbinsX();
+            hCorrSideSideProj[itrigg][iassoc]->Scale(1./hCorrSideSideProj[itrigg][iassoc]->Integral(rangeMin, rangeMax));
             hCorrSideSideProj[itrigg][iassoc]->Draw("HIST E");
-            hCorrSideSideProj[itrigg][iassoc]->Scale(1./hCorrSideSideProj[itrigg][iassoc]->GetEntries());
+            hCorrBBProj[itrigg][iassoc]->Scale(1./hCorrBBProj[itrigg][iassoc]->Integral(rangeMin, rangeMax));
             hCorrBBProj[itrigg][iassoc]->Draw("SAME HIST E");
         }
-    }**/
+    }
 }

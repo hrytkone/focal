@@ -139,6 +139,7 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrig
     int nTrigg = listTrigg.size();
     if (nTrigg < 1) return;
 
+    bool etriggFilled = false;
     for (int it = 0; it < nTrigg; it++) {
         int iTrigg = listTrigg[it];
         AliJBaseTrack *lvTrigg = (AliJBaseTrack*)arrPi0->At(iTrigg);
@@ -185,6 +186,15 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, std::vector<int> listTrig
                 histos->hCorrRejectMassMass[iTriggBin][iAssocBin]->Fill(dphi, deta);
             else
                 histos->hCorrRejectSideSide[iTriggBin][iAssocBin]->Fill(dphi, deta);
+
+            // Histogram for checking the energies of sideband candidates
+            if (!bTrueCorr && !bMassWindowTrigg) {
+                if (!etriggFilled) {
+                    histos->hEnergySidebandTrigg[iTriggBin]->Fill(lvTrigg->E());
+                    etriggFilled = true;
+                }
+                histos->hEnergySidebandAssoc[iTriggBin][iAssocBin]->Fill(lvAssoc->E());
+            }
         }
     }
 }
@@ -240,7 +250,7 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> lis
     }
 }
 
-void AliJHMRCorr::ConstructTrueCorrComponents(TClonesArray *arrPi0, std::vector<int> listTrigg, std::vector<int> listAssoc, bool bUseWeight)
+void AliJHMRCorr::ConstructTrueCorrComponents(TClonesArray *arrPi0, TClonesArray *arrPhoton, std::vector<int> listTrigg, std::vector<int> listAssoc, bool bUseWeight)
 {
     double wTrigg = 1.0;
     double wAssoc = 1.0;
@@ -263,6 +273,7 @@ void AliJHMRCorr::ConstructTrueCorrComponents(TClonesArray *arrPi0, std::vector<
         //if (bUseWeight) wTrigg = 1./fPhotonAcceptanceEfficiency->Eval(ptTrigg);
         if (bUseWeight) wTrigg = 1./pi0eff;
 
+        bool etriggFilled = false;
         for (int ia = 0; ia < nAssoc; ia++) {
             int iAssoc = listAssoc[ia];
             if (iTrigg==iAssoc) continue; // autocorrelations
@@ -288,8 +299,32 @@ void AliJHMRCorr::ConstructTrueCorrComponents(TClonesArray *arrPi0, std::vector<
                 histos->hCorrSignalBg[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
             if (lvTrigg->GetLabel()==0 && lvAssoc->GetLabel()==1)
                 histos->hCorrBgSignal[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
-            if (lvTrigg->GetLabel()==0 && lvAssoc->GetLabel()==0)
+            if (lvTrigg->GetLabel()==0 && lvAssoc->GetLabel()==0) {
                 histos->hCorrBgBg[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
+                if (!etriggFilled) {
+                    histos->hEnergyMassBgTrigg[iTriggBin]->Fill(lvTrigg->E());
+                    etriggFilled = true;
+                }
+                histos->hEnergyMassBgAssoc[iTriggBin][iAssocBin]->Fill(lvAssoc->E());
+
+                //std::vector<int> triggPairs = photonId[iTrigg];
+                std::vector<int> assocPairs = photonId[iAssoc];
+                //AliJBaseTrack *t1 = (AliJBaseTrack*)arrPhoton->At(triggPairs[0]);
+                //AliJBaseTrack *t2 = (AliJBaseTrack*)arrPhoton->At(triggPairs[1]);
+                AliJBaseTrack *a1 = (AliJBaseTrack*)arrPhoton->At(assocPairs[0]);
+                AliJBaseTrack *a2 = (AliJBaseTrack*)arrPhoton->At(assocPairs[1]);
+
+                if (a1->GetMotherID()==a2->GetMotherID()) {
+                    cout << "Should not happen!" << endl;
+                } else if (a1->GetLabel()==1 && a2->GetLabel()==1 && a1->GetMotherID()!=a2->GetMotherID()) {
+                    histos->hCorrBgBgDecay[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
+                } else if (a1->GetLabel()!=a2->GetLabel()) {
+                    histos->hCorrBgBgMix[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
+                } else {
+                    histos->hCorrBgBgNotDecay[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
+                }
+
+            }
         }
     }
 }
@@ -436,12 +471,24 @@ void AliJHMRCorr::FillPionMasses(TClonesArray *arrPhoton, int binsWithTriggPeak[
             if (lvSum.Eta()<detEta[idet][0]+etacut || lvSum.Eta()>detEta[idet][1]-etacut) continue;
             double mass = 1000.*lvSum.M();
             double pT = lvSum.Pt();
+
+            // Fill different components for the invariant mass distribution
+            if (lv1->GetMotherID()==lv2->GetMotherID()) {
+                histos->hMassTrue->Fill(mass);
+            } else if (lv1->GetLabel()==1 && lv2->GetLabel()==1 && lv1->GetMotherID()!=lv2->GetMotherID()) {
+                histos->hMassDecay->Fill(mass);
+            } else if (lv1->GetLabel()!=lv2->GetLabel()) {
+                histos->hMassMix->Fill(mass);
+            } else {
+                histos->hMassNotDecay->Fill(mass);
+            }
+
             int iTriggBin = GetBin(triggPt, NTRIGGBINS, pT);
             int iAssocBin = GetBin(assocPt, NASSOCBINS, pT);
 
             if (iTriggBin >= 0) {
                 histos->hPi0MassTrigg[iTriggBin]->Fill(mass);
-            } else {                
+            } else {
                 for (int it = 0; it < NTRIGGBINS; it++) {
                     if (triggPt[it] < assocPt[iAssocBin+1]) continue;
                     if (binsWithTriggPeak[it] > 0 && iAssocBin >= 0) histos->hPi0MassAssocPeak[it][iAssocBin]->Fill(mass);
@@ -513,7 +560,7 @@ void AliJHMRCorr::FillAsymmetry(TClonesArray *arrPhoton, detector idet)
             if (!IsMassWindow(mass)) continue;
             double asym = GetAsymmetry(arrPhoton, lv1, lv2);
             histos->hEnergyAsymRec->Fill(asym);
-            if (lv1->GetLabel()==1 && lv1->GetLabel()==1
+            if (lv1->GetLabel()==1 && lv2->GetLabel()==1
                 && lv1->GetMotherID()==lv2->GetMotherID())
                 histos->hEnergyAsymTrue->Fill(asym);
         }
@@ -525,13 +572,14 @@ void AliJHMRCorr::FillAsymmetry(TClonesArray *arrPhoton, detector idet)
 // trigger
 bool AliJHMRCorr::CheckAssocPhotonPair(int iTrigg, int iAssoc, bool bMassWindow)
 {
-    if (photonId.size()<1) return true;
     std::vector<int> triggPairs;
     std::vector<int> assocPairs;
     if (bMassWindow) {
+        if (photonId.size()<1) return true;
         triggPairs = photonId[iTrigg];
         assocPairs = photonId[iAssoc];
     } else {
+        if (sidebandId.size()<1) return true;
         triggPairs = sidebandId[iTrigg];
         assocPairs = sidebandId[iAssoc];
     }

@@ -1,5 +1,5 @@
 ! 1) Settings used in the main program
-Main:numberOfEvents = 500000
+Main:numberOfEvents = 100000
 Next:numberCount = 10000
 
 ! 2) Beam parameter settings

@@ -44,18 +44,9 @@ void processDataSTAR()
 void processDataFoCal()
 {
 	TString fInName[ndata_focal] = {
-        "/home/heimarry/Simulations/focal/analysis_output/2022-12-05_pp-focal_3.root"
-        //"/home/heimarry/Simulations/focal/analysis_output/20221128_ptmin-1/output.root"
-        //"/home/heimarry/Simulations/focal/analysis_output/20221114_no-weight_2m.root",
-        //"/home/heimarry/Simulations/focal/analysis_output/2022-11-22_pp-focal/output_merged.root"
-        //"/home/heimarry/Simulations/focal/analysis_output/20221114_wassoc_2m.root"
-        //"/home/heimarry/Simulations/focal/pythia/fullsim_pthard-2_asym-08_bigger-windows_n1m_no-weights.root"
-        //"/home/heimarry/Simulations/focal/pythia/full-sim_trigg-not-weighted_mixed.root"
-        //"/home/heimarry/Simulations/focal/pythia/full-sim_eta-4-5_weighted.root"
-        //"/home/heimarry/Simulations/focal-pythia-sim/focal-pp_test-bg-weight.root"
-        //"/home/heimarry/Simulations/focal-pythia-sim/focal-pp_const-weight.root"
-        //"/home/heimarry/Simulations/focal-pythia-sim/focal-pp_test-asym.root"
-        //"/home/heimarry/Simulations/focal-pythia-sim/2022-02-26_pp-FoCAl_check-delta-phi/output.root"
+        //"/home/heimarry/Simulations/focal/analysis_output/2022-12-05_pp-focal_34.root"
+        "/home/heimarry/Simulations/focal/analysis_output/2022-12-12_pp-focal_no-weights.root"
+        //"/home/heimarry/Simulations/focal/analysis_output/2022-12-08_full-sim_no-weight_smaller-bins_asym-08.root"
 	};
 
 	TString fOutName[ndata_focal] = {
@@ -110,6 +101,8 @@ void LoadInput()
             //hMassAssocPeak[it][ia]->Scale(1., "width");
 	        hMassAssocSide[it][ia] = (TH1D*)fIn->Get(Form("Masses/hPi0MassAssocSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); //hMassAssocSide[it][ia]->Rebin(4);
             //hMassAssocSide[it][ia]->Scale(1., "width");
+            hMassAssocSum[it][ia] = (TH1D*)hMassAssocPeak[it][ia]->Clone(Form("hMassAssocSum[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); //hMassAssocSum[it][ia]->Rebin(4);
+            hMassAssocSum[it][ia]->Add(hMassAssocSide[it][ia]);
 
 	        hCorrReal[it][ia]     = (TH2D*)fIn->Get(Form("CorrFor/hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));           //hCorrReal[it][ia]->Rebin2D(12);
 	        hCorrMassMass[it][ia] = (TH2D*)fIn->Get(Form("CorrMassMass/hCorrMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); //hCorrMassMass[it][ia]->Rebin2D(12);
@@ -156,7 +149,7 @@ void DoAnalysis()
 
             hCorr[it][ia] = (TH1D*)hCorrMassMassProj[it][ia]->Clone(Form("hCorrFinal[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
             hCorr[it][ia]->Add(hCorrMassSideProj[it][ia], -1);
-            //hCorr[it][ia]->Add(hCorrSideMassProj[it][ia], -1);
+            hCorr[it][ia]->Add(hCorrSideMassProj[it][ia], -1);
             hCorr[it][ia]->Add(hCorrSideSideProj[it][ia]);
 
             // Take efficiencies into account
@@ -322,6 +315,32 @@ void FitMassPeaks()
             fFitAssocSide[it][ia]->GetParameters(parAssocSide);
             fBgAssocSide[it][ia]->SetParameters(parAssocSide);
             fPeakAssocSide[it][ia]->SetParameters(&parAssocSide[5]);
+
+            // Assoc mass histrograms where trigger is from their sum
+            fFitAssocSum[it][ia] = new TF1(Form("fFitAssocSum%d-%d", it, ia), FitFunction, 50, 500, 10);
+            fFitAssocSum[it][ia]->SetParameters(0., 0., 0., 0., 0., 1., 1., 135., 5., 10.);
+            fFitAssocSum[it][ia]->SetParLimits(7, 130., 160.);
+            fFitAssocSum[it][ia]->SetParLimits(8, 0.1, 50.);
+            fFitAssocSum[it][ia]->SetParLimits(9, 5., 50.);
+            fFitAssocSum[it][ia]->FixParameter(0, 0.);
+            fFitAssocSum[it][ia]->FixParameter(1, 0.);
+            fFitAssocSum[it][ia]->FixParameter(6, 0.);
+            fFitAssocSum[it][ia]->FixParameter(9, 0.);
+            fFitAssocSum[it][ia]->SetNpx(1000);
+
+            fPeakAssocSum[it][ia] = new TF1(Form("fPeakAssocSum%d-%d", it, ia), FitPeak, 50, 500, 5);
+            fPeakAssocSum[it][ia]->SetLineColor(kBlue);
+            fPeakAssocSum[it][ia]->SetNpx(1000);
+
+            fBgAssocSum[it][ia]= new TF1(Form("fBgAssocSum%d-%d", it, ia), FitBackground, 50, 500, 5);
+            fBgAssocSum[it][ia]->SetLineColor(kBlack);
+            fBgAssocSum[it][ia]->SetLineStyle(kDashed);
+            fBgAssocSum[it][ia]->SetNpx(1000);
+
+            hMassAssocSum[it][ia]->Fit(Form("fFitAssocSum%d-%d", it, ia), "SQNR+");
+            fFitAssocSum[it][ia]->GetParameters(parAssocSum);
+            fBgAssocSum[it][ia]->SetParameters(parAssocSum);
+            fPeakAssocSum[it][ia]->SetParameters(&parAssocSum[5]);
         }
     }
 }
@@ -361,6 +380,7 @@ void GetScaleFactorsVersion1()
             //alpha[it][ia]  = fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/(fBgAssocPeak[it][ia]->Integral(40, 80) + fBgAssocPeak[it][ia]->Integral(210, 280));
             //beeta[it][ia]  = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/(fBgTrigg[it]->Integral(40, 80) + fBgTrigg[it]->Integral(210, 280));
             alpha[it][ia] = fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/fBgAssocPeak[it][ia]->Integral(300, 450);
+            cout << fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax) << "/" << fBgAssocPeak[it][ia]->Integral(300, 450) << endl;
             beeta[it][ia] = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/fBgTrigg[it]->Integral(300, 450);
             yamma[it][ia] = alpha[it][ia]*beeta[it][ia];
             std::cout << "\t\tbin [ "  << assocPt[ia] << " " << assocPt[ia+1] << " ] : "
@@ -385,8 +405,8 @@ void GetScaleFactorsVersion2()
             massWindowMin = massPeakPosTrigg[it]-3.*massSigmaTrigg[it];
             massWindowMax = massPeakPosTrigg[it]+3.*massSigmaTrigg[it];
         }
-        st[it] = fPeakTrigg[it]->Integral(massWindowMin, massWindowMax);
-        //st[it]    = hMassTrigg[it]->Integral(hMassTrigg[it]->GetXaxis()->FindBin(massWindowMin), hMassTrigg[it]->GetXaxis()->FindBin(massWindowMax)) - fBgTrigg[it]->Integral(massWindowMin, massWindowMax);
+        //st[it] = fPeakTrigg[it]->Integral(massWindowMin, massWindowMax);
+        st[it]  = hMassTrigg[it]->Integral(hMassTrigg[it]->GetXaxis()->FindBin(massWindowMin), hMassTrigg[it]->GetXaxis()->FindBin(massWindowMax)) - fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/hMassTrigg[it]->GetBinWidth(0);
         std::cout << "\n\tbin [ " << triggPt[it] << " " << triggPt[it+1] << " ] : \treal=" << nRealTrigg[it] << "\treconst=" << st[it] << "\trec/real=" << st[it]/nRealTrigg[it] << std::endl;
         for (int ia = 0; ia < nAssocBins; ia++) {
             double tlow = triggPt[it];
@@ -402,13 +422,73 @@ void GetScaleFactorsVersion2()
             }
 
             if (!useLeading && tlow < aupp) continue;
-            alpha[it][ia] = fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/(fBgAssocPeak[it][ia]->Integral(40, 80) + fBgAssocPeak[it][ia]->Integral(210, 280));
-            beeta[it][ia]  = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/(fBgTrigg[it]->Integral(40, 80) + fBgTrigg[it]->Integral(210, 280)) * fPeakAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/fPeakAssocSide[it][ia]->Integral(massWindowMin, massWindowMax);
-            yamma[it][ia] = beeta[it][ia] * fBgAssocSide[it][ia]->Integral(massWindowMin, massWindowMax)/(fBgAssocSide[it][ia]->Integral(40, 80) + fBgAssocSide[it][ia]->Integral(210, 280));
+            double alpha1 = fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/fBgAssocPeak[it][ia]->Integral(300, 350);
+            double alpha2 = fBgAssocSide[it][ia]->Integral(massWindowMin, massWindowMax)/fBgAssocSide[it][ia]->Integral(300, 350);
+            double alpha3 = fBgAssocPeak[it][ia]->Integral(300, 350)/fBgAssocSide[it][ia]->Integral(300, 350);
+            double alpha4 = hMassAssocPeak[it][ia]->Integral(hMassAssocPeak[it][ia]->GetXaxis()->FindBin(massWindowMin), hMassAssocPeak[it][ia]->GetXaxis()->FindBin(massWindowMax)) - fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/hMassAssocPeak[it][ia]->GetBinWidth(0);
+            alpha4 /= hMassAssocSide[it][ia]->Integral(hMassAssocSide[it][ia]->GetXaxis()->FindBin(massWindowMin), hMassAssocSide[it][ia]->GetXaxis()->FindBin(massWindowMax)) - fBgAssocSide[it][ia]->Integral(massWindowMin, massWindowMax)/hMassAssocSide[it][ia]->GetBinWidth(0);
+            double beeta1 = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/fBgTrigg[it]->Integral(300, 450);
+
+            alpha[it][ia] = alpha1;
+            beeta[it][ia] = alpha4*beeta1;
+            yamma[it][ia] = (alpha3 - alpha1*alpha3 - alpha2*alpha4)*beeta1;
+            std::cout << "\t\tbin [ "  << assocPt[ia] << " " << assocPt[ia+1] << " ] : "
+                      << "\talpha1=" << alpha1
+                      << "\talpha2=" << alpha2
+                      << "\talpha3=" << alpha3
+                      << "\talpha4=" << alpha4
+                      << "\tbeta1=" << beeta1
+                      << "\talpha=" << alpha[it][ia]
+                      << "\tbeeta="  << beeta[it][ia]
+                      << "\tgamma=" << yamma[it][ia] << std::endl;
+        }
+    }
+}
+
+void GetScaleFactorsVersion3()
+{
+    double massWindowMin, massWindowMax;
+    for (int it = 0; it < nTriggBins; it++) {
+        if (bUseConstMassWindow) {
+            massWindowMin = massMin;
+            massWindowMax = massMax;
+        } else {
+            massWindowMin = massPeakPosTrigg[it]-3.*massSigmaTrigg[it];
+            massWindowMax = massPeakPosTrigg[it]+3.*massSigmaTrigg[it];
+        }
+        //st[it] = fPeakTrigg[it]->Integral(massWindowMin, massWindowMax);
+        st[it]  = hMassTrigg[it]->Integral(hMassTrigg[it]->GetXaxis()->FindBin(massWindowMin), hMassTrigg[it]->GetXaxis()->FindBin(massWindowMax)) - fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/hMassTrigg[it]->GetBinWidth(0);
+        //st[it] *= effCorrTrigg[it]*pi0br;
+        stobtrigg[it] = fPeakTrigg[it]->Integral(massWindowMin, massWindowMax)/fFitTrigg[it]->Integral(massWindowMin, massWindowMax);
+        std::cout << "\n\tbin [ " << triggPt[it] << " " << triggPt[it+1] << " ] : \treal=" << nRealTrigg[it] << "\treconst=" << st[it] << "\trec=" << stfit[it] << "\trec/real=" << st[it]/nRealTrigg[it] << std::endl;
+        std::cout << "\tS/(S+B) : " << stobtrigg[it] << std::endl;
+        //std::cout << "bg : " << fBgTrigg[it]->Integral(massWindowMin, massWindowMax) << std::endl;
+        for (int ia = 0; ia < nAssocBins; ia++) {
+            double tlow = triggPt[it];
+            double tupp = triggPt[it+1];
+            double alow = assocPt[ia];
+            double aupp = assocPt[ia+1];
+            if (bUseConstMassWindow) {
+                massWindowMin = massMin;
+                massWindowMax = massMax;
+            } else {
+                massWindowMin = massPeakPosAssoc[it]-3.*massSigmaAssoc[it];
+                massWindowMax = massPeakPosAssoc[it]+3.*massSigmaAssoc[it];
+            }
+
+            if (!useLeading && tlow < aupp) continue;
+            //alpha[it][ia]  = fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/(fBgAssocPeak[it][ia]->Integral(40, 80) + fBgAssocPeak[it][ia]->Integral(210, 280));
+            //beeta[it][ia]  = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/(fBgTrigg[it]->Integral(40, 80) + fBgTrigg[it]->Integral(210, 280));
+            alpha[it][ia] = fBgAssocSum[it][ia]->Integral(massWindowMin, massWindowMax)/fBgAssocSum[it][ia]->Integral(300, 450);
+            cout << fBgAssocSum[it][ia]->Integral(massWindowMin, massWindowMax) << "/" << fBgAssocSum[it][ia]->Integral(300, 450) << endl;
+            beeta[it][ia] = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/fBgTrigg[it]->Integral(300, 450);
+            yamma[it][ia] = alpha[it][ia]*beeta[it][ia];
             std::cout << "\t\tbin [ "  << assocPt[ia] << " " << assocPt[ia+1] << " ] : "
                       << "\talpha=" << alpha[it][ia]
                       << "\tbeeta="  << beeta[it][ia]
                       << "\tgamma=" << yamma[it][ia] << std::endl;
+            stobassoc[it][ia] = fPeakAssocSum[it][ia]->Integral(massWindowMin, massWindowMax)/fFitAssocSum[it][ia]->Integral(massWindowMin, massWindowMax);
+            std::cout << "\t\tS/(S+B) : " << stobassoc[it][ia] << std::endl;
         }
     }
 }

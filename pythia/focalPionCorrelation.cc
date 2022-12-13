@@ -178,7 +178,7 @@ int main(int argc, char *argv[]) {
         }
 
         // Construct & save true correlation components f_SS, f_SB, f_BS, f_BB
-        fCorr->ConstructTrueCorrComponents(arrPi0Peak, listTriggPeak, listAssocPeak, 0);
+        fCorr->ConstructTrueCorrComponents(arrPi0Peak, arrPhotonFor, listTriggPeak, listAssocPeak, 0);
         fCorr->ClearPhotonPairVector();
         fCorr->ClearSidebandPairVector();
 

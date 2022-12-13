@@ -56,6 +56,11 @@ class AliJHMRHist {
         TH2D *hCorrSideMass[NTRIGGBINS][NASSOCBINS];
         TH2D *hCorrSideSide[NTRIGGBINS][NASSOCBINS];
 
+        // To check the different sources in the background
+        TH2D *hCorrSideSideDecay[NTRIGGBINS][NASSOCBINS];
+        TH2D *hCorrSideSideMix[NTRIGGBINS][NASSOCBINS];
+        TH2D *hCorrSideSideNotDecay[NTRIGGBINS][NASSOCBINS];
+
         TH2D *hCorrMassMassMixed[NTRIGGBINS][NASSOCBINS];
         TH2D *hCorrMassSideMixed[NTRIGGBINS][NASSOCBINS];
         TH2D *hCorrSideMassMixed[NTRIGGBINS][NASSOCBINS];
@@ -66,6 +71,16 @@ class AliJHMRHist {
         TH2D *hCorrBgSignal[NTRIGGBINS][NASSOCBINS];
         TH2D *hCorrBgBg[NTRIGGBINS][NASSOCBINS];
 
+        // To check the different sources in the background
+        TH2D *hCorrBgBgDecay[NTRIGGBINS][NASSOCBINS];
+        TH2D *hCorrBgBgMix[NTRIGGBINS][NASSOCBINS];
+        TH2D *hCorrBgBgNotDecay[NTRIGGBINS][NASSOCBINS];
+
+        TH1D *hMassTrue;
+        TH1D *hMassDecay;
+        TH1D *hMassMix;
+        TH1D *hMassNotDecay;
+
         TH1D *hPi0MassTrigg[NTRIGGBINS];
         TH1D *hPi0MassAssocPeak[NTRIGGBINS][NASSOCBINS];
         TH1D *hPi0MassAssocSide[NTRIGGBINS][NASSOCBINS];
@@ -73,7 +88,13 @@ class AliJHMRHist {
         TH1D *hEnergyAsymTrue;
         TH1D *hEnergyAsymRec;
 
+        TH1D *hEnergyMassBgTrigg[NTRIGGBINS];
+        TH1D *hEnergySidebandTrigg[NTRIGGBINS];
+        TH1D *hEnergyMassBgAssoc[NTRIGGBINS][NASSOCBINS];
+        TH1D *hEnergySidebandAssoc[NTRIGGBINS][NASSOCBINS];
+
         TDirectory *dirMasses;
+        TDirectory *dirMassComponents;
         TDirectory *dirCorrMid;
         TDirectory *dirCorrFor;
         TDirectory *dirCorrMeas;
@@ -85,7 +106,8 @@ class AliJHMRHist {
         TDirectory *dirCorrSideMass;
         TDirectory *dirCorrSideSide;
         TDirectory *dirTrueComponents; // true components f_SS, f_SB, f_BS, f_BB
-
+        TDirectory *dirBackgroundSources;
+        TDirectory *dirBackgroundEnergies;
 };
 
 #endif

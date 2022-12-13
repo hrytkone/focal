@@ -96,6 +96,8 @@ void PlotEfficiency()
     hEtaMass[0]->GetYaxis()->SetLabelSize(0.042);
     hEtaMass[0]->SetTitle(";#eta;m_{#gamma#gamma} (MeV/c^{2})");
     //hEtaMass[0]->Fit("pol1");
+    gPad->SetLeftMargin(0.15);
+    gPad->SetRightMargin(0.1);
     hEtaMass[0]->Draw("COL");
 
     TLine *lPionMass = new TLine(3.2, 135., 5.8, 135.);
@@ -113,8 +115,8 @@ void PlotEfficiency()
     TLatex textPion;
     textPion.SetTextColor(kWhite);
     textPion.SetTextSize(0.045);
-    textPion.DrawLatexNDC(.18,.39,"m_{#pi0}=135 MeV/c^{2}");
-    c6->SaveAs("pion-mass.pdf");
+    textPion.DrawLatexNDC(.18,.42,"m_{#pi0}=135 MeV/c^{2}");
+    c6->SaveAs("pion-mass_updated.pdf");
 
     //TLatex textEta;
     //textEta.SetTextColor(kWhite);
@@ -243,9 +245,9 @@ void PlotEfficiency()
     c9->SaveAs("phi-theta-pol.pdf");
 
     // XY histogram plotting
-    TCanvas *c10 = new TCanvas("c10", "c10", 1200, 600);
-    //TCanvas *c10 = new TCanvas("c10", "c10", 600, 600);
-    c10->Divide(2,1);
+    //TCanvas *c10 = new TCanvas("c10", "c10", 1200, 600);
+    TCanvas *c10 = new TCanvas("c10", "c10", 600, 600);
+    //c10->Divide(2,1);
 
     c10->cd(1);
     gPad->SetLogz();
@@ -255,7 +257,8 @@ void PlotEfficiency()
     hXY->GetYaxis()->SetRangeUser(-49.9,49.9);
     hXY->Draw("COLZ");
 
-    TEllipse *ring21 = new TEllipse(0, 0, 28.6184);
+    //TEllipse *ring21 = new TEllipse(0, 0, 28.6184);
+    TEllipse *ring21 = new TEllipse(0, 0, 42.7151);
     ring21->SetLineColor(kBlack);
     ring21->SetLineWidth(2);
     ring21->SetLineStyle(2);
@@ -273,27 +276,27 @@ void PlotEfficiency()
     text2.SetTextColor(kBlack);
     text2.SetTextFont(62);
     text2.SetTextSize(0.052);
-    text2.DrawLatexNDC(0.475, 0.74, "#eta = 3.9");
+    text2.DrawLatexNDC(0.475, 0.74, "#eta = 3.5");
     text2.DrawLatexNDC(0.475, 0.625, "#eta = 4.6");
     gPad->Update();
 
-    c10->cd(2);
-    gPad->SetLogz();
-    hXYGamma->SetTitle(";x(cm);y(cm)");
-    hXYGamma->Rebin2D();
-    //hXYGamma->GetXaxis()->SetRangeUser(-49.9,49.9);
-    //hXYGamma->GetYaxis()->SetRangeUser(-49.9,49.9);
-    //hXYGamma->GetXaxis()->SetTitleSize(0.);
-    //hXYGamma->GetYaxis()->SetTitleSize(0.);
-    //hXYGamma->GetXaxis()->SetLabelOffset(999);
-    //hXYGamma->GetXaxis()->SetLabelSize(0.);
-    //hXYGamma->GetYaxis()->SetLabelOffset(999);
-    //hXYGamma->GetYaxis()->SetLabelSize(0.);
-    hXYGamma->Draw("COLZ");
-    //ring21->Draw("same");
-    //ring22->Draw("same");
-    //text2.DrawLatexNDC(0.475, 0.74, "#eta = 3.9");
-    //text2.DrawLatexNDC(0.475, 0.625, "#eta = 4.6");
+    //c10->cd(2);
+    //gPad->SetLogz();
+    //hXYGamma->SetTitle(";x(cm);y(cm)");
+    //hXYGamma->Rebin2D();
+    ////hXYGamma->GetXaxis()->SetRangeUser(-49.9,49.9);
+    ////hXYGamma->GetYaxis()->SetRangeUser(-49.9,49.9);
+    ////hXYGamma->GetXaxis()->SetTitleSize(0.);
+    ////hXYGamma->GetYaxis()->SetTitleSize(0.);
+    ////hXYGamma->GetXaxis()->SetLabelOffset(999);
+    ////hXYGamma->GetXaxis()->SetLabelSize(0.);
+    ////hXYGamma->GetYaxis()->SetLabelOffset(999);
+    ////hXYGamma->GetYaxis()->SetLabelSize(0.);
+    //hXYGamma->Draw("COLZ");
+    ////ring21->Draw("same");
+    ////ring22->Draw("same");
+    ////text2.DrawLatexNDC(0.475, 0.74, "#eta = 3.9");
+    ////text2.DrawLatexNDC(0.475, 0.625, "#eta = 4.6");
 
     c10->SaveAs("xy_markings.png");
 

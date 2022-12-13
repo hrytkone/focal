@@ -70,7 +70,7 @@ int AliJHMRCorr::ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0C
         for (int j = 0; j < i; j++) {
             AliJBaseTrack *lv2 = (AliJBaseTrack*)arrPhoton->At(j);
             if (!fIsFullSim && IsPhotonRemoved(lv2->E())) continue;
-            if (fIsFullSim && GetAsymmetry(arrPhoton, lv1, lv2)>asymcut) continue;
+            if (GetAsymmetry(arrPhoton, lv1, lv2)>asymcut) continue;
             AliJBaseTrack lvSum = GetPhotonSumVector(arrPhoton, lv1, lv2);
             if (lvSum.Eta()<detEta[idet][0]+etacut || lvSum.Eta()>detEta[idet][1]-etacut) continue;
             double mass = 1000.*lvSum.M();
@@ -307,10 +307,10 @@ void AliJHMRCorr::ConstructTrueCorrComponents(TClonesArray *arrPi0, TClonesArray
                 }
                 histos->hEnergyMassBgAssoc[iTriggBin][iAssocBin]->Fill(lvAssoc->E());
 
-                //std::vector<int> triggPairs = photonId[iTrigg];
+                std::vector<int> triggPairs = photonId[iTrigg];
                 std::vector<int> assocPairs = photonId[iAssoc];
-                //AliJBaseTrack *t1 = (AliJBaseTrack*)arrPhoton->At(triggPairs[0]);
-                //AliJBaseTrack *t2 = (AliJBaseTrack*)arrPhoton->At(triggPairs[1]);
+                AliJBaseTrack *t1 = (AliJBaseTrack*)arrPhoton->At(triggPairs[0]);
+                AliJBaseTrack *t2 = (AliJBaseTrack*)arrPhoton->At(triggPairs[1]);
                 AliJBaseTrack *a1 = (AliJBaseTrack*)arrPhoton->At(assocPairs[0]);
                 AliJBaseTrack *a2 = (AliJBaseTrack*)arrPhoton->At(assocPairs[1]);
 
@@ -318,6 +318,9 @@ void AliJHMRCorr::ConstructTrueCorrComponents(TClonesArray *arrPi0, TClonesArray
                     cout << "Should not happen!" << endl;
                 } else if (a1->GetLabel()==1 && a2->GetLabel()==1 && a1->GetMotherID()!=a2->GetMotherID()) {
                     histos->hCorrBgBgDecay[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
+                    cout << "Mothers : " << endl;
+                    cou t<< "\tt1=" << t1->GetMotherID() << "\tt2=" << t2->GetMotherID() << endl;
+                    cou t<< "\ta1=" << a1->GetMotherID() << "\ta2=" << a2->GetMotherID() << endl;
                 } else if (a1->GetLabel()!=a2->GetLabel()) {
                     histos->hCorrBgBgMix[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
                 } else {

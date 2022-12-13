@@ -119,7 +119,8 @@ void LoadData(TString input)
             hCorrBS[itrigg][iassoc]->Rebin2D(4);
             hCorrBS[itrigg][iassoc]->GetYaxis()->SetMaxDigits(3);
 
-            hCorrBB[itrigg][iassoc] = (TH2D*)fIn->Get(Form("TrueComponents/hCorrBgBg[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
+            //hCorrBB[itrigg][iassoc] = (TH2D*)fIn->Get(Form("TrueComponents/hCorrBgBg[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
+            hCorrBB[itrigg][iassoc] = (TH2D*)fIn->Get(Form("BackgroundSources/hCorrBgBgMix[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
             hCorrBB[itrigg][iassoc]->Rebin2D(4);
             hCorrBB[itrigg][iassoc]->GetYaxis()->SetMaxDigits(3);
         }

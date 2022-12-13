@@ -67,9 +67,9 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet, bool bUseLeadin
         hPi0MassTrigg[i]->Sumw2();
 
         dirBackgroundEnergies->cd();
-        hEnergyMassBgTrigg[i] = new TH1D(Form("hEnergyMassBgTrigg[%4.1f,%4.1f]",tlow,tupp), Form("hEnergyMassBgTrigg[%4.1f,%4.1f]",tlow,tupp), 200, 0., 100.);
+        hEnergyMassBgTrigg[i] = new TH1D(Form("hEnergyMassBgTrigg[%4.1f,%4.1f]",tlow,tupp), Form("hEnergyMassBgTrigg[%4.1f,%4.1f]",tlow,tupp), 200, 0., 1000.);
         hEnergyMassBgTrigg[i]->Sumw2();
-        hEnergySidebandTrigg[i] = new TH1D(Form("hEnergySidebandTrigg[%4.1f,%4.1f]",tlow,tupp), Form("hEnergySidebandTrigg[%4.1f,%4.1f]",tlow,tupp), 200, 0., 100.);
+        hEnergySidebandTrigg[i] = new TH1D(Form("hEnergySidebandTrigg[%4.1f,%4.1f]",tlow,tupp), Form("hEnergySidebandTrigg[%4.1f,%4.1f]",tlow,tupp), 200, 0., 1000.);
         hEnergySidebandTrigg[i]->Sumw2();
 
         for (int j = 0; j < NASSOCBINS; j++) {

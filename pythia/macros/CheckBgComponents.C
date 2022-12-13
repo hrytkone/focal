@@ -261,6 +261,7 @@ void DrawFiliPad()
             //hCorrSideSideProj[itrigg][iassoc]->Scale(1./hCorrSideSideProj[itrigg][iassoc]->GetEntries());
             int rangeMin = hCorrSideSideProj[itrigg][iassoc]->GetNbinsX()/2.;
             int rangeMax = hCorrSideSideProj[itrigg][iassoc]->GetNbinsX();
+            cout << "side-side : " << hCorrSideSideProj[itrigg][iassoc]->Integral(rangeMin, rangeMax) << "\tfake-fake : " << hCorrBBProj[itrigg][iassoc]->Integral(rangeMin, rangeMax) << endl;
             hCorrSideSideProj[itrigg][iassoc]->Scale(1./hCorrSideSideProj[itrigg][iassoc]->Integral(rangeMin, rangeMax));
             hCorrSideSideProj[itrigg][iassoc]->Draw("HIST E");
             hCorrBBProj[itrigg][iassoc]->Scale(1./hCorrBBProj[itrigg][iassoc]->Integral(rangeMin, rangeMax));

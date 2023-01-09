@@ -226,17 +226,17 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet, bool bUseLeadin
         }
     }
 
-    // Save information about the asymmetry
+    // Save information about asymmetry and opening angle
     for (int i = 0; i < NASSOCBINS; i++) {
         double alow = assocPt[i];
         double aupp = assocPt[i+1];
 
         dirAsym->cd();
-        hAsymMass[i] = new TH2D(Form("hAsymMass[%4.1f,%4.1f]",alow,aupp), Form("hAsymMass[%4.1f,%4.1f]",alow,aupp), 360, 0.0, 720.0, 200, 0., 1.);
-        hAsymMass[i]->Sumw2();
+        hMassAsym[i] = new TH2D(Form("hAsymMass[%4.1f,%4.1f]",alow,aupp), Form("hAsymMass[%4.1f,%4.1f]",alow,aupp), 360, 0.0, 720.0, 200, 0., 1.);
+        hMassAsym[i]->Sumw2();
 
-        hAsymOpeningAngle[i] = new TH2D(Form("hAsymOpeningAngle[%4.1f,%4.1f]",alow,aupp), Form("hAsymOpeningAngle[%4.1f,%4.1f]",alow,aupp), 360, 0.0, 720.0, 200, 0., 0.2);
-        hAsymOpeningAngle[i]->Sumw2();
+        hMassOpeningAngle[i] = new TH2D(Form("hAsymOpeningAngle[%4.1f,%4.1f]",alow,aupp), Form("hAsymOpeningAngle[%4.1f,%4.1f]",alow,aupp), 360, 0.0, 720.0, 200, 0., 0.2);
+        hMassOpeningAngle[i]->Sumw2();
     }
 }
 

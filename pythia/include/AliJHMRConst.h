@@ -6,7 +6,7 @@
 
 #define NDET 4
 #define NTRIGGBINS 2
-#define NASSOCBINS 2
+#define NASSOCBINS 3
 #define NLEADINGBINS 10
 #define NMASSBINS 6
 #define NINCPTBIN 150

@@ -88,8 +88,8 @@ class AliJHMRHist {
         TH1D *hEnergyAsymTrue;
         TH1D *hEnergyAsymRec;
 
-        TH2D *hAsymMass[NTRIGGBINS];
-        TH2D *hAsymOpeningAngle[NTRIGGBINS];
+        TH2D *hMassAsym[NASSOCBINS];
+        TH2D *hMassOpeningAngle[NASSOCBINS];
 
         TH1D *hEnergyMassBgTrigg[NTRIGGBINS];
         TH1D *hEnergySidebandTrigg[NTRIGGBINS];

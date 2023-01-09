@@ -21,7 +21,7 @@ const TString accFunc[NDET] = {
 
 // FoCal bins
 double triggPt[NTRIGGBINS+1] = {4.0, 8.0, 20.0};
-double assocPt[NASSOCBINS+1] = {2.0, 3.0, 4.0};
+double assocPt[NASSOCBINS+1] = {2.0, 3.0, 4.0, 8.0};
 //double triggPt[NTRIGGBINS+1] = {4.0, 8.0, 10.0, 15.0, 20.0};
 //double assocPt[NASSOCBINS+1] = {2.0, 3.0, 4.0, 8.0, 10.0, 15.0};
 

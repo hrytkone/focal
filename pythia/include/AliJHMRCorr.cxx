@@ -501,8 +501,8 @@ void AliJHMRCorr::FillPionMasses(TClonesArray *arrPhoton, int binsWithTriggPeak[
 
             // Fill asymmetry information
             if (iAssocBin >= 0) {
-                histos->hAsymMass[iAssocBin]->Fill(mass, GetAsymmetry(arrPhoton, lv1, lv2));
-                histos->hAsymOpeningAngle[iAssocBin]->Fill(mass, GetOpeningAngle(arrPhoton, lv1, lv2));
+                histos->hMassAsym[iAssocBin]->Fill(mass, GetAsymmetry(arrPhoton, lv1, lv2));
+                histos->hMassOpeningAngle[iAssocBin]->Fill(mass, GetOpeningAngle(arrPhoton, lv1, lv2));
             }
 
             if (iTriggBin >= 0) {

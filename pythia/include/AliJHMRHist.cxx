@@ -232,11 +232,23 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet, bool bUseLeadin
         double aupp = assocPt[i+1];
 
         dirAsym->cd();
-        hMassAsym[i] = new TH2D(Form("hAsymMass[%4.1f,%4.1f]",alow,aupp), Form("hAsymMass[%4.1f,%4.1f]",alow,aupp), 360, 0.0, 720.0, 200, 0., 1.);
-        hMassAsym[i]->Sumw2();
+        hMassAsymTrue[i] = new TH2D(Form("hMassAsymTrue[%4.1f,%4.1f]",alow,aupp), Form("hMassAsymTrue[%4.1f,%4.1f]",alow,aupp), 360, 0.0, 720.0, 200, 0., 1.);
+        hMassAsymTrue[i]->Sumw2();
+        hMassAsymDecay[i] = new TH2D(Form("hMassAsymDecay[%4.1f,%4.1f]",alow,aupp), Form("hMassAsymDecay[%4.1f,%4.1f]",alow,aupp), 360, 0.0, 720.0, 200, 0., 1.);
+        hMassAsymDecay[i]->Sumw2();
+        hMassAsymMix[i] = new TH2D(Form("hMassAsymMix[%4.1f,%4.1f]",alow,aupp), Form("hMassAsymMix[%4.1f,%4.1f]",alow,aupp), 360, 0.0, 720.0, 200, 0., 1.);
+        hMassAsymMix[i]->Sumw2();
+        hMassAsymNotDecay[i] = new TH2D(Form("hMassAsymNotDecay[%4.1f,%4.1f]",alow,aupp), Form("hMassAsymNotDecay[%4.1f,%4.1f]",alow,aupp), 360, 0.0, 720.0, 200, 0., 1.);
+        hMassAsymNotDecay[i]->Sumw2();
+        hMassOpeningAngleTrue[i] = new TH2D(Form("hMassOpeningAngleTrue[%4.1f,%4.1f]",alow,aupp), Form("hMassOpeningAngleTrue[%4.1f,%4.1f]",alow,aupp), 360, 0.0, 720.0, 200, 0., 0.2);
+        hMassOpeningAngleTrue[i]->Sumw2();
+        hMassOpeningAngleDecay[i] = new TH2D(Form("hMassOpeningAngleDecay[%4.1f,%4.1f]",alow,aupp), Form("hMassOpeningAngleDecay[%4.1f,%4.1f]",alow,aupp), 360, 0.0, 720.0, 200, 0., 0.2);
+        hMassOpeningAngleDecay[i]->Sumw2();
+        hMassOpeningAngleMix[i] = new TH2D(Form("hMassOpeningAngleMix[%4.1f,%4.1f]",alow,aupp), Form("hMassOpeningAngleMix[%4.1f,%4.1f]",alow,aupp), 360, 0.0, 720.0, 200, 0., 0.2);
+        hMassOpeningAngleMix[i]->Sumw2();
+        hMassOpeningAngleNotDecay[i] = new TH2D(Form("hMassOpeningAngleNotDecay[%4.1f,%4.1f]",alow,aupp), Form("hMassOpeningAngleNotDecay[%4.1f,%4.1f]",alow,aupp), 360, 0.0, 720.0, 200, 0., 0.2);
+        hMassOpeningAngleNotDecay[i]->Sumw2();
 
-        hMassOpeningAngle[i] = new TH2D(Form("hAsymOpeningAngle[%4.1f,%4.1f]",alow,aupp), Form("hAsymOpeningAngle[%4.1f,%4.1f]",alow,aupp), 360, 0.0, 720.0, 200, 0., 0.2);
-        hMassOpeningAngle[i]->Sumw2();
     }
 }
 

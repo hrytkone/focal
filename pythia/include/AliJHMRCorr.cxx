@@ -485,24 +485,34 @@ void AliJHMRCorr::FillPionMasses(TClonesArray *arrPhoton, int binsWithTriggPeak[
             double mass = 1000.*lvSum.M();
             double pT = lvSum.Pt();
 
-            // Fill different components for the invariant mass distribution
-            if (lv1->GetMotherID()==lv2->GetMotherID()) {
-                histos->hMassTrue->Fill(mass);
-            } else if (lv1->GetLabel()==1 && lv2->GetLabel()==1 && lv1->GetMotherID()!=lv2->GetMotherID()) {
-                histos->hMassDecay->Fill(mass);
-            } else if (lv1->GetLabel()!=lv2->GetLabel()) {
-                histos->hMassMix->Fill(mass);
-            } else {
-                histos->hMassNotDecay->Fill(mass);
-            }
-
             int iTriggBin = GetBin(triggPt, NTRIGGBINS, pT);
             int iAssocBin = GetBin(assocPt, NASSOCBINS, pT);
 
-            // Fill asymmetry information
-            if (iAssocBin >= 0) {
-                histos->hMassAsym[iAssocBin]->Fill(mass, GetAsymmetry(arrPhoton, lv1, lv2));
-                histos->hMassOpeningAngle[iAssocBin]->Fill(mass, GetOpeningAngle(arrPhoton, lv1, lv2));
+            // Fill different components, asymmetry and opening angle for the invariant mass distributions
+            if (lv1->GetMotherID()==lv2->GetMotherID()) {
+                histos->hMassTrue->Fill(mass);
+                if (iAssocBin >= 0) {
+                    histos->hMassAsymTrue[iAssocBin]->Fill(mass, GetAsymmetry(arrPhoton, lv1, lv2));
+                    histos->hMassOpeningAngleTrue[iAssocBin]->Fill(mass, GetOpeningAngle(arrPhoton, lv1, lv2));
+                }
+            } else if (lv1->GetLabel()==1 && lv2->GetLabel()==1 && lv1->GetMotherID()!=lv2->GetMotherID()) {
+                histos->hMassDecay->Fill(mass);
+                if (iAssocBin >= 0) {
+                    histos->hMassAsymDecay[iAssocBin]->Fill(mass, GetAsymmetry(arrPhoton, lv1, lv2));
+                    histos->hMassOpeningAngleDecay[iAssocBin]->Fill(mass, GetOpeningAngle(arrPhoton, lv1, lv2));
+                }
+            } else if (lv1->GetLabel()!=lv2->GetLabel()) {
+                histos->hMassMix->Fill(mass);
+                if (iAssocBin >= 0) {
+                    histos->hMassAsymMix[iAssocBin]->Fill(mass, GetAsymmetry(arrPhoton, lv1, lv2));
+                    histos->hMassOpeningAngleMix[iAssocBin]->Fill(mass, GetOpeningAngle(arrPhoton, lv1, lv2));
+                }
+            } else {
+                histos->hMassNotDecay->Fill(mass);
+                if (iAssocBin >= 0) {
+                    histos->hMassAsymNotDecay[iAssocBin]->Fill(mass, GetAsymmetry(arrPhoton, lv1, lv2));
+                    histos->hMassOpeningAngleNotDecay[iAssocBin]->Fill(mass, GetOpeningAngle(arrPhoton, lv1, lv2));
+                }
             }
 
             if (iTriggBin >= 0) {

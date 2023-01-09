@@ -37,10 +37,10 @@ bool AliJHMRCorr::IsMassWindow(double mass, int ibin, bool isTriggBin)
 
 bool AliJHMRCorr::IsSideband(double mass)
 {
-    //if (fIsFullSim)
+    if (fIsFullSim)
         return (mass > sidebandMin && mass < sidebandMax) ? true : false;
-    //else
-    //    return ((mass > 40. && mass < 80.) || (mass > 210. && mass < 280.)) ? true : false;
+    else
+        return ((mass > 40. && mass < 80.) || (mass > 210. && mass < 280.)) ? true : false;
 }
 
 // Return 1 if trigger from peak has larger pT than trigger from sideband, 0 if sideband
@@ -181,12 +181,26 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, TClonesArray *arrPhoton, 
             double deta = etaTrigg - etaAssoc;
 
             if (bTrueCorr) {
-                hCorr[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
+                hCorr[iTriggBin][iAssocBin]->Fill(dphi, deta);
             } else {
                 if (CheckAssocPhotonPair(iTrigg, iAssoc, bMassWindowTrigg)) {
                     hCorr[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
 
                     if (!bMassWindowTrigg) {
+                        std::vector<int> assocPairs = sidebandId[iAssoc];
+                        AliJBaseTrack *a1 = (AliJBaseTrack*)arrPhoton->At(assocPairs[0]);
+                        AliJBaseTrack *a2 = (AliJBaseTrack*)arrPhoton->At(assocPairs[1]);
+
+                        if (a1->GetMotherID()==a2->GetMotherID()) {
+                            cout << "Should not happen!" << endl;
+                        } else if (a1->GetLabel()==1 && a2->GetLabel()==1 && a1->GetMotherID()!=a2->GetMotherID()) {
+                            histos->hCorrSideSideDecay[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
+                        } else if (a1->GetLabel()!=a2->GetLabel()) {
+                            histos->hCorrSideSideMix[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
+                        } else {
+                            histos->hCorrSideSideNotDecay[iTriggBin][iAssocBin]->Fill(dphi, deta, wTrigg*wAssoc);
+                        }
+
                         // Histogram for checking the energies of sideband candidates
                         if (!etriggFilled) {
                             histos->hEnergySidebandTrigg[iTriggBin]->Fill(lvTrigg->E());
@@ -339,14 +353,6 @@ int AliJHMRCorr::GetBin(double arr[], int nArr, double val)
     return -1;
 }
 
-// since phi-acceptance is peridic
-//double AliJHMRCorr::GetDeltaPhi(double phiTrigg, double phiAssoc)
-//{
-//    // dphi
-//    double res = atan2(sin(phiTrigg-phiAssoc), cos(phiTrigg-phiAssoc));
-//    return res > -1.413717 ? res : 6.283185+res ; // -9/20*pi : 2*pi
-//}
-
 double AliJHMRCorr::GetDeltaPhi(double phiTrigg, double phiAssoc)
 {
     double dphi = phiTrigg - phiAssoc;
@@ -408,6 +414,11 @@ bool AliJHMRCorr::IsPhotonRemoved(TClonesArray *arrPhoton, AliJBaseTrack *lv1, A
 double AliJHMRCorr::GetAsymmetry(TClonesArray *arrPhoton, AliJBaseTrack *lv1, AliJBaseTrack *lv2)
 {
     return TMath::Abs(lv1->E() - lv2->E())/(lv1->E() + lv2->E());
+}
+
+double AliJHMRCorr::GetOpeningAngle(TClonesArray *arrPhoton, AliJBaseTrack *lv1, AliJBaseTrack *lv2)
+{
+    return lv1->Angle(lv2->Vect());
 }
 
 AliJBaseTrack AliJHMRCorr::GetPhotonSumVector(TClonesArray *arrPhoton, AliJBaseTrack *lv1, AliJBaseTrack *lv2)
@@ -487,6 +498,12 @@ void AliJHMRCorr::FillPionMasses(TClonesArray *arrPhoton, int binsWithTriggPeak[
 
             int iTriggBin = GetBin(triggPt, NTRIGGBINS, pT);
             int iAssocBin = GetBin(assocPt, NASSOCBINS, pT);
+
+            // Fill asymmetry information
+            if (iAssocBin >= 0) {
+                histos->hAsymMass[iAssocBin]->Fill(mass, GetAsymmetry(arrPhoton, lv1, lv2));
+                histos->hAsymOpeningAngle[iAssocBin]->Fill(mass, GetOpeningAngle(arrPhoton, lv1, lv2));
+            }
 
             if (iTriggBin >= 0) {
                 histos->hPi0MassTrigg[iTriggBin]->Fill(mass);

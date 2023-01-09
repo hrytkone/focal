@@ -48,6 +48,7 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet, bool bUseLeadin
     dirTrueComponents = output->mkdir("TrueComponents");
     dirBackgroundSources = output->mkdir("BackgroundSources");
     dirBackgroundEnergies = output->mkdir("BackgroundEnergies");
+    dirAsym = output->mkdir("Asymmetry");
 
     dirMassComponents->cd();
     hMassTrue = new TH1D("hMassTrue", "Invariant mass, photons from same mother", 360, 0.0, 720.0);
@@ -223,6 +224,19 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet, bool bUseLeadin
                                              200, 0., 1000.);
             hEnergySidebandAssoc[i][j]->Sumw2();
         }
+    }
+
+    // Save information about the asymmetry
+    for (int i = 0; i < NASSOCBINS; i++) {
+        double alow = assocPt[i];
+        double aupp = assocPt[i+1];
+
+        dirAsym->cd();
+        hAsymMass[i] = new TH2D(Form("hAsymMass[%4.1f,%4.1f]",alow,aupp), Form("hAsymMass[%4.1f,%4.1f]",alow,aupp), 360, 0.0, 720.0, 200, 0., 1.);
+        hAsymMass[i]->Sumw2();
+
+        hAsymOpeningAngle[i] = new TH2D(Form("hAsymOpeningAngle[%4.1f,%4.1f]",alow,aupp), Form("hAsymOpeningAngle[%4.1f,%4.1f]",alow,aupp), 360, 0.0, 720.0, 200, 0., 0.2);
+        hAsymOpeningAngle[i]->Sumw2();
     }
 }
 

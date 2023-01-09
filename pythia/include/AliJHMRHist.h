@@ -88,6 +88,9 @@ class AliJHMRHist {
         TH1D *hEnergyAsymTrue;
         TH1D *hEnergyAsymRec;
 
+        TH2D *hAsymMass[NTRIGGBINS];
+        TH2D *hAsymOpeningAngle[NTRIGGBINS];
+
         TH1D *hEnergyMassBgTrigg[NTRIGGBINS];
         TH1D *hEnergySidebandTrigg[NTRIGGBINS];
         TH1D *hEnergyMassBgAssoc[NTRIGGBINS][NASSOCBINS];
@@ -108,6 +111,7 @@ class AliJHMRHist {
         TDirectory *dirTrueComponents; // true components f_SS, f_SB, f_BS, f_BB
         TDirectory *dirBackgroundSources;
         TDirectory *dirBackgroundEnergies;
+        TDirectory *dirAsym;
 };
 
 #endif

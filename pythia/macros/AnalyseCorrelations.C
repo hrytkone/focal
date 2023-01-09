@@ -45,8 +45,11 @@ void processDataFoCal()
 {
 	TString fInName[ndata_focal] = {
         //"/home/heimarry/Simulations/focal/analysis_output/2022-12-05_pp-focal_34.root"
-        "/home/heimarry/Simulations/focal/analysis_output/2022-12-12_pp-focal_no-weights.root"
-        //"/home/heimarry/Simulations/focal/analysis_output/2022-12-08_full-sim_no-weight_smaller-bins_asym-08.root"
+        //"/home/heimarry/Simulations/focal/analysis_output/2022-12-14_pp-focal_no-pair-check.root"
+        //"/home/heimarry/Simulations/focal/analysis_output/2022-12-16_pp-focal_pair-check_two-sidebands.root"
+        //"/home/heimarry/Simulations/focal/analysis_output/2022-12-16_pp-focal_pair-check_two-sidebands.root"
+        //"/home/heimarry/Simulations/focal/analysis_output/2022-12-19_pp-focal_no-pair-check.root"
+        "/home/heimarry/Simulations/focal/analysis_output/2022-12-20_pp-focal_sideband-50-115-160-200.root"
 	};
 
 	TString fOutName[ndata_focal] = {
@@ -133,7 +136,7 @@ void DoAnalysis()
             if (!useLeading && tlow < aupp) continue;
 
             hCorrRealProj[it][ia] = hCorrReal[it][ia]->ProjectionX();
-            hCorrRealProj[it][ia]->Scale(1.0/nRealTrigg[it], "width");
+            //hCorrRealProj[it][ia]->Scale(1.0/nRealTrigg[it], "width");
             //hCorrRealProj[it][ia]->Scale(1.0/hCorrRealProj[it][ia]->GetEntries(), "width");
 
             hCorrMassMassProj[it][ia] = hCorrMassMass[it][ia]->ProjectionX();
@@ -153,7 +156,7 @@ void DoAnalysis()
             hCorr[it][ia]->Add(hCorrSideSideProj[it][ia]);
 
             // Take efficiencies into account
-            hCorr[it][ia]->Scale(1.0/st[it], "width");
+            //hCorr[it][ia]->Scale(1.0/st[it], "width");
             //hCorr[it][ia]->Scale(1.0/hCorr[it][ia]->GetEntries(), "width");
 
             double massWindowMin, massWindowMax;
@@ -166,7 +169,7 @@ void DoAnalysis()
             }
             hCorrMeasProj[it][ia] = hCorrMeas[it][ia]->ProjectionX();
             //hCorrMeasProj[it][ia]->Scale(1.0/fFitTrigg[it]->Integral(massWindowMin, massWindowMax), "width");
-            hCorrMeasProj[it][ia]->Scale(1.0/hMassTrigg[it]->Integral(hMassTrigg[it]->GetXaxis()->FindBin(massWindowMin), hMassTrigg[it]->GetXaxis()->FindBin(massWindowMax)), "width");
+            //hCorrMeasProj[it][ia]->Scale(1.0/hMassTrigg[it]->Integral(hMassTrigg[it]->GetXaxis()->FindBin(massWindowMin), hMassTrigg[it]->GetXaxis()->FindBin(massWindowMax)), "width");
             //hCorrMeasProj[it][ia]->Scale(1.0/hCorrMeasProj[it][ia]->GetEntries(), "width");
         }
     }
@@ -379,9 +382,13 @@ void GetScaleFactorsVersion1()
             if (!useLeading && tlow < aupp) continue;
             //alpha[it][ia]  = fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/(fBgAssocPeak[it][ia]->Integral(40, 80) + fBgAssocPeak[it][ia]->Integral(210, 280));
             //beeta[it][ia]  = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/(fBgTrigg[it]->Integral(40, 80) + fBgTrigg[it]->Integral(210, 280));
-            alpha[it][ia] = fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/fBgAssocPeak[it][ia]->Integral(300, 450);
-            cout << fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax) << "/" << fBgAssocPeak[it][ia]->Integral(300, 450) << endl;
-            beeta[it][ia] = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/fBgTrigg[it]->Integral(300, 450);
+
+            alpha[it][ia]  = fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/(fBgAssocPeak[it][ia]->Integral(50, 115) + fBgAssocPeak[it][ia]->Integral(160, 200));
+            beeta[it][ia]  = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/(fBgTrigg[it]->Integral(50, 115) + fBgTrigg[it]->Integral(160, 200));
+
+            //alpha[it][ia] = fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/fBgAssocPeak[it][ia]->Integral(300, 450);
+            //beeta[it][ia] = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/fBgTrigg[it]->Integral(300, 450);
+            //cout << fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax) << "/" << fBgAssocPeak[it][ia]->Integral(300, 450) << endl;
             yamma[it][ia] = alpha[it][ia]*beeta[it][ia];
             std::cout << "\t\tbin [ "  << assocPt[ia] << " " << assocPt[ia+1] << " ] : "
                       << "\talpha=" << alpha[it][ia]
@@ -425,9 +432,13 @@ void GetScaleFactorsVersion2()
             double alpha1 = fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/fBgAssocPeak[it][ia]->Integral(300, 350);
             double alpha2 = fBgAssocSide[it][ia]->Integral(massWindowMin, massWindowMax)/fBgAssocSide[it][ia]->Integral(300, 350);
             double alpha3 = fBgAssocPeak[it][ia]->Integral(300, 350)/fBgAssocSide[it][ia]->Integral(300, 350);
+            //double alpha1 = fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/(fBgAssocPeak[it][ia]->Integral(40, 80) + fBgAssocPeak[it][ia]->Integral(210, 280));
+            //double alpha2 = fBgAssocSide[it][ia]->Integral(massWindowMin, massWindowMax)/(fBgAssocSide[it][ia]->Integral(40, 80) + fBgAssocSide[it][ia]->Integral(210, 280));
+            //double alpha3 = (fBgAssocPeak[it][ia]->Integral(40, 80) + fBgAssocPeak[it][ia]->Integral(210, 280))/(fBgAssocSide[it][ia]->Integral(40, 80) + fBgAssocSide[it][ia]->Integral(210, 280));
             double alpha4 = hMassAssocPeak[it][ia]->Integral(hMassAssocPeak[it][ia]->GetXaxis()->FindBin(massWindowMin), hMassAssocPeak[it][ia]->GetXaxis()->FindBin(massWindowMax)) - fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/hMassAssocPeak[it][ia]->GetBinWidth(0);
             alpha4 /= hMassAssocSide[it][ia]->Integral(hMassAssocSide[it][ia]->GetXaxis()->FindBin(massWindowMin), hMassAssocSide[it][ia]->GetXaxis()->FindBin(massWindowMax)) - fBgAssocSide[it][ia]->Integral(massWindowMin, massWindowMax)/hMassAssocSide[it][ia]->GetBinWidth(0);
             double beeta1 = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/fBgTrigg[it]->Integral(300, 450);
+            //double beeta1 = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/(fBgTrigg[it]->Integral(40, 80) + fBgTrigg[it]->Integral(210, 280));
 
             alpha[it][ia] = alpha1;
             beeta[it][ia] = alpha4*beeta1;
@@ -441,54 +452,6 @@ void GetScaleFactorsVersion2()
                       << "\talpha=" << alpha[it][ia]
                       << "\tbeeta="  << beeta[it][ia]
                       << "\tgamma=" << yamma[it][ia] << std::endl;
-        }
-    }
-}
-
-void GetScaleFactorsVersion3()
-{
-    double massWindowMin, massWindowMax;
-    for (int it = 0; it < nTriggBins; it++) {
-        if (bUseConstMassWindow) {
-            massWindowMin = massMin;
-            massWindowMax = massMax;
-        } else {
-            massWindowMin = massPeakPosTrigg[it]-3.*massSigmaTrigg[it];
-            massWindowMax = massPeakPosTrigg[it]+3.*massSigmaTrigg[it];
-        }
-        //st[it] = fPeakTrigg[it]->Integral(massWindowMin, massWindowMax);
-        st[it]  = hMassTrigg[it]->Integral(hMassTrigg[it]->GetXaxis()->FindBin(massWindowMin), hMassTrigg[it]->GetXaxis()->FindBin(massWindowMax)) - fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/hMassTrigg[it]->GetBinWidth(0);
-        //st[it] *= effCorrTrigg[it]*pi0br;
-        stobtrigg[it] = fPeakTrigg[it]->Integral(massWindowMin, massWindowMax)/fFitTrigg[it]->Integral(massWindowMin, massWindowMax);
-        std::cout << "\n\tbin [ " << triggPt[it] << " " << triggPt[it+1] << " ] : \treal=" << nRealTrigg[it] << "\treconst=" << st[it] << "\trec=" << stfit[it] << "\trec/real=" << st[it]/nRealTrigg[it] << std::endl;
-        std::cout << "\tS/(S+B) : " << stobtrigg[it] << std::endl;
-        //std::cout << "bg : " << fBgTrigg[it]->Integral(massWindowMin, massWindowMax) << std::endl;
-        for (int ia = 0; ia < nAssocBins; ia++) {
-            double tlow = triggPt[it];
-            double tupp = triggPt[it+1];
-            double alow = assocPt[ia];
-            double aupp = assocPt[ia+1];
-            if (bUseConstMassWindow) {
-                massWindowMin = massMin;
-                massWindowMax = massMax;
-            } else {
-                massWindowMin = massPeakPosAssoc[it]-3.*massSigmaAssoc[it];
-                massWindowMax = massPeakPosAssoc[it]+3.*massSigmaAssoc[it];
-            }
-
-            if (!useLeading && tlow < aupp) continue;
-            //alpha[it][ia]  = fBgAssocPeak[it][ia]->Integral(massWindowMin, massWindowMax)/(fBgAssocPeak[it][ia]->Integral(40, 80) + fBgAssocPeak[it][ia]->Integral(210, 280));
-            //beeta[it][ia]  = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/(fBgTrigg[it]->Integral(40, 80) + fBgTrigg[it]->Integral(210, 280));
-            alpha[it][ia] = fBgAssocSum[it][ia]->Integral(massWindowMin, massWindowMax)/fBgAssocSum[it][ia]->Integral(300, 450);
-            cout << fBgAssocSum[it][ia]->Integral(massWindowMin, massWindowMax) << "/" << fBgAssocSum[it][ia]->Integral(300, 450) << endl;
-            beeta[it][ia] = fBgTrigg[it]->Integral(massWindowMin, massWindowMax)/fBgTrigg[it]->Integral(300, 450);
-            yamma[it][ia] = alpha[it][ia]*beeta[it][ia];
-            std::cout << "\t\tbin [ "  << assocPt[ia] << " " << assocPt[ia+1] << " ] : "
-                      << "\talpha=" << alpha[it][ia]
-                      << "\tbeeta="  << beeta[it][ia]
-                      << "\tgamma=" << yamma[it][ia] << std::endl;
-            stobassoc[it][ia] = fPeakAssocSum[it][ia]->Integral(massWindowMin, massWindowMax)/fFitAssocSum[it][ia]->Integral(massWindowMin, massWindowMax);
-            std::cout << "\t\tS/(S+B) : " << stobassoc[it][ia] << std::endl;
         }
     }
 }

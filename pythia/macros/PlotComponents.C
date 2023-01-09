@@ -10,6 +10,7 @@ const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
 const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
 
 TString legHeader = "p-p #sqrt{s} = 14 TeV";
+int nEvent = 1;
 
 TFile *fIn;
 TH1D *hCounter;
@@ -78,7 +79,7 @@ void LoadData(TString input)
 {
     fIn = TFile::Open(input);
     hCounter = (TH1D*)fIn->Get("hCounter");
-    int nEvent = hCounter->GetBinContent(1);
+    nEvent = hCounter->GetBinContent(1);
     std::cout << "Input file contains " << nEvent << " events, proceed to analyse" << std::endl;
 
     for (int itrigg = 0; itrigg < nTriggBins; itrigg++) {
@@ -139,7 +140,7 @@ void ConfigHistos()
 
             if (!useLeading && tlow < aupp) continue;
                 hCorrTrueProj[itrigg][iassoc] = hCorrTrue[itrigg][iassoc]->ProjectionX();
-                //hCorrTrueProj[itrigg][iassoc]->Scale(1./nMeasTrigg);
+                hCorrTrueProj[itrigg][iassoc]->Scale(1./nEvent);
                 hCorrTrueProj[itrigg][iassoc]->SetTitle("; #Delta#phi; Counts");
                 hCorrTrueProj[itrigg][iassoc]->GetYaxis()->SetTitleOffset(1.);
                 //hCorrTrueProj[itrigg][iassoc]->GetYaxis()->SetRangeUser(0.00001, 0.6);
@@ -150,6 +151,7 @@ void ConfigHistos()
                 hCorrTrueProj[itrigg][iassoc]->SetLineWidth(2);
 
                 hCorrMassMassProj[itrigg][iassoc] = hCorrMassMass[itrigg][iassoc]->ProjectionX();
+                hCorrMassMassProj[itrigg][iassoc]->Scale(1./nEvent);
                 //hCorrMassMassProj[itrigg][iassoc]->Scale(1./nMeasTrigg);
                 hCorrMassMassProj[itrigg][iassoc]->SetTitle("; #Delta#phi; Counts");
                 hCorrMassMassProj[itrigg][iassoc]->GetYaxis()->SetTitleOffset(1.);
@@ -161,6 +163,7 @@ void ConfigHistos()
                 hCorrMassMassProj[itrigg][iassoc]->SetLineWidth(2);
 
                 hCorrMassSideProj[itrigg][iassoc] = hCorrMassSide[itrigg][iassoc]->ProjectionX();
+                hCorrMassSideProj[itrigg][iassoc]->Scale(1./nEvent);
                 hCorrMassSideProj[itrigg][iassoc]->SetTitle("; #Delta#phi; Counts");
                 hCorrMassSideProj[itrigg][iassoc]->GetYaxis()->SetTitleOffset(1.);
                 hCorrMassSideProj[itrigg][iassoc]->SetLineColor(kRed);
@@ -170,6 +173,7 @@ void ConfigHistos()
                 hCorrMassSideProj[itrigg][iassoc]->SetLineWidth(2);
 
                 hCorrSideMassProj[itrigg][iassoc] = hCorrSideMass[itrigg][iassoc]->ProjectionX();
+                hCorrSideMassProj[itrigg][iassoc]->Scale(1./nEvent);
                 hCorrSideMassProj[itrigg][iassoc]->SetTitle("; #Delta#phi; Counts");
                 hCorrSideMassProj[itrigg][iassoc]->GetYaxis()->SetTitleOffset(1.);
                 hCorrSideMassProj[itrigg][iassoc]->SetLineColor(kRed);
@@ -179,6 +183,7 @@ void ConfigHistos()
                 hCorrSideMassProj[itrigg][iassoc]->SetLineWidth(2);
 
                 hCorrSideSideProj[itrigg][iassoc] = hCorrSideSide[itrigg][iassoc]->ProjectionX();
+                hCorrSideSideProj[itrigg][iassoc]->Scale(1./nEvent);
                 hCorrSideSideProj[itrigg][iassoc]->SetTitle("; #Delta#phi; Counts");
                 hCorrSideSideProj[itrigg][iassoc]->GetYaxis()->SetTitleOffset(1.);
                 hCorrSideSideProj[itrigg][iassoc]->SetLineColor(kRed);
@@ -188,6 +193,7 @@ void ConfigHistos()
                 hCorrSideSideProj[itrigg][iassoc]->SetLineWidth(2);
 
                 hCorrSSProj[itrigg][iassoc] = hCorrSS[itrigg][iassoc]->ProjectionX();
+                hCorrSSProj[itrigg][iassoc]->Scale(1./nEvent);
                 hCorrSSProj[itrigg][iassoc]->SetMarkerStyle(kDot);
                 hCorrSSProj[itrigg][iassoc]->SetMarkerColor(kMagenta-7);
                 hCorrSSProj[itrigg][iassoc]->SetLineColor(kMagenta-7);
@@ -197,6 +203,7 @@ void ConfigHistos()
                 hCorrSSProj[itrigg][iassoc]->SetTitle("; #Delta#phi; Counts");
 
                 hCorrSBProj[itrigg][iassoc] = hCorrSB[itrigg][iassoc]->ProjectionX();
+                hCorrSBProj[itrigg][iassoc]->Scale(1./nEvent);
                 hCorrSBProj[itrigg][iassoc]->SetMarkerStyle(7);
                 //hCorrSBProj[itrigg][iassoc]->Scale(1./nRealRecTrigg);
                 hCorrSBProj[itrigg][iassoc]->SetMarkerColor(kOrange+7);
@@ -205,6 +212,7 @@ void ConfigHistos()
                 hCorrSBProj[itrigg][iassoc]->SetLineWidth(2);
 
                 hCorrBSProj[itrigg][iassoc] = hCorrBS[itrigg][iassoc]->ProjectionX();
+                hCorrBSProj[itrigg][iassoc]->Scale(1./nEvent);
                 hCorrBSProj[itrigg][iassoc]->SetMarkerStyle(7);
                 //hCorrBSProj[itrigg][iassoc]->Scale(1./nFakeRecTrigg);
                 hCorrBSProj[itrigg][iassoc]->SetMarkerColor(kCyan+1);
@@ -214,6 +222,7 @@ void ConfigHistos()
                 hCorrBSProj[itrigg][iassoc]->SetLineWidth(2);
 
                 hCorrBBProj[itrigg][iassoc] = hCorrBB[itrigg][iassoc]->ProjectionX();
+                hCorrBBProj[itrigg][iassoc]->Scale(1./nEvent);
                 hCorrBBProj[itrigg][iassoc]->SetMarkerStyle(7);
                 //hCorrBBProj[itrigg][iassoc]->Scale(1./nFakeRecTrigg);
                 hCorrBBProj[itrigg][iassoc]->SetMarkerColor(kBlue-7);
@@ -333,7 +342,7 @@ void DrawFiliPad()
             }
             TPad *p = fpad[itrigg][iassoc]->GetPad(1);
             p->SetTickx(); p->SetLogx(0); p->SetLogy(1); p->cd();
-            hset(*hCorrTrueProj[itrigg][iassoc], "#Delta#phi", "counts", 1.1,1.2, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
+            hset(*hCorrTrueProj[itrigg][iassoc], "#Delta#phi", "1/N_{ev}dN/d#Delta#phi", 1.1,1.2, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
             hCorrTrueProj[itrigg][iassoc]->GetYaxis()->SetRangeUser(rangeMin, rangeMax);
             hCorrTrueProj[itrigg][iassoc]->Draw("HIST E");
             hCorrMassMassProj[itrigg][iassoc]->Draw("SAME HIST E");

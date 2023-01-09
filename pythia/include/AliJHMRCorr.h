@@ -54,6 +54,7 @@ public:
     bool IsPhotonRemoved(double ePhoton);
     bool IsPhotonRemoved(TClonesArray *arrPhoton, AliJBaseTrack *lv1, AliJBaseTrack *lv2);
     double GetAsymmetry(TClonesArray *arrPhoton, AliJBaseTrack *lv1, AliJBaseTrack *lv2);
+    double GetOpeningAngle(TClonesArray *arrPhoton, AliJBaseTrack *lv1, AliJBaseTrack *lv2);
     AliJBaseTrack GetPhotonSumVector(TClonesArray *arrayPhoton, AliJBaseTrack *lv1, AliJBaseTrack *lv2);
     int GetLeadingTriggerIndex(TClonesArray *arrPi0, bool bUseSim);
     int GetLargerTrigg(TClonesArray *arrPi0Peak, std::vector<int> listTriggPeak, TClonesArray *arrPi0Side, std::vector<int> listTriggSide);

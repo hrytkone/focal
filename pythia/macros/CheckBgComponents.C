@@ -9,6 +9,9 @@ const int nAssocBins = 2;
 const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
 const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
 
+const double alpha = 0.2;
+const double beeta = 0.2;
+
 TString legHeader = "p-p #sqrt{s} = 14 TeV";
 
 TFile *fIn;
@@ -92,36 +95,36 @@ void LoadData(TString input)
             hCorrTrue[itrigg][iassoc]->GetYaxis()->SetMaxDigits(3);
 
             hCorrMassMass[itrigg][iassoc] = (TH2D*)fIn->Get(Form("CorrMassMass/hCorrMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
-            hCorrMassMass[itrigg][iassoc]->Rebin2D(4);
+            //hCorrMassMass[itrigg][iassoc]->Rebin2D(4);
             hCorrMassMass[itrigg][iassoc]->GetYaxis()->SetMaxDigits(3);
 
             hCorrMassSide[itrigg][iassoc] = (TH2D*)fIn->Get(Form("CorrMassSide/hCorrMassSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
-            hCorrMassSide[itrigg][iassoc]->Rebin2D(4);
+            //hCorrMassSide[itrigg][iassoc]->Rebin2D(4);
             hCorrMassSide[itrigg][iassoc]->GetYaxis()->SetMaxDigits(3);
 
             hCorrSideMass[itrigg][iassoc] = (TH2D*)fIn->Get(Form("CorrSideMass/hCorrSideMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
-            hCorrSideMass[itrigg][iassoc]->Rebin2D(4);
+            //hCorrSideMass[itrigg][iassoc]->Rebin2D(4);
             hCorrSideMass[itrigg][iassoc]->GetYaxis()->SetMaxDigits(3);
 
             hCorrSideSide[itrigg][iassoc] = (TH2D*)fIn->Get(Form("CorrSideSide/hCorrSideSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
-            hCorrSideSide[itrigg][iassoc]->Rebin2D(4);
+            //hCorrSideSide[itrigg][iassoc]->Rebin2D(4);
             hCorrSideSide[itrigg][iassoc]->GetYaxis()->SetMaxDigits(3);
 
             hCorrSS[itrigg][iassoc] = (TH2D*)fIn->Get(Form("TrueComponents/hCorrSignalSignal[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
-            hCorrSS[itrigg][iassoc]->Rebin2D(4);
+            //hCorrSS[itrigg][iassoc]->Rebin2D(4);
             hCorrSS[itrigg][iassoc]->GetYaxis()->SetMaxDigits(3);
 
             hCorrSB[itrigg][iassoc] = (TH2D*)fIn->Get(Form("TrueComponents/hCorrSignalBg[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
-            hCorrSB[itrigg][iassoc]->Rebin2D(4);
+            //hCorrSB[itrigg][iassoc]->Rebin2D(4);
             hCorrSB[itrigg][iassoc]->GetYaxis()->SetMaxDigits(3);
 
             hCorrBS[itrigg][iassoc] = (TH2D*)fIn->Get(Form("TrueComponents/hCorrBgSignal[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
-            hCorrBS[itrigg][iassoc]->Rebin2D(4);
+            //hCorrBS[itrigg][iassoc]->Rebin2D(4);
             hCorrBS[itrigg][iassoc]->GetYaxis()->SetMaxDigits(3);
 
-            //hCorrBB[itrigg][iassoc] = (TH2D*)fIn->Get(Form("TrueComponents/hCorrBgBg[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
-            hCorrBB[itrigg][iassoc] = (TH2D*)fIn->Get(Form("BackgroundSources/hCorrBgBgMix[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
-            hCorrBB[itrigg][iassoc]->Rebin2D(4);
+            hCorrBB[itrigg][iassoc] = (TH2D*)fIn->Get(Form("TrueComponents/hCorrBgBg[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
+            //hCorrBB[itrigg][iassoc] = (TH2D*)fIn->Get(Form("BackgroundSources/hCorrBgBgMix[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
+            //hCorrBB[itrigg][iassoc]->Rebin2D(4);
             hCorrBB[itrigg][iassoc]->GetYaxis()->SetMaxDigits(3);
         }
     }
@@ -244,29 +247,36 @@ void DrawFiliPad()
             TCanvas *c1 = new TCanvas(Form("c_%d-%d", itrigg, iassoc), "", 800, 800);
             c1->Divide(2,2,0.0001,0.0001);
 
+            // Remove side-side component
+            //hCorrMassSideProj[itrigg][iassoc]->Add(hCorrSideSideProj[itrigg][iassoc], -beeta);
+            //hCorrSideMassProj[itrigg][iassoc]->Add(hCorrSideSideProj[itrigg][iassoc], -alpha);
+
+            int rangeMin = hCorrMassMassProj[itrigg][iassoc]->GetNbinsX()/2.;
+            //int rangeMin = 0;
+            int rangeMax = hCorrMassMassProj[itrigg][iassoc]->GetNbinsX();
+            hCorrMassMassProj[itrigg][iassoc]->Scale(1./hCorrMassMassProj[itrigg][iassoc]->Integral(rangeMin, rangeMax));
+            hCorrMassSideProj[itrigg][iassoc]->Scale(1./hCorrMassSideProj[itrigg][iassoc]->Integral(rangeMin, rangeMax));
+            hCorrSideMassProj[itrigg][iassoc]->Scale(1./hCorrSideMassProj[itrigg][iassoc]->Integral(rangeMin, rangeMax));
+            hCorrSideSideProj[itrigg][iassoc]->Scale(1./hCorrSideSideProj[itrigg][iassoc]->Integral(rangeMin, rangeMax));
+            hCorrSBProj[itrigg][iassoc]->Scale(1./hCorrSBProj[itrigg][iassoc]->Integral(rangeMin, rangeMax));
+            hCorrBSProj[itrigg][iassoc]->Scale(1./hCorrBSProj[itrigg][iassoc]->Integral(rangeMin, rangeMax));
+            hCorrBBProj[itrigg][iassoc]->Scale(1./hCorrBBProj[itrigg][iassoc]->Integral(rangeMin, rangeMax));
+
             c1->cd(1);
-            hCorrSSProj[itrigg][iassoc]->Draw("HIST E");
+            hCorrMassMassProj[itrigg][iassoc]->Draw("HIST E");
+            hCorrBBProj[itrigg][iassoc]->Draw("SAME HIST E");
 
             c1->cd(2);
             hCorrMassSideProj[itrigg][iassoc]->Draw("HIST E");
             hCorrSBProj[itrigg][iassoc]->Draw("SAME HIST E");
-            hCorrBBProj[itrigg][iassoc]->Draw("SAME HIST E");
 
             c1->cd(3);
             hCorrSideMassProj[itrigg][iassoc]->Draw("HIST E");
             hCorrBSProj[itrigg][iassoc]->Draw("SAME HIST E");
-            hCorrBBProj[itrigg][iassoc]->Draw("SAME HIST E");
 
             c1->cd(4);
-            //gPad->SetLogy();
-            //hCorrSideSideProj[itrigg][iassoc]->Scale(1./hCorrSideSideProj[itrigg][iassoc]->GetEntries());
-            int rangeMin = hCorrSideSideProj[itrigg][iassoc]->GetNbinsX()/2.;
-            int rangeMax = hCorrSideSideProj[itrigg][iassoc]->GetNbinsX();
-            cout << "side-side : " << hCorrSideSideProj[itrigg][iassoc]->Integral(rangeMin, rangeMax) << "\tfake-fake : " << hCorrBBProj[itrigg][iassoc]->Integral(rangeMin, rangeMax) << endl;
-            hCorrSideSideProj[itrigg][iassoc]->Scale(1./hCorrSideSideProj[itrigg][iassoc]->Integral(rangeMin, rangeMax));
-            hCorrSideSideProj[itrigg][iassoc]->Draw("HIST E");
-            hCorrBBProj[itrigg][iassoc]->Scale(1./hCorrBBProj[itrigg][iassoc]->Integral(rangeMin, rangeMax));
-            hCorrBBProj[itrigg][iassoc]->Draw("SAME HIST E");
+            hCorrBBProj[itrigg][iassoc]->Draw("HIST E");
+            hCorrSideSideProj[itrigg][iassoc]->Draw("SAME HIST E");
         }
     }
 }

@@ -72,6 +72,10 @@ public:
     pp->Draw();
   }
 
+  void Print(TString filename) {
+      C->SaveAs(filename.Data());
+  }
+
   //-------------------------------------------------------------------------------------
   void Hset(TH1* hid, TString xtit="", TString ytit="",
       double titoffx = 2.5, double titoffy = 1.5,

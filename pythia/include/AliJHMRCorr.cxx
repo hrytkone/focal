@@ -71,6 +71,7 @@ int AliJHMRCorr::ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0C
             AliJBaseTrack *lv2 = (AliJBaseTrack*)arrPhoton->At(j);
             if (!fIsFullSim && IsPhotonRemoved(lv2->E())) continue;
             if (GetAsymmetry(arrPhoton, lv1, lv2)>asymcut) continue;
+            if (GetOpeningAngle(arrPhoton, lv1, lv2)<thetacut) continue;
             AliJBaseTrack lvSum = GetPhotonSumVector(arrPhoton, lv1, lv2);
             if (lvSum.Eta()<detEta[idet][0]+etacut || lvSum.Eta()>detEta[idet][1]-etacut) continue;
             double mass = 1000.*lvSum.M();
@@ -479,6 +480,7 @@ void AliJHMRCorr::FillPionMasses(TClonesArray *arrPhoton, int binsWithTriggPeak[
         for (int j = 0; j < i; j++) {
             AliJBaseTrack *lv2 = (AliJBaseTrack*)arrPhoton->At(j);
             if (GetAsymmetry(arrPhoton, lv1, lv2)>asymcut) continue;
+            if (GetOpeningAngle(arrPhoton, lv1, lv2)<thetacut) continue;            
             if (!fIsFullSim && IsPhotonRemoved(lv2->E())) continue;
             AliJBaseTrack lvSum = GetPhotonSumVector(arrPhoton, lv1, lv2);
             if (lvSum.Eta()<detEta[idet][0]+etacut || lvSum.Eta()>detEta[idet][1]-etacut) continue;

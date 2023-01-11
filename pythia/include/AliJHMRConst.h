@@ -42,6 +42,7 @@ extern const double effCorrLeading[NLEADINGBINS]; // FOR GEANT SIMUALTION
 
 extern const double etacut;
 extern const double asymcut;
+extern const double thetacut;
 
 extern const double detEta[NDET][2];
 extern const TString accFunc[NDET];

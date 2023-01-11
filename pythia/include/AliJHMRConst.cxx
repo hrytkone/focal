@@ -60,6 +60,7 @@ const double effCorrLeading[NLEADINGBINS] = {0.250451, 0.275956, 0.326522, 0.368
 
 const double etacut = 0.2;
 const double asymcut = 1.0;
+const double thetacut = 0.;
 
 const double kJPi = TMath::Pi();
 const double kJTwoPi = 2 * TMath::Pi();

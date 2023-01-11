@@ -8,33 +8,40 @@ const double xmin = -TMath::Pi()/6;
 const double xmax = TMath::Pi()/3;
 //const double xmax = (3./2)*TMath::Pi();
 
-const int nset = 4;
+const double alpha = 0.5;
+
+const int nset = 3;
 const int nTriggBins = 2;
 const int nAssocBins = 2;
 const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
 const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
 
 const TString inputname[nset] = {
-    "/home/heimarry/Simulations/focal/analysis_output/2022-12-19_pp-focal_two-sidebands.root",
-    "/home/heimarry/Simulations/focal/analysis_output/2022-12-20_pp-focal_sideband-50-115-160-200.root",
-    "/home/heimarry/Simulations/focal/analysis_output/2023-01-09_pp-focal_sideband-160-200.root",
+//    "/home/heimarry/Simulations/focal/analysis_output/2022-12-19_pp-focal_two-sidebands.root",
+    "/home/heimarry/Simulations/focal/analysis_output/2023-01-10_pp-focal_oangle-divided_asym-1.root",
+    "/home/heimarry/Simulations/focal/analysis_output/2023-01-09_pp-focal_oangle-divided_asym-08.root",
+    "/home/heimarry/Simulations/focal/analysis_output/2023-01-10_pp-focal_oangle-divided_asym-05.root"
+//    "/home/heimarry/Simulations/focal/analysis_output/2022-12-20_pp-focal_sideband-50-115-160-200.root",
     //"/home/heimarry/Simulations/focal/analysis_output/2022-12-16_pp-focal_sideband-40-80.root",
-    //"/home/heimarry/Simulations/focal/analysis_output/2022-12-16_pp-focal_sideband-210-280.root",
-    "/home/heimarry/Simulations/focal/analysis_output/2022-12-14_pp-focal.root"
+//    "/home/heimarry/Simulations/focal/analysis_output/2022-12-16_pp-focal_sideband-210-280.root",
+//    "/home/heimarry/Simulations/focal/analysis_output/2023-01-09_pp-focal_sideband-160-200.root",
+    //"/home/heimarry/Simulations/focal/analysis_output/2022-12-14_pp-focal.root"
 };
 
 const TString legHeader = "p-p #sqrt{s} = 14 TeV";
 const TString setlabel[nset+1] = {
     "MC truth",
     "[40,80] & [210,280]",
-    "[50,115] & [160,200]",
-    "[160,200]",
+    "[40,80] & [210,280]",
+    "[40,80] & [210,280]"
+//    "[50,115] & [160,200]",
     //"[40,80]",
-    //"[210,280]",
-    "[300,450]"
+//    "[210,280]",
+    //"[160,200]"
+    //"[300,450]"
 };
 
-const EColor cMarker[nset] = {kBlue, kRed, kOrange, kMagenta};
+const EColor cMarker[nset] = {kRed, kBlue, kOrange};//, kMagenta};
 
 TFile *fIn[nset];
 TH1D *hCounter[nset];
@@ -108,7 +115,7 @@ void LoadData()
 
                 if (tlow < aupp) continue;
                 hSideSideVsBB[iset][itrigg][iassoc] = (TH1D*)hCorrSideSideProj[iset][itrigg][iassoc]->Clone(Form("hSideSideVsBB_%d_[%4.1f,%4.1f][%4.1f,%4.1f]",iset,tlow,tupp,alow,aupp));
-                hSideSideVsBB[iset][itrigg][iassoc]->Divide(hCorrBBProj[0][itrigg][iassoc]);
+                hSideSideVsBB[iset][itrigg][iassoc]->Divide(hCorrBBProj[iset][itrigg][iassoc]);
             }
         }
     }
@@ -125,7 +132,7 @@ void ConfigLegends()
 
             if (tlow < aupp) continue;
 
-            leg[itrigg][iassoc] = new TLegend(0.6, 0.3, 0.78, 0.75);
+            leg[itrigg][iassoc] = new TLegend(0.55, 0.46, 0.78, 0.71);
             leg[itrigg][iassoc]->SetFillStyle(0); leg[itrigg][iassoc]->SetBorderSize(0); leg[itrigg][iassoc]->SetTextSize(0.05);
             leg[itrigg][iassoc]->SetHeader(Form("#splitline{%s}{[%0.1f,%0.1f][%0.1f,%0.1f]}", legHeader.Data(),triggPt[itrigg],triggPt[itrigg+1],assocPt[iassoc],assocPt[iassoc+1]));
             leg[itrigg][iassoc]->AddEntry(hCorrBBProj[0][itrigg][iassoc], setlabel[0].Data(), "le");
@@ -164,6 +171,7 @@ void ConfigHistos()
                 hCorrBBProj[iset][itrigg][iassoc]->GetXaxis()->SetRangeUser(xmin, xmax);
                 hCorrBBProj[iset][itrigg][iassoc]->SetMarkerColor(kBlack);
                 hCorrBBProj[iset][itrigg][iassoc]->SetLineColor(kBlack);
+                //hCorrBBProj[iset][itrigg][iassoc]->SetLineStyle(3);
                 hCorrBBProj[iset][itrigg][iassoc]->SetMarkerStyle(kOpenCircle);
                 hCorrBBProj[iset][itrigg][iassoc]->SetLineWidth(2);
                 hCorrBBProj[iset][itrigg][iassoc]->SetMarkerSize(0);
@@ -188,9 +196,11 @@ void ConfigHistos()
 
 void DrawFiliPad()
 {
-    TText *t;
-    t = new TText(.6,0.79,"PYTHIA8 simulation");
+    TText *t, *t2;
+    t = new TText(.55,0.79,"PYTHIA8 simulation");
+    t2 = new TText(.55,0.74,Form("Asymmetry  < %0.1f", alpha));    
     t->SetNDC();
+    t2->SetNDC();
 
     int padID = 0;
     for (int itrigg = 0; itrigg < nTriggBins; itrigg++) {
@@ -214,7 +224,7 @@ void DrawFiliPad()
             TPad *p = fpadcomp[itrigg][iassoc]->GetPad(1);
             p->SetTickx(); p->SetLogx(0); p->SetLogy(0); p->cd();
             hset(*hCorrBBProj[0][itrigg][iassoc], "#Delta#phi", "1/N dN/d#Delta#phi", 1.1,1.2, 0.05,0.05, 0.01,0.01, 0.05,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
-            hCorrBBProj[0][itrigg][iassoc]->GetYaxis()->SetRangeUser(0.001, 0.25);
+            hCorrBBProj[0][itrigg][iassoc]->GetYaxis()->SetRangeUser(0.001, 0.18);
             hCorrBBProj[0][itrigg][iassoc]->Draw("HIST E");
             for (int iset = 0; iset < nset; iset++) hCorrSideSideProj[iset][itrigg][iassoc]->Draw("HIST E SAME");
             //for (int iset = 1; iset < nset; iset++)hCorrBBProj[iset][itrigg][iassoc]->Draw("HIST E SAME");
@@ -222,14 +232,14 @@ void DrawFiliPad()
 
             leg[itrigg][iassoc]->Draw("SAME");
             t->Draw("SAME");
+            t2->Draw("SAME");
 
             // Lower pad
             p = fpadcomp[itrigg][iassoc]->GetPad(2);
             p->SetTickx(); p->SetGridy(1); p->SetLogx(0), p->SetLogy(0); p->cd();
             hset( *hSideSideVsBB[0][itrigg][iassoc], "#Delta#phi", "f_{side,side}/MC truth",1.1,0.7, 0.09,0.09, 0.01,0.01, 0.08,0.08, 510,505);
-            hSideSideVsBB[0][itrigg][iassoc]->GetYaxis()->SetRangeUser(-0.2, 5.);
+            hSideSideVsBB[0][itrigg][iassoc]->GetYaxis()->SetRangeUser(-0.2, 2.2);
             hSideSideVsBB[0][itrigg][iassoc]->Draw("");
-            hSideSideVsBB[1][itrigg][iassoc]->Draw("SAME");
             //for (int iset = 0; iset < nset; iset++) {
             //    if (iset==0)
             //        hSideSideVsBB[iset][itrigg][iassoc]->Draw("");
@@ -240,6 +250,8 @@ void DrawFiliPad()
             l->SetLineStyle(2);
             l->SetLineWidth(2);
             l->Draw("SAME");
+
+            //fpadcomp[itrigg][iassoc]->Print(Form("sb-comp_%d-%d.pdf", itrigg, iassoc));
         }
     }
 }

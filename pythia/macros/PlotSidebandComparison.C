@@ -8,9 +8,9 @@ const double xmin = -TMath::Pi()/6;
 const double xmax = TMath::Pi()/3;
 //const double xmax = (3./2)*TMath::Pi();
 
-const double alpha = 0.5;
+const double alpha = 1;
 
-const int nset = 3;
+const int nset = 1;
 const int nTriggBins = 2;
 const int nAssocBins = 2;
 const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
@@ -18,9 +18,10 @@ const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
 
 const TString inputname[nset] = {
 //    "/home/heimarry/Simulations/focal/analysis_output/2022-12-19_pp-focal_two-sidebands.root",
-    "/home/heimarry/Simulations/focal/analysis_output/2023-01-10_pp-focal_oangle-divided_asym-1.root",
-    "/home/heimarry/Simulations/focal/analysis_output/2023-01-09_pp-focal_oangle-divided_asym-08.root",
-    "/home/heimarry/Simulations/focal/analysis_output/2023-01-10_pp-focal_oangle-divided_asym-05.root"
+    //"/home/heimarry/Simulations/focal/analysis_output/2023-01-10_pp-focal_oangle-divided_asym-1.root",
+    //"/home/heimarry/Simulations/focal/analysis_output/2023-01-09_pp-focal_oangle-divided_asym-08.root",
+    //"/home/heimarry/Simulations/focal/analysis_output/2023-01-10_pp-focal_oangle-divided_asym-05.root"
+    "/home/heimarry/Simulations/focal/analysis_output/2023-01-11_pp-focal_thetacut-0002.root"
 //    "/home/heimarry/Simulations/focal/analysis_output/2022-12-20_pp-focal_sideband-50-115-160-200.root",
     //"/home/heimarry/Simulations/focal/analysis_output/2022-12-16_pp-focal_sideband-40-80.root",
 //    "/home/heimarry/Simulations/focal/analysis_output/2022-12-16_pp-focal_sideband-210-280.root",
@@ -32,8 +33,6 @@ const TString legHeader = "p-p #sqrt{s} = 14 TeV";
 const TString setlabel[nset+1] = {
     "MC truth",
     "[40,80] & [210,280]",
-    "[40,80] & [210,280]",
-    "[40,80] & [210,280]"
 //    "[50,115] & [160,200]",
     //"[40,80]",
 //    "[210,280]",
@@ -41,7 +40,7 @@ const TString setlabel[nset+1] = {
     //"[300,450]"
 };
 
-const EColor cMarker[nset] = {kRed, kBlue, kOrange};//, kMagenta};
+const EColor cMarker[nset] = {kRed};//, kBlue, kOrange};//, kMagenta};
 
 TFile *fIn[nset];
 TH1D *hCounter[nset];

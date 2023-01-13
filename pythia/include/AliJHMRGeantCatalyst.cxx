@@ -31,9 +31,9 @@ void AliJHMRGeantCatalyst::GetParticles()
             AliJBaseTrack track = *tr;
             track.SetParticleType(kJDecayPhoton);
 
-            //// In the case of photons tag those that are from pi0 decay
-            ////      track label 1 = decay product
-            ////      track label 0 = not from decay
+            // In the case of photons tag those that are from pi0 decay
+            //      track label 1 = decay product
+            //      track label 0 = not from decay
             Int_t imother = track.GetMotherID();
             AliJBaseTrack *trMom = (AliJBaseTrack*)fTracks->At(imother);
             if (trMom->GetID() == 111 && (trMom->Eta() > etaMin+etacut && trMom->Eta() < etaMax-etacut)) {

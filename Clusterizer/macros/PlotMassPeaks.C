@@ -2,9 +2,9 @@ const int nset = 6;
 const int npt = 6;
 //const int npt = 10;
 
-const TString filename = "etacut_35-55.root";
+const TString filename = "masses_v5_eta35-55.root";
 const TString lowmassfilename = "etacut_41-55_gamma_more-pt-bins.root";
-const TString legEta = "4.1 < #eta < 5.5";
+const TString legEta = "3.5 < #eta < 5.5";
 //------------------------------------------------------------------------------
 
 const TString legHeader[npt] = {

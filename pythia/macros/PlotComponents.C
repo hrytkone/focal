@@ -92,38 +92,47 @@ void LoadData(TString input)
             if (!useLeading && tlow < aupp) continue;
             hCorrTrue[itrigg][iassoc] = (TH2D*)fIn->Get(Form("CorrFor/hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
             hCorrTrue[itrigg][iassoc]->Rebin2D(4);
+            hCorrTrue[itrigg][iassoc]->Scale(1./nEvent);
             hCorrTrue[itrigg][iassoc]->GetYaxis()->SetMaxDigits(3);
 
             hCorrMassMass[itrigg][iassoc] = (TH2D*)fIn->Get(Form("CorrMassMass/hCorrMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
             hCorrMassMass[itrigg][iassoc]->Rebin2D(4);
+            hCorrMassMass[itrigg][iassoc]->Scale(1./nEvent);
             hCorrMassMass[itrigg][iassoc]->GetYaxis()->SetMaxDigits(3);
 
             hCorrMassSide[itrigg][iassoc] = (TH2D*)fIn->Get(Form("CorrMassSide/hCorrMassSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
             hCorrMassSide[itrigg][iassoc]->Rebin2D(4);
+            hCorrMassSide[itrigg][iassoc]->Scale(1./nEvent);
             hCorrMassSide[itrigg][iassoc]->GetYaxis()->SetMaxDigits(3);
 
             hCorrSideMass[itrigg][iassoc] = (TH2D*)fIn->Get(Form("CorrSideMass/hCorrSideMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
             hCorrSideMass[itrigg][iassoc]->Rebin2D(4);
+            hCorrSideMass[itrigg][iassoc]->Scale(1./nEvent);
             hCorrSideMass[itrigg][iassoc]->GetYaxis()->SetMaxDigits(3);
 
             hCorrSideSide[itrigg][iassoc] = (TH2D*)fIn->Get(Form("CorrSideSide/hCorrSideSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
             hCorrSideSide[itrigg][iassoc]->Rebin2D(4);
+            hCorrSideSide[itrigg][iassoc]->Scale(1./nEvent);
             hCorrSideSide[itrigg][iassoc]->GetYaxis()->SetMaxDigits(3);
 
             hCorrSS[itrigg][iassoc] = (TH2D*)fIn->Get(Form("TrueComponents/hCorrSignalSignal[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
             hCorrSS[itrigg][iassoc]->Rebin2D(4);
+            hCorrSS[itrigg][iassoc]->Scale(1./nEvent);
             hCorrSS[itrigg][iassoc]->GetYaxis()->SetMaxDigits(3);
 
             hCorrSB[itrigg][iassoc] = (TH2D*)fIn->Get(Form("TrueComponents/hCorrSignalBg[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
             hCorrSB[itrigg][iassoc]->Rebin2D(4);
+            hCorrSB[itrigg][iassoc]->Scale(1./nEvent);
             hCorrSB[itrigg][iassoc]->GetYaxis()->SetMaxDigits(3);
 
             hCorrBS[itrigg][iassoc] = (TH2D*)fIn->Get(Form("TrueComponents/hCorrBgSignal[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
             hCorrBS[itrigg][iassoc]->Rebin2D(4);
+            hCorrBS[itrigg][iassoc]->Scale(1./nEvent);
             hCorrBS[itrigg][iassoc]->GetYaxis()->SetMaxDigits(3);
 
             hCorrBB[itrigg][iassoc] = (TH2D*)fIn->Get(Form("TrueComponents/hCorrBgBg[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
             hCorrBB[itrigg][iassoc]->Rebin2D(4);
+            hCorrBB[itrigg][iassoc]->Scale(1./nEvent);
             hCorrBB[itrigg][iassoc]->GetYaxis()->SetMaxDigits(3);
         }
     }
@@ -140,8 +149,7 @@ void ConfigHistos()
 
             if (!useLeading && tlow < aupp) continue;
                 hCorrTrueProj[itrigg][iassoc] = hCorrTrue[itrigg][iassoc]->ProjectionX();
-                hCorrTrueProj[itrigg][iassoc]->Scale(1./nEvent);
-                hCorrTrueProj[itrigg][iassoc]->SetTitle("; #Delta#phi; Counts");
+                hCorrTrueProj[itrigg][iassoc]->SetTitle("; #Delta#phi; 1/N dN/d#Delta#phi");
                 hCorrTrueProj[itrigg][iassoc]->GetYaxis()->SetTitleOffset(1.);
                 //hCorrTrueProj[itrigg][iassoc]->GetYaxis()->SetRangeUser(0.00001, 0.6);
                 hCorrTrueProj[itrigg][iassoc]->SetLineColor(kBlack);
@@ -151,9 +159,7 @@ void ConfigHistos()
                 hCorrTrueProj[itrigg][iassoc]->SetLineWidth(2);
 
                 hCorrMassMassProj[itrigg][iassoc] = hCorrMassMass[itrigg][iassoc]->ProjectionX();
-                hCorrMassMassProj[itrigg][iassoc]->Scale(1./nEvent);
-                //hCorrMassMassProj[itrigg][iassoc]->Scale(1./nMeasTrigg);
-                hCorrMassMassProj[itrigg][iassoc]->SetTitle("; #Delta#phi; Counts");
+                hCorrMassMassProj[itrigg][iassoc]->SetTitle("; #Delta#phi; 1/N dN/d#Delta#phi");
                 hCorrMassMassProj[itrigg][iassoc]->GetYaxis()->SetTitleOffset(1.);
                 //hCorrMassMassProj[itrigg][iassoc]->GetYaxis()->SetRangeUser(0.00001, 0.6);
                 hCorrMassMassProj[itrigg][iassoc]->SetLineColor(kRed);
@@ -163,8 +169,7 @@ void ConfigHistos()
                 hCorrMassMassProj[itrigg][iassoc]->SetLineWidth(2);
 
                 hCorrMassSideProj[itrigg][iassoc] = hCorrMassSide[itrigg][iassoc]->ProjectionX();
-                hCorrMassSideProj[itrigg][iassoc]->Scale(1./nEvent);
-                hCorrMassSideProj[itrigg][iassoc]->SetTitle("; #Delta#phi; Counts");
+                hCorrMassSideProj[itrigg][iassoc]->SetTitle("; #Delta#phi; 1/N dN/d#Delta#phi");
                 hCorrMassSideProj[itrigg][iassoc]->GetYaxis()->SetTitleOffset(1.);
                 hCorrMassSideProj[itrigg][iassoc]->SetLineColor(kRed);
                 hCorrMassSideProj[itrigg][iassoc]->SetMarkerColor(kRed);
@@ -173,8 +178,7 @@ void ConfigHistos()
                 hCorrMassSideProj[itrigg][iassoc]->SetLineWidth(2);
 
                 hCorrSideMassProj[itrigg][iassoc] = hCorrSideMass[itrigg][iassoc]->ProjectionX();
-                hCorrSideMassProj[itrigg][iassoc]->Scale(1./nEvent);
-                hCorrSideMassProj[itrigg][iassoc]->SetTitle("; #Delta#phi; Counts");
+                hCorrSideMassProj[itrigg][iassoc]->SetTitle("; #Delta#phi; 1/N dN/d#Delta#phi");
                 hCorrSideMassProj[itrigg][iassoc]->GetYaxis()->SetTitleOffset(1.);
                 hCorrSideMassProj[itrigg][iassoc]->SetLineColor(kRed);
                 hCorrSideMassProj[itrigg][iassoc]->SetMarkerColor(kRed);
@@ -183,8 +187,7 @@ void ConfigHistos()
                 hCorrSideMassProj[itrigg][iassoc]->SetLineWidth(2);
 
                 hCorrSideSideProj[itrigg][iassoc] = hCorrSideSide[itrigg][iassoc]->ProjectionX();
-                hCorrSideSideProj[itrigg][iassoc]->Scale(1./nEvent);
-                hCorrSideSideProj[itrigg][iassoc]->SetTitle("; #Delta#phi; Counts");
+                hCorrSideSideProj[itrigg][iassoc]->SetTitle("; #Delta#phi; 1/N dN/d#Delta#phi");
                 hCorrSideSideProj[itrigg][iassoc]->GetYaxis()->SetTitleOffset(1.);
                 hCorrSideSideProj[itrigg][iassoc]->SetLineColor(kRed);
                 hCorrSideSideProj[itrigg][iassoc]->SetMarkerColor(kRed);
@@ -193,38 +196,30 @@ void ConfigHistos()
                 hCorrSideSideProj[itrigg][iassoc]->SetLineWidth(2);
 
                 hCorrSSProj[itrigg][iassoc] = hCorrSS[itrigg][iassoc]->ProjectionX();
-                hCorrSSProj[itrigg][iassoc]->Scale(1./nEvent);
                 hCorrSSProj[itrigg][iassoc]->SetMarkerStyle(kDot);
                 hCorrSSProj[itrigg][iassoc]->SetMarkerColor(kMagenta-7);
                 hCorrSSProj[itrigg][iassoc]->SetLineColor(kMagenta-7);
                 hCorrSSProj[itrigg][iassoc]->SetMarkerStyle(kDot);
                 hCorrSSProj[itrigg][iassoc]->SetLineWidth(2);
-                //hCorrSSProj[itrigg][iassoc]->Scale(1./nRealRecTrigg);
-                hCorrSSProj[itrigg][iassoc]->SetTitle("; #Delta#phi; Counts");
+                hCorrSSProj[itrigg][iassoc]->SetTitle("; #Delta#phi; 1/N dN/d#Delta#phi");
 
                 hCorrSBProj[itrigg][iassoc] = hCorrSB[itrigg][iassoc]->ProjectionX();
-                hCorrSBProj[itrigg][iassoc]->Scale(1./nEvent);
                 hCorrSBProj[itrigg][iassoc]->SetMarkerStyle(7);
-                //hCorrSBProj[itrigg][iassoc]->Scale(1./nRealRecTrigg);
                 hCorrSBProj[itrigg][iassoc]->SetMarkerColor(kOrange+7);
                 hCorrSBProj[itrigg][iassoc]->SetLineColor(kOrange+7);
                 hCorrSBProj[itrigg][iassoc]->SetMarkerStyle(kDot);
                 hCorrSBProj[itrigg][iassoc]->SetLineWidth(2);
 
                 hCorrBSProj[itrigg][iassoc] = hCorrBS[itrigg][iassoc]->ProjectionX();
-                hCorrBSProj[itrigg][iassoc]->Scale(1./nEvent);
                 hCorrBSProj[itrigg][iassoc]->SetMarkerStyle(7);
-                //hCorrBSProj[itrigg][iassoc]->Scale(1./nFakeRecTrigg);
                 hCorrBSProj[itrigg][iassoc]->SetMarkerColor(kCyan+1);
                 hCorrBSProj[itrigg][iassoc]->SetLineColor(kCyan+1);
                 hCorrBSProj[itrigg][iassoc]->SetMarkerStyle(kDot);
-                hCorrBSProj[itrigg][iassoc]->SetTitle("; #Delta#phi; Counts");
+                hCorrBSProj[itrigg][iassoc]->SetTitle("; #Delta#phi; 1/N dN/d#Delta#phi");
                 hCorrBSProj[itrigg][iassoc]->SetLineWidth(2);
 
                 hCorrBBProj[itrigg][iassoc] = hCorrBB[itrigg][iassoc]->ProjectionX();
-                hCorrBBProj[itrigg][iassoc]->Scale(1./nEvent);
                 hCorrBBProj[itrigg][iassoc]->SetMarkerStyle(7);
-                //hCorrBBProj[itrigg][iassoc]->Scale(1./nFakeRecTrigg);
                 hCorrBBProj[itrigg][iassoc]->SetMarkerColor(kBlue-7);
                 hCorrBBProj[itrigg][iassoc]->SetLineColor(kBlue-7);
                 hCorrBBProj[itrigg][iassoc]->SetMarkerStyle(kDot);
@@ -282,7 +277,7 @@ void CreateLegends()
                 leg2[itrigg][iassoc] = new TLegend(0.6, 0.3, 0.9, 0.6);
                 leg2[itrigg][iassoc]->SetFillStyle(0); leg2[itrigg][iassoc]->SetBorderSize(0); leg2[itrigg][iassoc]->SetTextSize(0.06);
 
-                leg3[itrigg][iassoc] = new TLegend(0.5, 0.5, 0.9, 0.75);
+                leg3[itrigg][iassoc] = new TLegend(0.48, 0.5, 0.92, 0.75);
                 leg3[itrigg][iassoc]->SetFillStyle(0); leg3[itrigg][iassoc]->SetBorderSize(0); leg3[itrigg][iassoc]->SetTextSize(0.05);
                 leg3[itrigg][iassoc]->SetNColumns(3);
                 leg3[itrigg][iassoc]->SetHeader(Form("#splitline{%s}{[%0.1f,%0.1f][%0.1f,%0.1f]}", legHeader.Data(),triggPt[itrigg],triggPt[itrigg+1],assocPt[iassoc],assocPt[iassoc+1]));
@@ -310,7 +305,7 @@ void DrawFiliPad()
     if (plotCloseup)
         t = new TText(.25,0.79,"PYTHIA8 simulation");
     else
-        t = new TText(.5,0.79,"PYTHIA8 simulation");
+        t = new TText(.48,0.79,"PYTHIA8 simulation");
     t->SetNDC();
     int padID = 0;
     for (int itrigg = 0; itrigg < nTriggBins; itrigg++) {
@@ -340,9 +335,11 @@ void DrawFiliPad()
             if (plotCloseup) {
                 rangeMax = hCorrMassMassProj[itrigg][iassoc]->GetBinContent(maxBin) + 10.*hCorrMassMassProj[itrigg][iassoc]->GetBinContent(maxBin);
             }
+            rangeMin = 5e-7;
+            rangeMax = 2e-4;
             TPad *p = fpad[itrigg][iassoc]->GetPad(1);
             p->SetTickx(); p->SetLogx(0); p->SetLogy(1); p->cd();
-            hset(*hCorrTrueProj[itrigg][iassoc], "#Delta#phi", "1/N_{ev}dN/d#Delta#phi", 1.1,1.2, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
+            hset(*hCorrTrueProj[itrigg][iassoc], "#Delta#phi", "1/N_{ev} dN/d#Delta#phi", 1.1,1.4, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
             hCorrTrueProj[itrigg][iassoc]->GetYaxis()->SetRangeUser(rangeMin, rangeMax);
             hCorrTrueProj[itrigg][iassoc]->Draw("HIST E");
             hCorrMassMassProj[itrigg][iassoc]->Draw("SAME HIST E");
@@ -384,7 +381,7 @@ void DrawFiliPad()
             int maxBin = hCorrMassMassProj[itrigg][iassoc]->GetMaximumBin();
             double rangeMin = 0.5;
             double rangeMax = hCorrMassMassProj[itrigg][iassoc]->GetBinContent(maxBin) + 10.*hCorrMassMassProj[itrigg][iassoc]->GetBinContent(maxBin);
-            if (rangeMin<=0) rangeMin = 0.0008;
+            if (rangeMin<=0) rangeMin = 0.0000008;
             if (itrigg==0 && iassoc==0) {
                 rangeMin = 1;
                 rangeMax *= 3.;
@@ -392,9 +389,15 @@ void DrawFiliPad()
             if (plotCloseup) {
                 rangeMax = hCorrMassMassProj[itrigg][iassoc]->GetBinContent(maxBin) + 100.*hCorrMassMassProj[itrigg][iassoc]->GetBinContent(maxBin);
             }
+            if (iassoc==0) {
+                rangeMin = 5e-9;
+            } else {
+                rangeMin = 5e-10;
+            }
+            rangeMax = 5e-4;
             TPad *p = fpadcomp[itrigg][iassoc]->GetPad(1);
             p->SetTickx(); p->SetLogx(0); p->SetLogy(1); p->cd();
-            hset(*hCorrMassMassProj[itrigg][iassoc], "#Delta#phi", "counts", 1.1,1.2, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
+            hset(*hCorrMassMassProj[itrigg][iassoc], "#Delta#phi", "1/N_{ev} dN/d#Delta#phi", 1.2,1.4, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
             hCorrMassMassProj[itrigg][iassoc]->GetYaxis()->SetRangeUser(rangeMin, rangeMax);
             hCorrMassMassProj[itrigg][iassoc]->Draw("HIST E");
             hCorrSSProj[itrigg][iassoc]->Draw("SAME HIST E");

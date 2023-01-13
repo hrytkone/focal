@@ -28,8 +28,8 @@ const double effCorrTrigg[nTriggBins] = {1., 1.};
 //const double effCorrTrigg[nTriggBins] = {1./0.988, 1./0.988};
 //const double effCorrTrigg[nTriggBins] = {1./0.43981}; // LEADING TRIGG 2 GeV/c < pTassoc < pTtrigg
 
-const double massMin = 120.;
-const double massMax = 155.;
+const double massMin = 110.;
+const double massMax = 160.;
 
 //const double massMin = 60.;
 //const double massMax = 210.;

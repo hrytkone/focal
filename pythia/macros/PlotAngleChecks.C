@@ -1,7 +1,9 @@
 
-TString infile = "/home/heimarry/Simulations/focal/analysis_output/2023-01-10_pp-focal_oangle-divided_asym-1.root";
+//TString infile = "/home/heimarry/Simulations/focal/analysis_output/2023-01-10_pp-focal_oangle-divided_asym-1.root";
 //TString infile = "/home/heimarry/Simulations/focal/analysis_output/2023-01-09_pp-focal_oangle-divided_asym-08.root";
 //TString infile = "/home/heimarry/Simulations/focal/analysis_output/2023-01-10_pp-focal_oangle-divided_asym-05.root";
+TString infile = "/home/heimarry/Simulations/focal/analysis_output/2023-01-11_pp-focal_thetacut-0001.root";
+
 
 const int nAssocBins = 3;
 const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0, 8.0};

@@ -8,9 +8,9 @@ const double etacut = 0.2;
 const double mwMin = 110;
 const double mwMax = 160;
 
-const int nPtBin = 40;
+const int nPtBin = 90;
 const double ptMin = 2.;
-const double ptMax = 10.;
+const double ptMax = 20.;
 
 TFile *fIn, *fOut;
 TTree *fTree;

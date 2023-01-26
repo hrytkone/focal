@@ -66,10 +66,10 @@ int AliJHMRCorr::ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0C
 
     for (int i = 1; i < nPhoton; i++) {
         AliJBaseTrack *lv1 = (AliJBaseTrack*)arrPhoton->At(i);
-        if (!fIsFullSim && IsPhotonRemoved(lv1->E())) continue;
+        //if (!fIsFullSim && IsPhotonRemoved(lv1->E())) continue;
         for (int j = 0; j < i; j++) {
             AliJBaseTrack *lv2 = (AliJBaseTrack*)arrPhoton->At(j);
-            if (!fIsFullSim && IsPhotonRemoved(lv2->E())) continue;
+            //if (!fIsFullSim && IsPhotonRemoved(lv2->E())) continue;
             if (GetAsymmetry(arrPhoton, lv1, lv2)>asymcut) continue;
             if (GetOpeningAngle(arrPhoton, lv1, lv2)<thetacut) continue;
             AliJBaseTrack lvSum = GetPhotonSumVector(arrPhoton, lv1, lv2);
@@ -153,10 +153,6 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, TClonesArray *arrPhoton, 
         int nAssoc = listAssoc.size();
         if (nAssoc < 1) continue;
 
-        //if (bUseWeight) wTrigg = 1./fPhotonAcceptanceEfficiency->Eval(ptTrigg);
-        //if (bUseWeight && !fIsFullSim) wTrigg = 1./pi0eff;
-        //if (bUseWeight && fIsFullSim) wTrigg = 1./effCorrTrigg[iTriggBin];
-
         for (int ia = 0; ia < nAssoc; ia++) {
             int iAssoc = listAssoc[ia];
             if (iTrigg==iAssoc) continue; // autocorrelations
@@ -227,6 +223,7 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> lis
     int nTrigg = listTrigg.size();
     if (nTrigg < 1) return;
 
+
     for (int it = 0; it < nTrigg; it++) {
         int iTrigg = listTrigg[it];
         AliJBaseTrack *lvTrigg = (AliJBaseTrack*)arrPi0Trigg->At(iTrigg);
@@ -237,10 +234,6 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> lis
 
         int nAssoc = listAssoc.size();
         if (nAssoc < 1) continue;
-
-        //if (bUseWeightTrigg) wTrigg = 1./fPhotonAcceptanceEfficiency->Eval(ptTrigg);
-        if (bUseWeightTrigg && !fIsFullSim) wTrigg = 1./pi0eff;
-        if (bUseWeightTrigg && fIsFullSim) wTrigg = 1./effCorrTrigg[iTriggBin];
 
         for (int ia = 0; ia < nAssoc; ia++) {
             int iAssoc = listAssoc[ia];
@@ -286,7 +279,6 @@ void AliJHMRCorr::ConstructTrueCorrComponents(TClonesArray *arrPi0, TClonesArray
         double etaTrigg = lvTrigg->Eta();
 
         int iTriggBin = GetBin(triggPt, NTRIGGBINS, ptTrigg);
-
         int nAssoc = listAssoc.size();
         if (nAssoc < 1) continue;
 
@@ -476,12 +468,12 @@ void AliJHMRCorr::FillPionMasses(TClonesArray *arrPhoton, int binsWithTriggPeak[
     int nPhoton = arrPhoton->GetEntriesFast();
     for (int i = 1; i < nPhoton; i++) {
         AliJBaseTrack *lv1 = (AliJBaseTrack*)arrPhoton->At(i);
-        if (!fIsFullSim && IsPhotonRemoved(lv1->E())) continue;
+        //if (!fIsFullSim && IsPhotonRemoved(lv1->E())) continue;
         for (int j = 0; j < i; j++) {
             AliJBaseTrack *lv2 = (AliJBaseTrack*)arrPhoton->At(j);
             if (GetAsymmetry(arrPhoton, lv1, lv2)>asymcut) continue;
             if (GetOpeningAngle(arrPhoton, lv1, lv2)<thetacut) continue;            
-            if (!fIsFullSim && IsPhotonRemoved(lv2->E())) continue;
+            //if (!fIsFullSim && IsPhotonRemoved(lv2->E())) continue;
             AliJBaseTrack lvSum = GetPhotonSumVector(arrPhoton, lv1, lv2);
             if (lvSum.Eta()<detEta[idet][0]+etacut || lvSum.Eta()>detEta[idet][1]-etacut) continue;
             double mass = 1000.*lvSum.M();

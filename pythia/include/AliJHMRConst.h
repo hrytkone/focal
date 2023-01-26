@@ -5,8 +5,8 @@
 #include "TString.h"
 
 #define NDET 4
-#define NTRIGGBINS 2
-#define NASSOCBINS 3
+#define NTRIGGBINS 3
+#define NASSOCBINS 4
 #define NLEADINGBINS 10
 #define NMASSBINS 6
 #define NINCPTBIN 150

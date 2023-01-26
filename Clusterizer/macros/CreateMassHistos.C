@@ -220,7 +220,7 @@ void FillMassHistosMixed(TClonesArray *clusters, TClonesArray *clustpool)
 int GetBin(double arr[], int nArr, double val)
 {
     for (int i=0; i<nArr; i++) {
-        if (arr[i]<=val && val<arr[i+1]) return i;
+        if (arr[i]<val && val<=arr[i+1]) return i;
     }
     return -1;
 }

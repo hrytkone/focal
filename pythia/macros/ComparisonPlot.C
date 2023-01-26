@@ -5,7 +5,7 @@ void LoadData();
 void ConfigHistos();
 void DrawFiliPad();
 
-const bool useLeading = 1;
+const bool useLeading = 0;
 
 const int nTriggBins = 2;
 const int nAssocBins = 2;

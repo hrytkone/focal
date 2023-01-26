@@ -49,7 +49,9 @@ void processDataFoCal()
         //"/home/heimarry/Simulations/focal/analysis_output/2022-12-16_pp-focal_pair-check_two-sidebands.root"
         //"/home/heimarry/Simulations/focal/analysis_output/2022-12-16_pp-focal_pair-check_two-sidebands.root"
         //"/home/heimarry/Simulations/focal/analysis_output/2022-12-19_pp-focal_no-pair-check.root"
-        "/home/heimarry/Simulations/focal/analysis_output/2023-01-12_pp-focal_no-pair-check.root"
+        //"/home/heimarry/Simulations/focal/analysis_output/2023-01-25_pp-focal_test-bug_include-same-pairs.root"
+        "/home/heimarry/Simulations/focal/test-old-commits/2023-01-24_pp-focal_commit-2.root"
+        //"/home/heimarry/Simulations/focal-pythia-sim/focal-pp_no-weight.root"
 	};
 
 	TString fOutName[ndata_focal] = {
@@ -136,8 +138,8 @@ void DoAnalysis()
             if (!useLeading && tlow < aupp) continue;
 
             hCorrRealProj[it][ia] = hCorrReal[it][ia]->ProjectionX();
-            hCorrRealProj[it][ia]->Scale(1.0/nEvent, "width");
-            //hCorrRealProj[it][ia]->Scale(1.0/nRealTrigg[it], "width");
+            //hCorrRealProj[it][ia]->Scale(1.0/nEvent, "width");
+            hCorrRealProj[it][ia]->Scale(1.0/nRealTrigg[it], "width");
             //hCorrRealProj[it][ia]->Scale(1.0/hCorrRealProj[it][ia]->GetEntries(), "width");
 
             hCorrMassMassProj[it][ia] = hCorrMassMass[it][ia]->ProjectionX();
@@ -157,8 +159,8 @@ void DoAnalysis()
             hCorr[it][ia]->Add(hCorrSideSideProj[it][ia]);
 
             // Take efficiencies into account
-            hCorr[it][ia]->Scale(1.0/nEvent, "width");
-            //hCorr[it][ia]->Scale(1.0/st[it], "width");
+            //hCorr[it][ia]->Scale(1.0/nEvent, "width");
+            hCorr[it][ia]->Scale(1.0/st[it], "width");
             //hCorr[it][ia]->Scale(1.0/hCorr[it][ia]->GetEntries(), "width");
 
             double massWindowMin, massWindowMax;
@@ -170,9 +172,9 @@ void DoAnalysis()
                 massWindowMax = massPeakPosTrigg[it]+3.*massSigmaTrigg[it];
             }
             hCorrMeasProj[it][ia] = hCorrMeas[it][ia]->ProjectionX();
-            hCorrMeasProj[it][ia]->Scale(1.0/nEvent, "width");
+            //hCorrMeasProj[it][ia]->Scale(1.0/nEvent, "width");
             //hCorrMeasProj[it][ia]->Scale(1.0/fFitTrigg[it]->Integral(massWindowMin, massWindowMax), "width");
-            //hCorrMeasProj[it][ia]->Scale(1.0/hMassTrigg[it]->Integral(hMassTrigg[it]->GetXaxis()->FindBin(massWindowMin), hMassTrigg[it]->GetXaxis()->FindBin(massWindowMax)), "width");
+            hCorrMeasProj[it][ia]->Scale(1.0/hMassTrigg[it]->Integral(hMassTrigg[it]->GetXaxis()->FindBin(massWindowMin), hMassTrigg[it]->GetXaxis()->FindBin(massWindowMax)), "width");
             //hCorrMeasProj[it][ia]->Scale(1.0/hCorrMeasProj[it][ia]->GetEntries(), "width");
         }
     }

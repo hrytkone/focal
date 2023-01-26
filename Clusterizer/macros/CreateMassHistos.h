@@ -1,4 +1,4 @@
-const TString outputname = "masses_v5_eta35-55";
+const TString outputname = "masses_v5_eta35-55_gun-5GeV_test";
 const int nasym = 6;
 const int npt = 6;
 //const int npt = 10;
@@ -12,7 +12,11 @@ const int poolsize = 0;
 
 double asymcut[nasym] = {0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
 //double pt[npt+1] = {1., 2., 3., 5., 8., 12., 20.};
-double pt[npt+1] = {2., 3., 4., 8., 10., 15., 20.};
+//double pt[npt+1] = {2., 3., 4., 8., 10., 15., 20.};
+//double pt[npt+1] = {2., 3., 4., 8., 20.};
+//double pt[npt+1] = {1.,2., 3., 4., 5., 6., 7., 8., 9., 10., 11., 12., 13., 14., 15.};
+//double pt[npt+1] = {8., 8.5, 9., 9.5, 10., 10.5, 11.};
+double pt[npt+1] = {3., 3.5, 4., 4.5, 5., 5.5, 6.};
 //double pt[npt+1] = {2., 2.5, 3., 3.5, 4., 5., 6., 8., 10., 15., 20.};
 //double pt[npt+1] = {10., 11.};
 

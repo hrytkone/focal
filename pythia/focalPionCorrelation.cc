@@ -133,7 +133,7 @@ int main(int argc, char *argv[]) {
         fHistos->FillPtEta(kJPi0, arrPi0Real);
         fHistos->FillPtEta(kJRecPi0, arrPi0Peak);
 
-        if (bDebugOn)
+        if (!bDebugOn)
             std::cout << "Number of Pi0 (real) : " << arrPi0Real->GetEntriesFast()
                       << "\t (rec, peak) : " << arrPi0Peak->GetEntriesFast()
                       << "\t (rec, peak) true : " << nTrueFromPeak
@@ -160,20 +160,19 @@ int main(int argc, char *argv[]) {
         fCorr->FillAsymmetry(arrPhotonFor, det);
 
         fCorr->DoCorrelations(arrPi0Real, arrPhotonFor, listTriggReal, listAssocReal, fHistos->hCorrFor, 1, 0, 0); // last three values: bTrueCorr, bMassWindow, bUseWeight
-        fCorr->DoCorrelations(arrPi0Peak, arrPhotonFor, listTriggPeak, listAssocPeak, fHistos->hCorrMeas, 0, 1, 0);
-        fCorr->DoCorrelations(arrPi0Peak, arrPhotonFor, listTriggPeak, listAssocPeak, fHistos->hCorrMassMass, 0, 1, 1);
+        fCorr->DoCorrelations(arrPi0Peak, arrPhotonFor, listTriggPeak, listAssocPeak, fHistos->hCorrMassMass, 0, 1, 0);
 
         if (bUseLeading) {
             int isPeakTriggLarger = fCorr->GetLargerTrigg(arrPi0Peak, listTriggPeak, arrPi0Side, listTriggSide);
             if (isPeakTriggLarger) {
                 fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0Side, listAssocSide, fHistos->hCorrMassSide, 0, 0);
             } else {
-                fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, fHistos->hCorrSideMass, 0, 1);
+                fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, fHistos->hCorrSideMass, 0, 0);
                 fCorr->DoCorrelations(arrPi0Side, arrPhotonFor, listTriggSide, listAssocSide, fHistos->hCorrSideSide, 0, 0, 0);
             }
         } else {
             fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0Side, listAssocSide, fHistos->hCorrMassSide, 0, 0);
-            fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, fHistos->hCorrSideMass, 0, 1);
+            fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, fHistos->hCorrSideMass, 0, 0);
             fCorr->DoCorrelations(arrPi0Side, arrPhotonFor, listTriggSide, listAssocSide, fHistos->hCorrSideSide, 0, 0, 0);
         }
 

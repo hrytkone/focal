@@ -1,7 +1,6 @@
 #include "AliJHMRConst.h"
 
 const double detEta[NDET][2] = {
-    //{4.1, 5.5},
     {3.5, 5.5},
 	{2.6, 4.},
 	{-0.8, 0.8},
@@ -20,8 +19,8 @@ const TString accFunc[NDET] = {
 //double assocPt[NASSOCBINS+1] = {0.5, 1.0, 1.5, 2.0, 2.5};
 
 // FoCal bins
-double triggPt[NTRIGGBINS+1] = {4.0, 8.0, 20.0};
-double assocPt[NASSOCBINS+1] = {2.0, 3.0, 4.0, 8.0};
+double triggPt[NTRIGGBINS+1] = {2.0, 4.0, 8.0, 20.0};
+double assocPt[NASSOCBINS+1] = {1.0, 2.0, 3.0, 4.0, 8.0};
 //double triggPt[NTRIGGBINS+1] = {4.0, 8.0, 10.0, 15.0, 20.0};
 //double assocPt[NASSOCBINS+1] = {2.0, 3.0, 4.0, 8.0, 10.0, 15.0};
 

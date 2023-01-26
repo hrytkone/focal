@@ -25,7 +25,7 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet, bool bUseLeadin
     hPhotonPt = new TH1D("hPhotonPt", "hPhotonPt", NINCPTBIN, logBinsX); hPhotonPt->Sumw2();
 
     hPionEta = new TH1D("hPionEta", "hPionEta", NINCETABIN, -incEtaRange/2., incEtaRange/2.); hPionEta->Sumw2();
-    hRecPionEta = new TH1D("hPionEta", "hPionEta", NINCETABIN, -incEtaRange/2., incEtaRange/2.); hRecPionEta->Sumw2();
+    hRecPionEta = new TH1D("hRecPionEta", "hRecPionEta", NINCETABIN, -incEtaRange/2., incEtaRange/2.); hRecPionEta->Sumw2();
     hPhotonEta = new TH1D("hPhotonEta", "hPhotonEta", NINCETABIN, -incEtaRange/2., incEtaRange/2.); hPhotonEta->Sumw2();
     hChargedHadronEta = new TH1D("hChargedHadronEta", "hChargedHadronEta", NINCETABIN, -incEtaRange/2., incEtaRange/2.); hChargedHadronEta->Sumw2();
 
@@ -37,7 +37,6 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet, bool bUseLeadin
     dirMassComponents = output->mkdir("MassComponents");
     dirCorrMid = output->mkdir("CorrMid");
     dirCorrFor = output->mkdir("CorrFor");
-    dirCorrMeas = output->mkdir("CorrMeas");
     dirCorrReject = output->mkdir("CorrReject");
     dirCorrChargedMid = output->mkdir("CorrChargedMid");
     dirCorrChargedFor = output->mkdir("CorrChargedFor");
@@ -98,12 +97,6 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet, bool bUseLeadin
                                       Form("hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
                                       nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
             hCorrFor[i][j]->Sumw2();
-
-            dirCorrMeas->cd();
-            hCorrMeas[i][j] = new TH2D(Form("hCorrMeas[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
-                                      Form("hCorrMeas[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
-                                      nPhiBin, deltaPhiMin, deltaPhiMax, nEtaBin, -etaRange, etaRange);
-            hCorrMeas[i][j]->Sumw2();
 
             dirCorrReject->cd();
             hCorrRejectMassMass[i][j] = new TH2D(Form("hCorrRejectMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),

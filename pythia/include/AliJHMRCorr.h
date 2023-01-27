@@ -29,11 +29,9 @@ public:
 
     AliJHMRCorr(AliJHMRHist *inhistos, detector det, bool bUseLeading, bool isFullSim) :
         histos(inhistos) {
-            fPhotonEfficiency = new TF1("fPhotonEfficiency", "TMath::Exp(-3.20093/x)"); // Parameters from fit to efficiency (PhotonEfficiency.C)
-            fPhotonAcceptanceEfficiency = new TF1("fPhotonAcceptanceEfficiency", accFunc[det].Data()); // Parameters from fit (CheckMissingPionsRatio.C)
             std::cout << "Correlations are calculated in " << detEta[det][0]+etacut << " < eta < " << detEta[det][1]-etacut << std::endl;
             std::cout << "(etacut=" << etacut << ")" << std::endl;
-            std::cout << "Using acceptance function " << accFunc[det].Data() << std::endl;
+
             fRand = new TRandom3();
             fUseLeading = bUseLeading;
             fIsFullSim = isFullSim;
@@ -51,8 +49,6 @@ public:
     double GetDeltaPhi(double phiTrigg, double phiAssoc);
     double PhotonEnergySmearing(double px, double py, double pz);
     void SmearEnergies(TClonesArray * arrParticles);
-    bool IsPhotonRemoved(double ePhoton);
-    bool IsPhotonRemoved(TClonesArray *arrPhoton, AliJBaseTrack *lv1, AliJBaseTrack *lv2);
     double GetAsymmetry(TClonesArray *arrPhoton, AliJBaseTrack *lv1, AliJBaseTrack *lv2);
     double GetOpeningAngle(TClonesArray *arrPhoton, AliJBaseTrack *lv1, AliJBaseTrack *lv2);
     AliJBaseTrack GetPhotonSumVector(TClonesArray *arrayPhoton, AliJBaseTrack *lv1, AliJBaseTrack *lv2);
@@ -60,7 +56,7 @@ public:
     int GetLargerTrigg(TClonesArray *arrPi0Peak, std::vector<int> listTriggPeak, TClonesArray *arrPi0Side, std::vector<int> listTriggSide);
 
     void DoCorrelations(TClonesArray *arrPi0, TClonesArray *arrPhoton, std::vector<int> listTrigg, std::vector<int> listAssoc, TH2D *hCorr[NTRIGGBINS][NASSOCBINS], bool bTrueCorr, bool bMassWindowTrigg, bool bUseWeight);
-    void DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> listTrigg, TClonesArray *arrPi0Assoc, std::vector<int> listAssoc, TH2D *hCorr[NTRIGGBINS][NASSOCBINS], bool bUseWeightTrigg, bool bUseWeightAssoc);
+    void DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> listTrigg, TClonesArray *arrPi0Assoc, std::vector<int> listAssoc, TH2D *hCorr[NTRIGGBINS][NASSOCBINS], bool bUseWeight);
     void ConstructTrueCorrComponents(TClonesArray *arrPi0, TClonesArray* arrPhoton, std::vector<int> listTrigg, std::vector<int> listAssoc, bool bUseWeight);
     int ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0Candidates, detector idet, bool bMass);
     void GetTriggAssocLists(TClonesArray *arrPi0Candidates, std::vector<int>& listTrigg, std::vector<int>& listAssoc, int *binsWithTrigg, bool bMass);
@@ -89,8 +85,6 @@ protected:
     double fLphi;     // These are to find out the leading trigger when filling mass histos for assoc
     double fLpt;      // These are to find out the leading trigger when filling mass histos for assoc
 
-    TF1 *fPhotonEfficiency;
-    TF1 *fPhotonAcceptanceEfficiency;
     TRandom3 *fRand;
     AliJHMRHist *histos;
 

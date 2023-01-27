@@ -133,7 +133,7 @@ int main(int argc, char *argv[]) {
         fHistos->FillPtEta(kJPi0, arrPi0Real);
         fHistos->FillPtEta(kJRecPi0, arrPi0Peak);
 
-        if (!bDebugOn)
+        if (bDebugOn)
             std::cout << "Number of Pi0 (real) : " << arrPi0Real->GetEntriesFast()
                       << "\t (rec, peak) : " << arrPi0Peak->GetEntriesFast()
                       << "\t (rec, peak) true : " << nTrueFromPeak
@@ -165,14 +165,14 @@ int main(int argc, char *argv[]) {
         if (bUseLeading) {
             int isPeakTriggLarger = fCorr->GetLargerTrigg(arrPi0Peak, listTriggPeak, arrPi0Side, listTriggSide);
             if (isPeakTriggLarger) {
-                fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0Side, listAssocSide, fHistos->hCorrMassSide, 0, 0);
+                fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0Side, listAssocSide, fHistos->hCorrMassSide, 0);
             } else {
-                fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, fHistos->hCorrSideMass, 0, 0);
+                fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, fHistos->hCorrSideMass, 0);
                 fCorr->DoCorrelations(arrPi0Side, arrPhotonFor, listTriggSide, listAssocSide, fHistos->hCorrSideSide, 0, 0, 0);
             }
         } else {
-            fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0Side, listAssocSide, fHistos->hCorrMassSide, 0, 0);
-            fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, fHistos->hCorrSideMass, 0, 0);
+            fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0Side, listAssocSide, fHistos->hCorrMassSide, 0);
+            fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, fHistos->hCorrSideMass, 0);
             fCorr->DoCorrelations(arrPi0Side, arrPhotonFor, listTriggSide, listAssocSide, fHistos->hCorrSideSide, 0, 0, 0);
         }
 
@@ -189,10 +189,10 @@ int main(int argc, char *argv[]) {
                     int binsWithTriggPeakMixed[NTRIGGBINS+1] = {0}, binsWithTriggSideMixed[NTRIGGBINS+1] = {0};
                     fCorr->GetTriggAssocLists(arrPi0PeakMixed[ipool], listTriggPeakMixed, listAssocPeakMixed, binsWithTriggPeakMixed, 0);
                     fCorr->GetTriggAssocLists(arrPi0SideMixed[ipool], listTriggSideMixed, listAssocSideMixed, binsWithTriggSideMixed, 0);
-                    fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0PeakMixed[ipool], listAssocPeakMixed, fHistos->hCorrMassMassMixed, 0, 0);
-                    fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0SideMixed[ipool], listAssocSideMixed, fHistos->hCorrSideSideMixed, 0, 0);
-                    fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0SideMixed[ipool], listAssocSideMixed, fHistos->hCorrMassSideMixed, 0, 0);
-                    fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0PeakMixed[ipool], listAssocPeakMixed, fHistos->hCorrSideMassMixed, 0, 0);
+                    fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0PeakMixed[ipool], listAssocPeakMixed, fHistos->hCorrMassMassMixed, 0);
+                    fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0SideMixed[ipool], listAssocSideMixed, fHistos->hCorrSideSideMixed, 0);
+                    fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0SideMixed[ipool], listAssocSideMixed, fHistos->hCorrMassSideMixed, 0);
+                    fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0PeakMixed[ipool], listAssocPeakMixed, fHistos->hCorrSideMassMixed, 0);
 
                 }
                 // Remove the first from the pool and add new array to the pool

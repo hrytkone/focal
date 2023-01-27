@@ -1,42 +1,16 @@
-const bool bUseConstMassWindow = true;
-const bool useLeading = false;
-
 const int ndata_star = 2;
 const int ndata_focal = 1;
 const int nTriggBins = 2;
 const int nAssocBins = 2;
-const int nLeadingBins = 10;
 
 const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
 const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
-//const double triggPt[nTriggBins+1] = {8.0, 20.0};
-//const double assocPt[nAssocBins+1] = {3.0, 4.0, 8.0};
-//const double triggPt[nTriggBins+1] = {4.0, 8.0, 10.0, 15.0, 20.0};
-//const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0, 8.0, 10.0, 15.0};
-
-// Leading trigger
-//const double triggPt[nTriggBins+1] = {4.0, 10000.0};
-//const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
 
 const double pi0br = 1./0.98823;
 //const double pi0eff = 1.;
 
-const double effCorrTrigg[nTriggBins] = {1., 1.};
-//const double effCorrTrigg[nTriggBins] = {1.};
-//const double effCorrTrigg[nTriggBins] = {1./0.485133, 1./0.610642, 1./0.674529, 1./0.561265};
-//const double effCorrTrigg[nTriggBins] = {1./0.221901, 1./0.409597, 1./0.440636, 1./0.42808};
-//const double effCorrTrigg[nTriggBins] = {1./0.988, 1./0.988};
-//const double effCorrTrigg[nTriggBins] = {1./0.43981}; // LEADING TRIGG 2 GeV/c < pTassoc < pTtrigg
-
 const double massMin = 110.;
 const double massMax = 160.;
-
-//const double massMin = 60.;
-//const double massMax = 210.;
-const double massSigmaTrigg[nTriggBins] = {27.4508};//, 28.5018, 24.3633, 20.5244};
-const double massSigmaAssoc[nAssocBins] = {28.8498, 25.1395};//, 27.4508, 28.5018, 24.3633};
-const double massPeakPosTrigg[nTriggBins] = {140.779};//, 143.724, 146.13, 146.865};
-const double massPeakPosAssoc[nAssocBins] = {130, 135.607};//, 140.779, 143.724, 146.13};
 
 // Input
 int nEvent;
@@ -47,7 +21,6 @@ TH1D *hRealTriggCounter;
 TH1D *hMassTrigg[nTriggBins];
 TH1D *hMassAssocPeak[nTriggBins][nAssocBins];
 TH1D *hMassAssocSide[nTriggBins][nAssocBins];
-TH1D *hMassAssocSum[nTriggBins][nAssocBins];
 
 TH2D *hCorrReal[nTriggBins][nAssocBins];
 TH2D *hCorrMeas[nTriggBins][nAssocBins];
@@ -104,12 +77,12 @@ TF1 *fPeakAssocSum[nTriggBins][nAssocBins];
 TF1 *fBgAssocSum[nTriggBins][nAssocBins];
 
 TH1D *hCorrRealProj[nTriggBins][nAssocBins];
-TH1D *hCorrMeasProj[nTriggBins][nAssocBins];
 TH1D *hCorrMassMassProj[nTriggBins][nAssocBins];
 TH1D *hCorrMassSideProj[nTriggBins][nAssocBins];
 TH1D *hCorrSideMassProj[nTriggBins][nAssocBins];
 TH1D *hCorrSideSideProj[nTriggBins][nAssocBins];
-TH1D *hCorr[nTriggBins][nAssocBins];
+TH1D *hCorrNonCorrected[nTriggBins][nAssocBins];
+TH1D *hCorrCorrected[nTriggBins][nAssocBins];
 
 TFile *fIn;
 TFile *fOut;

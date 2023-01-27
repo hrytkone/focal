@@ -29,14 +29,7 @@ extern const double massSigmaAssoc[NASSOCBINS];
 extern const double massPeakPosTrigg[NTRIGGBINS];
 extern const double massPeakPosAssoc[NASSOCBINS];
 
-// FOR LEADING TRIGGER CASE
-//extern const double massSigmaTrigg[NLEADINGBINS];
-//extern const double massSigmaAssoc[NLEADINGBINS];
-//extern const double massPeakPosTrigg[NLEADINGBINS];
-//extern const double massPeakPosAssoc[NLEADINGBINS];
-
 extern const double pi0eff; // FOR MC SIMULATION
-extern const double effCorrTrigg[NTRIGGBINS]; // FOR GEANT SIMUALTION
 extern const double effCorrAssoc[NASSOCBINS]; // FOR GEANT SIMUALTION
 extern const double effCorrLeading[NLEADINGBINS]; // FOR GEANT SIMUALTION
 

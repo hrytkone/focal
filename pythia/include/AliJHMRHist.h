@@ -29,6 +29,7 @@ class AliJHMRHist {
         // create histograms
         void CreateHistos(TFile *output, detector labelDet, bool bUseLeading);
         void FillPtEta(particleType itype, TClonesArray * arrParticles);
+        void FillMathingInformation(TClonesArray * arrClusters, TClonesArray * arrPtMatchedClusters);
 
         TH1D *hCounter;
         TH1D *hRealTriggCounter;
@@ -95,6 +96,11 @@ class AliJHMRHist {
         TH2D *hMassOpeningAngleDecay[NASSOCBINS];
         TH2D *hMassOpeningAngleMix[NASSOCBINS];
         TH2D *hMassOpeningAngleNotDecay[NASSOCBINS];
+
+        // To check how well matching particles to clusters work
+        TH2D *hPtMatched;
+        TH2D *hEtaMatched;
+        TH2D *hPhiMatched;
 
         TH1D *hEnergyMassBgTrigg[NTRIGGBINS];
         TH1D *hEnergySidebandTrigg[NTRIGGBINS];

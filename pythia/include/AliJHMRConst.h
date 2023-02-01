@@ -13,7 +13,7 @@
 #define NINCETABIN 150
 #define NPHOTONENERGYBIN 150
 
-enum particleType { kJHadron, kJPi0, kJDecayPhoton, kJRecPi0 };
+enum particleType { kJHadron, kJPi0, kJDecayPhoton, kJRecPi0, kJCluster, kJPtMatchedCluster };
 enum detector { kJFoCal, kJSTAR, kJTracker, kJFull };
 
 // For fixed mass window

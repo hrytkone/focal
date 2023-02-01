@@ -3,16 +3,17 @@
 
 //const double xmin = -TMath::Pi()/6;
 //const double xmin = -0.4;
-const double xmin = -TMath::Pi();
+const double xmin = -TMath::Pi()/2;
 //const double xmin = TMath::Pi()/2.;
 
 //const double xmax = TMath::Pi()/3;
 //const double xmax = 0.8;
 const double xmax = (3./2)*TMath::Pi();
+//const double xmax = TMath::Pi();
 
 const double alpha = 1;
 
-const int nset = 2;
+const int nset = 1;
 const int nTriggBins = 2;
 const int nAssocBins = 2;
 const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
@@ -21,30 +22,18 @@ const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
 const double ymax[nTriggBins][nAssocBins] = {{1.2, 2.4}, {1.2, 2.8}};
 
 const TString inputname[nset] = {
-//    "/home/heimarry/Simulations/focal/analysis_output/2022-12-19_pp-focal_two-sidebands.root",
-    //"/home/heimarry/Simulations/focal/analysis_output/2023-01-10_pp-focal_oangle-divided_asym-1.root",
-    //"/home/heimarry/Simulations/focal/analysis_output/2023-01-09_pp-focal_oangle-divided_asym-08.root",
-    //"/home/heimarry/Simulations/focal/analysis_output/2023-01-10_pp-focal_oangle-divided_asym-05.root"
-    //"/home/heimarry/Simulations/focal/analysis_output/2023-01-11_pp-focal_thetacut-0002.root"
-    "/home/heimarry/Simulations/focal/analysis_output/2022-12-20_pp-focal_sideband-50-115-160-200.root",
-    //"/home/heimarry/Simulations/focal/analysis_output/2022-12-16_pp-focal_sideband-40-80.root",
-//    "/home/heimarry/Simulations/focal/analysis_output/2022-12-16_pp-focal_sideband-210-280.root",
-    "/home/heimarry/Simulations/focal/analysis_output/2023-01-09_pp-focal_sideband-160-200.root",
-    //"/home/heimarry/Simulations/focal/analysis_output/2022-12-14_pp-focal.root"
+    //"/home/heimarry/Simulations/focal/analysis_output_2/2023-01-26_pp-focal_no-photon-eff.root"
+    //"/home/heimarry/Simulations/focal/analysis_output_2/2023-01-27_pp-focal_asym-08.root"
+    "/home/heimarry/Simulations/focal/analysis_output_2/2023-01-27_pp-focal_asym-08_weight-078.root"
 };
 
 const TString legHeader = "p-p #sqrt{s} = 14 TeV";
 const TString setlabel[nset+1] = {
     "f_{fake,fake}",
-//    Form("[40,80] #cup [210,280]"),
-    Form("[50,115] #cup [160,200]"),
-    //"[40,80]",
-//    "[210,280]",
-    "[160,200]"
-//    "[300,450]"
+    Form("[40,80] #cup [210,280]")
 };
 
-const EColor cMarker[nset] = {kRed, kBlue};//, kOrange};//, kMagenta};
+const EColor cMarker[nset] = {kRed};//, kBlue};//, kOrange};//, kMagenta};
 
 TFile *fIn[nset];
 TH1D *hCounter[nset];

@@ -44,13 +44,16 @@ void processDataSTAR()
 void processDataFoCal()
 {
 	TString fInName[ndata_focal] = {
-        //"/home/heimarry/Simulations/focal/analysis_output_2/2023-01-26_pp-focal_no-weights.root"
-        "/home/heimarry/Simulations/focal/analysis_output_2/2023-01-27_pp-focal_e-pt-cuts.root"
+        //"/home/heimarry/Simulations/focal/analysis_output_2/2023-01-26_pp-focal_no-photon-eff.root"
+        //"/home/heimarry/Simulations/focal/analysis_output_2/2023-01-31_gAnalysis_asym-08_etacut-02.root"
+        //"/home/heimarry/Simulations/focal/analysis_output_2/2023-01-30_gAnalysis_asym-08_etacut-02_weighted.root"
+        "/home/heimarry/Simulations/focal/analysis_output_2/2023-01-27_pp-focal_asym-08_weight-078.root"
         //"/home/heimarry/Simulations/focal-pythia-sim/focal-pp_no-weight.root"
 	};
 
 	TString fOutName[ndata_focal] = {
-		"analysis_FoCal_pp.root"
+		//"analysis_FoCal_pp.root"
+		"analysis_FoCal_pp_full-sim.root"
 	};
 
     TString dataname[ndata_focal] = {
@@ -65,6 +68,7 @@ void processDataFoCal()
         FitMassPeaks();
         //MixedEventCorrection();
 		GetScaleFactorsVersion1();
+        //DoSimplifiedAnalysis();
 		DoAnalysis();
         DrawMassHistos(dataname[idata]);
 		fOut->Write();
@@ -88,7 +92,8 @@ void LoadInput()
 	    double tlow = triggPt[it];
 	    double tupp = triggPt[it+1];
 
-	    hMassTrigg[it] = (TH1D*)fIn->Get(Form("Masses/hPi0MassTrigg[%4.1f,%4.1f]",tlow,tupp)); 
+	    hMassTrigg[it] = (TH1D*)fIn->Get(Form("Masses/hPi0MassTrigg[%4.1f,%4.1f]",tlow,tupp));
+        //hMassTrigg[it]->Rebin(5);
 
 	    for (int ia = 0; ia < nAssocBins; ia++) {
 	        double alow = assocPt[ia];
@@ -96,8 +101,10 @@ void LoadInput()
 
 	        if (tlow < aupp) continue;
 
-	        hMassAssocPeak[it][ia] = (TH1D*)fIn->Get(Form("Masses/hPi0MassAssocPeak[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp)); 
+	        hMassAssocPeak[it][ia] = (TH1D*)fIn->Get(Form("Masses/hPi0MassAssocPeak[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
+            //hMassAssocPeak[it][ia]->Rebin(5);
 	        hMassAssocSide[it][ia] = (TH1D*)fIn->Get(Form("Masses/hPi0MassAssocSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
+            //hMassAssocSide[it][ia]->Rebin(5);
 
             // 2D same event correlations
 	        hCorrReal[it][ia]     = (TH2D*)fIn->Get(Form("CorrFor/hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));           
@@ -114,6 +121,15 @@ void LoadInput()
             hCorrSideSideProj[it][ia] = hCorrSideSide[it][ia]->ProjectionX();
             hCorrNonCorrected[it][ia] = (TH1D*)hCorrMassMassProj[it][ia]->Clone(Form("hCorrNonCorrected[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
             hCorrCorrected[it][ia] = (TH1D*)hCorrMassMassProj[it][ia]->Clone(Form("hCorrCorrected[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
+
+            // Rebin if needed
+            hCorrRealProj[it][ia]->Rebin(8);
+            hCorrMassMassProj[it][ia]->Rebin(8);
+            hCorrMassSideProj[it][ia]->Rebin(8);
+            hCorrSideMassProj[it][ia]->Rebin(8);
+            hCorrSideSideProj[it][ia]->Rebin(8);
+            hCorrNonCorrected[it][ia]->Rebin(8);
+            hCorrCorrected[it][ia]->Rebin(8);
 
             // 2D mixed event correlations
             hCorrMassMassMixed[it][ia] = (TH2D*)fIn->Get(Form("CorrMassMass/hCorrMassMassMixed[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
@@ -143,7 +159,6 @@ void DoAnalysis()
             hCorrRealProj[it][ia]->Scale(1.0/nreal, "width");
 
             // Non sideband corrected correlation
-            //hCorrNonCorrected[it][ia]->Scale(1.0/fFitTrigg[it]->Integral(massMin, massMax), "width");
             hCorrNonCorrected[it][ia]->Scale(1.0/ncandidates, "width");
 
             // Sideband corrected correlation
@@ -154,6 +169,39 @@ void DoAnalysis()
             hCorrCorrected[it][ia]->Add(hCorrMassSideProj[it][ia], -1);
             hCorrCorrected[it][ia]->Add(hCorrSideMassProj[it][ia], -1);
             hCorrCorrected[it][ia]->Add(hCorrSideSideProj[it][ia]);
+
+            hCorrCorrected[it][ia]->Scale(1.0/ncandidateswobg, "width");
+        }
+    }
+
+}
+
+void DoSimplifiedAnalysis()
+{
+    for (int it = 0; it < nTriggBins; it++) {
+        double tlow = triggPt[it];
+        double tupp = triggPt[it+1];
+        int nreal = nRealTrigg[it];
+        int ncandidates = hMassTrigg[it]->Integral(hMassTrigg[it]->GetXaxis()->FindBin(massMin), hMassTrigg[it]->GetXaxis()->FindBin(massMax));
+        int ncandidateswobg = st[it];
+        cout << "Trigg bin [" << tlow << " " << tupp << "] : \tN REAL TRIGGERS=" << nreal << "\tN CANDIDATES="  << ncandidates << "\tN CANDIDATES (NO BG)=" << ncandidateswobg << endl;
+        for (int ia = 0; ia < nAssocBins; ia++) {
+            double alow = assocPt[ia];
+            double aupp = assocPt[ia+1];
+
+            if (tlow < aupp) continue;
+
+            // True correlation
+            hCorrRealProj[it][ia]->Scale(1.0/nreal, "width");
+
+            // Non sideband corrected correlation
+            //hCorrNonCorrected[it][ia]->Scale(1.0/fFitTrigg[it]->Integral(massMin, massMax), "width");
+            hCorrNonCorrected[it][ia]->Scale(1.0/ncandidates, "width");
+
+            // Sideband corrected correlation
+            double scaling = (hCorrSideSideProj[it][ia]->GetEntries()+hCorrMassSideProj[it][ia]->GetEntries()+hCorrSideMassProj[it][ia]->GetEntries())/hCorrSideSideProj[it][ia]->GetEntries();
+            hCorrSideSideProj[it][ia]->Scale(alpha[it][ia]*scaling);
+            hCorrCorrected[it][ia]->Add(hCorrSideSideProj[it][ia], -1.);
             hCorrCorrected[it][ia]->Scale(1.0/ncandidateswobg, "width");
         }
     }
@@ -248,7 +296,7 @@ void FitMassPeaks()
             if (tlow < aupp) continue;
 
             // Assoc mass histrograms where trigger is from peak region
-            fFitAssocPeak[it][ia] = new TF1(Form("fFitAssocPeak%d-%d", it, ia), FitFunction, 50, 500, 10);
+            fFitAssocPeak[it][ia] = new TF1(Form("fFitAssocPeak%d-%d", it, ia), FitFunction, 10, 500, 10);
             fFitAssocPeak[it][ia]->SetParameters(0., 0., 0., 0., 0., 1., 1., 135., 5., 10.);
             //fFitAssocPeak[it]->SetParLimits(4, 132., 137.);
             fFitAssocPeak[it][ia]->SetParLimits(7, 130., 160.);
@@ -309,9 +357,11 @@ void GetScaleFactorsVersion1()
 {
     for (int it = 0; it < nTriggBins; it++) {
         st[it]  = hMassTrigg[it]->Integral(hMassTrigg[it]->GetXaxis()->FindBin(massMin), hMassTrigg[it]->GetXaxis()->FindBin(massMax)) - fBgTrigg[it]->Integral(massMin, massMax)/hMassTrigg[it]->GetBinWidth(0);
-        stobtrigg[it] = fPeakTrigg[it]->Integral(massMin, massMax)/fFitTrigg[it]->Integral(massMin, massMax);
+        //stobtrigg[it] = fPeakTrigg[it]->Integral(massMin, massMax)/fFitTrigg[it]->Integral(massMin, massMax);
+        stobtrigg[it] = fPeakTrigg[it]->Integral(massMin, massMax)/fBgTrigg[it]->Integral(massMin, massMax);
         std::cout << "\n\tbin [ " << triggPt[it] << " " << triggPt[it+1] << " ] : \treal=" << nRealTrigg[it] << "\treconst=" << st[it] << "\trec=" << stfit[it] << "\trec/real=" << st[it]/nRealTrigg[it] << std::endl;
-        std::cout << "\tS/(S+B) : " << stobtrigg[it] << std::endl;
+        //std::cout << "\tS/(S+B) : " << stobtrigg[it] << std::endl;
+        std::cout << "\tS/B : " << stobtrigg[it] << std::endl;
 
         for (int ia = 0; ia < nAssocBins; ia++) {
             double tlow = triggPt[it];
@@ -320,8 +370,10 @@ void GetScaleFactorsVersion1()
             double aupp = assocPt[ia+1];
 
             if (tlow < aupp) continue;
-            alpha[it][ia]  = fBgAssocPeak[it][ia]->Integral(massMin, massMax)/(fBgAssocPeak[it][ia]->Integral(40, 80) + fBgAssocPeak[it][ia]->Integral(210, 280));
-            beeta[it][ia]  = fBgTrigg[it]->Integral(massMin, massMax)/(fBgTrigg[it]->Integral(40, 80) + fBgTrigg[it]->Integral(210, 280));
+            //alpha[it][ia]  = fBgAssocPeak[it][ia]->Integral(massMin, massMax)/(fBgAssocPeak[it][ia]->Integral(40, 80) + fBgAssocPeak[it][ia]->Integral(210, 280));
+            //beeta[it][ia]  = fBgTrigg[it]->Integral(massMin, massMax)/(fBgTrigg[it]->Integral(40, 80) + fBgTrigg[it]->Integral(210, 280));
+            alpha[it][ia]  = fBgAssocPeak[it][ia]->Integral(massMin, massMax)/fBgAssocPeak[it][ia]->Integral(220, 300);
+            beeta[it][ia]  = fBgTrigg[it]->Integral(massMin, massMax)/fBgTrigg[it]->Integral(220, 300);
             yamma[it][ia] = alpha[it][ia]*beeta[it][ia];
             std::cout << "\t\tbin [ "  << assocPt[ia] << " " << assocPt[ia+1] << " ] : "
                       << "\talpha=" << alpha[it][ia]
@@ -373,6 +425,7 @@ void DrawMassHistos(TString dataname)
 
         tl.DrawLatexNDC(.52, .7, "#pi^{0} mass peak");
         tl.DrawLatexNDC(.55, .65, Form("#bf{#bf{%.1f < p_{T,t} < %.1f GeV/c}}", triggPt[it], triggPt[it+1]));
+        tl.DrawLatexNDC(.55, .6,  Form("S/B=%.3f", stobtrigg[it]));
         gPad->RedrawAxis();
         cMassTrigg[it]->SaveAs(Form("MassTrigg%d_%s.pdf", it, dataname.Data()));
 
@@ -411,7 +464,7 @@ void DrawMassHistos(TString dataname)
             cMassAssocPeak[it][ia]->cd();
             hMassAssocPeak[it][ia]->Draw("HIST");
             fPeakColoredAssocPeak[it][ia]->Draw("SAME");
-            //fLeftSidebandColoredAssocPeak[it][ia]->Draw("SAME");
+            fLeftSidebandColoredAssocPeak[it][ia]->Draw("SAME");
             fRightSidebandColoredAssocPeak[it][ia]->Draw("SAME");
             fBgColoredAssocPeak[it][ia]->Draw("SAME");
             hMassAssocPeak[it][ia]->Draw("HIST SAME");
@@ -419,9 +472,9 @@ void DrawMassHistos(TString dataname)
             fBgAssocPeak[it][ia]->Draw("SAME");
             fPeakAssocPeak[it][ia]->Draw("SAME");
 
-            tl.DrawLatexNDC(.52, .7, "#pi^{0} mass peak");
-            tl.DrawLatexNDC(.55, .65, Form("#bf{#bf{%.1f < p_{T,t} < %.1f GeV/c}}", tlow, tupp));
-            tl.DrawLatexNDC(.55, .6, Form("%.1f < p_{T,a} < %.1f GeV/c", alow, aupp));
+            tl.DrawLatexNDC(.52, .4, "#pi^{0} mass peak");
+            tl.DrawLatexNDC(.55, .35, Form("#bf{#bf{%.1f < p_{T,t} < %.1f GeV/c}}", tlow, tupp));
+            tl.DrawLatexNDC(.55, .3, Form("%.1f < p_{T,a} < %.1f GeV/c", alow, aupp));
             gPad->RedrawAxis();
             cMassAssocPeak[it][ia]->SaveAs(Form("MassAssocPeak%d-%d_%s.pdf",it,ia,dataname.Data()));
 

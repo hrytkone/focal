@@ -63,7 +63,7 @@ int AliJHMRCorr::ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0C
     int nTrue = 0;
     int nCandidate = 0;
     int nPhoton = arrPhoton->GetEntriesFast();
-
+    
     for (int i = 1; i < nPhoton; i++) {
         AliJBaseTrack *lv1 = (AliJBaseTrack*)arrPhoton->At(i);
         for (int j = 0; j < i; j++) {

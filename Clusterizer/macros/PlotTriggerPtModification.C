@@ -3,13 +3,13 @@
 
 const TString filename = "triggPt-mod_binning.root";
 //const double eff = 0.329; // pt = [2,3]
-//const double eff = 0.343; // pt = [3,4]
+const double eff = 0.343; // pt = [3,4]
 //const double eff = 0.374; // pt = [4,8]
-const double eff = 0.494; // pt = [8,10]
+//const double eff = 0.494; // pt = [8,10]
 const int nev = 495000;
 
-const double minpt = 8.;
-const double maxpt = 12.;
+const double minpt = 0.;
+const double maxpt = 20.;
 
 TFile *fin;
 TH1D *hPtTrue;

@@ -70,10 +70,11 @@ int main(int argc, char *argv[]) {
 
     AliJHMRCorr *fCorr = new AliJHMRCorr(fHistos, det, bUseLeading, bUseSim);
 
-    TClonesArray *arrPhotonFor = new TClonesArray("AliJBaseTrack", 1500);
-    TClonesArray *arrPi0Real   = new TClonesArray("AliJBaseTrack", 1500);
-    TClonesArray *arrPi0Peak   = new TClonesArray("AliJBaseTrack", 1500);
-    TClonesArray *arrPi0Side   = new TClonesArray("AliJBaseTrack", 1500);
+    TClonesArray *arrPhotonFor      = new TClonesArray("AliJBaseTrack", 1500);
+    TClonesArray *arrClusterMatched = new TClonesArray("AliJBaseTrack", 1500);
+    TClonesArray *arrPi0Real        = new TClonesArray("AliJBaseTrack", 1500);
+    TClonesArray *arrPi0Peak        = new TClonesArray("AliJBaseTrack", 1500);
+    TClonesArray *arrPi0Side        = new TClonesArray("AliJBaseTrack", 1500);
 
     TClonesArray* arrPi0PeakMixed[poolsize];
     TClonesArray* arrPi0SideMixed[poolsize];
@@ -114,9 +115,12 @@ int main(int argc, char *argv[]) {
             fCatalystG->GetEvent(iEvent);
             fCatalystG->InitializeEvent();
             fCatalystG->GetParticles();
+            fCatalystG->GetClusters();
+            fCatalystG->GetPtMatchedClusters();
             arrPi0Real   = fCatalystG->GetParticleList(kJPi0);
-            arrPhotonFor = fCatalystG->GetClusters();
-            //arrPhotonFor = fCatalystG->GetParticleList(kJDecayPhoton);
+            arrPhotonFor = fCatalystG->GetParticleList(kJCluster);
+            arrClusterMatched = fCatalystG->GetParticleList(kJPtMatchedCluster);
+            fHistos->FillMathingInformation(arrPhotonFor, arrClusterMatched);
         } else { // Get stuff from pythia
             if ( !pythia.next() ) continue;
             fCatalyst->InitializeEvent();
@@ -125,7 +129,6 @@ int main(int argc, char *argv[]) {
             arrPi0Real   = fCatalyst->GetParticleList(kJPi0);
             fCorr->SmearEnergies(arrPhotonFor);
         }
-
         int nTrueFromPeak = fCorr->ReconstructPions(arrPhotonFor, arrPi0Peak, det, 1);
         fCorr->ReconstructPions(arrPhotonFor, arrPi0Side, det, 0);
 
@@ -160,7 +163,7 @@ int main(int argc, char *argv[]) {
         fCorr->FillAsymmetry(arrPhotonFor, det);
 
         fCorr->DoCorrelations(arrPi0Real, arrPhotonFor, listTriggReal, listAssocReal, fHistos->hCorrFor, 1, 0, 0); // last three values: bTrueCorr, bMassWindow, bUseWeight
-        fCorr->DoCorrelations(arrPi0Peak, arrPhotonFor, listTriggPeak, listAssocPeak, fHistos->hCorrMassMass, 0, 1, 0);
+        fCorr->DoCorrelations(arrPi0Peak, arrPhotonFor, listTriggPeak, listAssocPeak, fHistos->hCorrMassMass, 0, 1, 1);
 
         if (bUseLeading) {
             int isPeakTriggLarger = fCorr->GetLargerTrigg(arrPi0Peak, listTriggPeak, arrPi0Side, listTriggSide);
@@ -171,9 +174,9 @@ int main(int argc, char *argv[]) {
                 fCorr->DoCorrelations(arrPi0Side, arrPhotonFor, listTriggSide, listAssocSide, fHistos->hCorrSideSide, 0, 0, 0);
             }
         } else {
-            fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0Side, listAssocSide, fHistos->hCorrMassSide, 0);
-            fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, fHistos->hCorrSideMass, 0);
-            fCorr->DoCorrelations(arrPi0Side, arrPhotonFor, listTriggSide, listAssocSide, fHistos->hCorrSideSide, 0, 0, 0);
+            fCorr->DoCorrelations(arrPi0Peak, listTriggPeak, arrPi0Side, listAssocSide, fHistos->hCorrMassSide, 1);
+            fCorr->DoCorrelations(arrPi0Side, listTriggSide, arrPi0Peak, listAssocPeak, fHistos->hCorrSideMass, 1);
+            fCorr->DoCorrelations(arrPi0Side, arrPhotonFor, listTriggSide, listAssocSide, fHistos->hCorrSideSide, 0, 0, 1);
         }
 
         // Construct & save true correlation components f_SS, f_SB, f_BS, f_BB

@@ -1,38 +1,17 @@
 const int nset = 6;
-const int npt = 6;
+const int npt = 4;
 //const int npt = 10;
 
-//const TString filename = "masses_v5_eta35-55_less-bins.root";
-const TString filename = "masses_v5_eta35-55_gun-5GeV_test.root";
+const TString filename = "masses_v5_eta35-55_pt-bins_etacut-02.root";
 const TString lowmassfilename = "etacut_41-55_gamma_more-pt-bins.root";
-const TString legEta = "3.5 < #eta < 5.5";
+const TString legEta = "3.5(+0.2) < #eta < 5.5(-0.2)";
 //------------------------------------------------------------------------------
 
 const TString legHeader[npt] = {
-    //"0 GeV < p_{T} < 8 GeV",
-    //"8 GeV < p_{T} < 8.5 GeV",
-    //"8.5 GeV < p_{T} < 9 GeV",
-    //"9 GeV < p_{T} < 9.5 GeV",
-    //"9.5 GeV < p_{T} < 10 GeV",
-    //"10 GeV < p_{T} < 10.5 GeV",
-    //"10.5 GeV < p_{T} < 11 GeV"
-    //"0 GeV < p_{T} < 3 GeV",
-    "3 GeV < p_{T} < 3.5 GeV",
-    "3.5 GeV < p_{T} < 4 GeV",
-    "4 GeV < p_{T} < 4.5 GeV",
-    "4.5 GeV < p_{T} < 5 GeV",
-    "5 GeV < p_{T} < 5.5 GeV",
-    "5.5 GeV < p_{T} < 6 GeV"
-    //"2 GeV < p_{T} < 2.5 GeV",
-    //"2.5 GeV < p_{T} < 3 GeV",
-    //"3 GeV < p_{T} < 3.5 GeV",
-    //"3.5 GeV < p_{T} < 4 GeV",
-    //"4 GeV < p_{T} < 5 GeV",
-    //"5 GeV < p_{T} < 6 GeV",
-    //"6 GeV < p_{T} < 8 GeV",
-    //"8 GeV < p_{T} < 10 GeV",
-    //"10 GeV < p_{T} < 15 GeV",
-    //"15 GeV < p_{T} < 20 GeV"
+    "2 GeV < p_{T} < 3 GeV",
+    "3 GeV < p_{T} < 4 GeV",
+    "4 GeV < p_{T} < 8 GeV",
+    "8 GeV < p_{T} < 20 GeV"
 };
 
 //------------------------------------------------------------------------------
@@ -51,8 +30,7 @@ const double xf[nset] = {0.85, 0.85, 0.85, 0.85, 0.85, 0.85};
 const double yi[nset] = {0.6, 0.6, 0.6, 0.6, 0.6, 0.6};
 const double yf[nset] = {0.87, 0.87, 0.87, 0.87, 0.87, 0.87};
 
-const double fitStartingPoint[npt] = {40., 50., 40., 50., 50., 50.};
-//const double fitStartingPoint[npt] = {50., 50., 40., 50., 50., 50., 50., 50., 50., 50.};
+const double fitStartingPoint[npt] = {35., 50., 40., 50.};
 
 //------------------------------------------------------------------------------
 
@@ -91,14 +69,12 @@ double peakPos[npt][nset] = {0};
 double peakPosErr[npt][nset] = {0};
 double asymmetry[nset] = {0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
 double asymmteryErr[nset] = {0};
-double ptMid[npt] = {2.5, 3.5, 6., 9., 12.5, 17.5};
-double ptMidErr[npt] = {0.5, 0.5, 2., 1., 2.5, 2.5};
-//double ptMid[npt] = {2.5, 3.5, 6., 14.};
-//double ptMidErr[npt] = {0.5, 0.5, 2., 6.};
+double ptMid[npt] = {2.5, 3.5, 6., 14.};
+double ptMidErr[npt] = {0.5, 0.5, 2., 6.};
 //double ptMid[npt] = {2.25, 2.75, 3.25, 3.75, 4.5, 5.5, 7, 9, 12.5, 17.5};
 //double ptMidErr[npt] = {0.25, 0.25, 0.25, 0.25, 0.5, 0.5, 1., 1., 2.5, 2.5};
 
-const int mColor[npt] = {kAzure, kViolet, kPink, kOrange, kSpring, kTeal};//, kBlack, kBlack-1, kBlack-2, kBlack-3};
+const int mColor[npt] = {kAzure, kViolet, kPink, kOrange};//, kSpring, kTeal};//, kBlack, kBlack-1, kBlack-2, kBlack-3};
 TGraphErrors *gSignalToBg[npt];
 TGraphErrors *gEfficiency[npt];
 TGraphErrors *gEffPtFunc[nset];
@@ -132,8 +108,8 @@ void PlotMassPeaks()
 
     cout << "NPIONS : " << npion << endl;
     for (int j=0; j<nset; j++) {
-        c1[j] = new TCanvas(Form("c%d", j), "", 900, 600);
-        c1[j]->Divide(3,2);
+        c1[j] = new TCanvas(Form("c%d", j), "", 600, 600);
+        c1[j]->Divide(2,2);
         for (int i=0; i<npt; i++) {
             c1[j]->cd(i+1);
             gPad->SetLeftMargin(0.1);
@@ -147,12 +123,12 @@ void PlotMassPeaks()
             //hMassClusterBg[j][i]->Draw("HIST E");
             hMassCluster[j][i]->Draw("HIST E");
             //hMassClusterMixed[j][i]->Draw("PE SAME");
-            //fBg[j][i]->Draw("SAME");
-            //fPeak[j][i]->Draw("SAME");
+            fBg[j][i]->Draw("SAME");
+            fPeak[j][i]->Draw("SAME");
             fBg[j][i]->SetLineWidth(1);
             fPeak[j][i]->SetLineWidth(1);
             fFit[j][i]->SetLineWidth(2);
-            //fFit[j][i]->Draw("SAME");
+            fFit[j][i]->Draw("SAME");
 
             TLine *minMassBorder = new TLine(massmin[j][i], 0., massmin[j][i], max);
             TLine *maxMassBorder = new TLine(massmax[j][i], 0., massmax[j][i], max);
@@ -264,12 +240,13 @@ void CreateLegends()
             leg[iasym][ipt] = new TLegend(xi[ipt], yi[ipt], xf[ipt], yf[ipt]);
             leg[iasym][ipt]->SetFillStyle(0); leg[iasym][ipt]->SetBorderSize(0); leg[iasym][ipt]->SetTextSize(gStyle->GetTextSize()*1.);
             leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], legHeader[ipt].Data(), "");
-            //leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], legEntry1[iasym], "");
-            //leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], Form("S/B = %0.03f", signalToBg[ipt][iasym]), "");
-            //leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], Form("m_{#pi0} = %0.01f#pm%0.01f", peakPos[iasym][ipt], peakPosErr[iasym][ipt]), "");
-            leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], Form("m_{#pi0} = %0.0f", hMassCluster[iasym][ipt]->GetBinCenter(hMassCluster[iasym][ipt]->GetMaximumBin())), "");
-            leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], Form("N_{entry} = %0.0f", hMassCluster[iasym][ipt]->GetEntries()), "");
-            leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], Form("N_{entry}/N_{#pi0, true} = %0.3f", hMassCluster[iasym][ipt]->GetEntries()/(double)npion), "");
+            leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], legEntry1[iasym], "");
+            leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], Form("S/B = %0.03f", signalToBg[ipt][iasym]), "");
+            leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], Form("m_{#pi0} = %0.01f#pm%0.01f", peakPos[iasym][ipt], peakPosErr[iasym][ipt]), "");
+            leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], Form("#epsilon = %0.03f#pm%0.03f", eff[ipt][iasym], effErr[ipt][iasym]), "");
+            //leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], Form("m_{#pi0} = %0.0f", hMassCluster[iasym][ipt]->GetBinCenter(hMassCluster[iasym][ipt]->GetMaximumBin())), "");
+            //leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], Form("N_{entry} = %0.0f", hMassCluster[iasym][ipt]->GetEntries()), "");
+            //leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], Form("N_{entry}/N_{#pi0, true} = %0.3f", hMassCluster[iasym][ipt]->GetEntries()/(double)npion), "");
             //leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], legEta.Data(), "");
         }
     }
@@ -289,10 +266,10 @@ void FitMassPeaks()
         cout << "\nAsymmetry " << asymmetry[i] << endl;
         for (int j=0; j<npt; j++) {
             fFit[i][j] = new TF1(Form("fFit_%d_%d", i, j), FitFunction, fitStartingPoint[j], 450, 10);
-            fFit[i][j]->SetParameters(0., 0., 0., 0., 0., 1., 1., 135., 5., 1.);
-            //fFit[i][j]->SetParLimits(7, 130., 160.);
-            //fFit[i][j]->SetParLimits(8, 2., 50.);
-            //fFit[i][j]->SetParLimits(9, 1., 10.);
+            fFit[i][j]->SetParameters(0., 0., 0., 0., 0., 1., 1., 135., 10., 1.);
+            fFit[i][j]->SetParLimits(7, 110., 160.);
+            fFit[i][j]->SetParLimits(8, 2., 50.);
+            fFit[i][j]->SetParLimits(9, 1., 20.);
 
             //fFit[i][j] = new TF1(Form("fFit_%d_%d", i, j), FitFunction, fitStartingPoint[j], 400, 8);
             //fFit[i][j]->SetParameters(0., 0., 0., 0., 0., 100., 100., 135.);
@@ -326,8 +303,8 @@ void FitMassPeaks()
             //    massmax[i][j] = fitPar[7]+6.*fitPar[9];
             //}
 
-            //massmin[i][j] = 50.;
-            //massmax[i][j] = 220.;
+            massmin[i][j] = 50.;
+            massmax[i][j] = 200.;
 
             peakPos[i][j] = fitPar[7];
             peakPosErr[i][j] = fFit[i][j]->GetParError(7);
@@ -345,8 +322,8 @@ void FitMassPeaks()
 
             //cout << legHeader[j] << "  Nrec=" << fPeak[i][j]->Integral(110, 160) << "\tNtrue=" << hCounter->GetBinContent(j+1) << endl;
             //cout << legHeader[j] << "  Nrec=" << hMassCluster[i][j]->Integral(hMassCluster[i][j]->FindBin(110), hMassCluster[i][j]->FindBin(160)) << "\tNtrue=" << hCounter->GetBinContent(j+1) << "\tratio=" <<  hMassCluster[i][j]->Integral(hMassCluster[i][j]->FindBin(110), hMassCluster[i][j]->FindBin(160))/hCounter->GetBinContent(j+1) << endl;
-            //cout << legHeader[j] << "  Nrec=" << hMassCluster[i][j]->Integral(hMassCluster[i][j]->FindBin(massmin[i][j]), hMassCluster[i][j]->FindBin(massmax[i][j])) - fBg[i][j]->Integral(massmin[i][j], massmax[i][j])/hMassCluster[i][j]->GetBinWidth(0) << "\tNtrue=" << hCounter->GetBinContent(j+1) << "\tsigma=" << fitPar[8] << "\tpeak=" << fitPar[7] << endl;
-            cout << legHeader[j] << "  Nrec=" << hMassCluster[i][j]->GetEntries() << "\tNtrue=" << hCounter->GetBinContent(j+1) << "\tsigma=" << fitPar[8] << "\tpeak=" << fitPar[7] << endl;
+            cout << legHeader[j] << "  Nrec=" << hMassCluster[i][j]->Integral(hMassCluster[i][j]->FindBin(massmin[i][j]), hMassCluster[i][j]->FindBin(massmax[i][j])) - fBg[i][j]->Integral(massmin[i][j], massmax[i][j])/hMassCluster[i][j]->GetBinWidth(0) << "\tNtrue=" << hCounter->GetBinContent(j+1) << "\tsigma=" << fitPar[8] << "\tpeak=" << fitPar[7] << endl;
+            //cout << legHeader[j] << "  Nrec=" << hMassCluster[i][j]->GetEntries() << "\tNtrue=" << hCounter->GetBinContent(j+1) << "\tsigma=" << fitPar[8] << "\tpeak=" << fitPar[7] << endl;
         }
     }
 }

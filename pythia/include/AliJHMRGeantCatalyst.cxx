@@ -3,7 +3,7 @@
 
 using namespace std;
 
-TClonesArray * AliJHMRGeantCatalyst::GetClusters()
+void AliJHMRGeantCatalyst::GetClusters()
 {
     for (int iclust = 0; iclust < fClusters->GetEntries(); iclust++) {
         AliJHMRCluster *cluster = (AliJHMRCluster*)fClusters->At(iclust);
@@ -14,7 +14,7 @@ TClonesArray * AliJHMRGeantCatalyst::GetClusters()
         AliJBaseTrack track( lvParticle );
         new((*fInputListCluster)[fInputListCluster->GetEntriesFast()]) AliJBaseTrack(track);
     }
-    return fInputListCluster;
+    //return fInputListCluster;
 }
 
 // Only for foCal
@@ -55,6 +55,48 @@ void AliJHMRGeantCatalyst::GetParticles()
     }
 }
 
+void AliJHMRGeantCatalyst::GetPtMatchedClusters()
+{
+    std::vector<bool> bParticleIsMatched;
+    for (int i = 0; i < fInputListPhoton->GetEntriesFast(); i++) bParticleIsMatched.push_back(false);
+    //cout << "NCLUSTER : " << fInputListCluster->GetEntriesFast() << "  NPHOTON : " << fInputListPhoton->GetEntriesFast() << endl;
+    for (int icluster = 0; icluster < fInputListCluster->GetEntriesFast(); icluster++) {
+        AliJBaseTrack *cluster = (AliJBaseTrack*)fInputListCluster->At(icluster);
+        double etaCluster = cluster->Eta();
+        double phiCluster = cluster->Phi();
+
+        // Get geometrically closest MC photon to the cluster
+        double dist = 1000000.0;
+        double ptMatched = -1;
+        int iMatched = 0;
+        for (int itr = 0; itr < fInputListPhoton->GetEntriesFast(); itr++) {
+            AliJBaseTrack *tr = (AliJBaseTrack*)fInputListPhoton->At(itr);
+
+            double etaPhoton = tr->Eta();
+            double phiPhoton = tr->Phi();
+            double ptPhoton = tr->Pt();
+            double deltaPhoton = TMath::Sqrt((etaPhoton-etaCluster)*(etaPhoton-etaCluster) + (phiPhoton-phiCluster)*(phiPhoton-phiCluster));
+
+            if (deltaPhoton < dist) {
+                dist = deltaPhoton;
+                ptMatched = ptPhoton;
+                if (!bParticleIsMatched[iMatched]) iMatched = itr;
+            }
+        }
+        bParticleIsMatched[iMatched] = true;
+
+        AliJBaseTrack *matched = (AliJBaseTrack*)fInputListPhoton->At(iMatched);
+        //cout << "Cluster (phi eta pt): (" << phiCluster << " " << etaCluster << " " << cluster->Pt() << ")\t particle (phi eta pt): (" << matched->Phi() << " " << matched->Eta() << " " << ptMatched << ")\t dist = " << dist << endl;
+
+        // Save cluster to the list but with matched pt
+        lvParticle.SetPtEtaPhiM(ptMatched, cluster->Eta(), cluster->Phi(), 0.);
+        lvParticle.SetUniqueID(UniqueID++);
+
+        AliJBaseTrack track( lvParticle );
+        new((*fInputListPtMatchedCluster)[fInputListPtMatchedCluster->GetEntriesFast()]) AliJBaseTrack(track);        
+    }
+}
+
 TClonesArray * AliJHMRGeantCatalyst::GetParticleList(particleType itype)
 {
 	switch(itype) {
@@ -64,6 +106,10 @@ TClonesArray * AliJHMRGeantCatalyst::GetParticleList(particleType itype)
 			return fInputListPi0;
 		case kJDecayPhoton:
 			return fInputListPhoton;
+        case kJCluster:
+            return fInputListCluster;
+        case kJPtMatchedCluster:
+            return fInputListPtMatchedCluster;
 		default:
 			std::cout << "Particle species not specified, return nothing" << std::endl;
 			return 0;

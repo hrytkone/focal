@@ -1,19 +1,19 @@
-# Volume Name            Material     C-X   C-Y    X      Y       Z
+# Volume Name            Material     C-X   C-Y    X      Y       Z 
   COMPOSITION_PAD_S0       PureW       0     0     9.     8.      0.35
   COMPOSITION_PAD_S1       G10         0     0     9.     8.      0.05
-  COMPOSITION_PAD_S2       SiPad       0     0     9.     8.      0.05
+  COMPOSITION_PAD_S2       SiPad       0     0     9.     8.      0.03
   COMPOSITION_PAD_S3       G10         0     0     9.     8.      0.05
   COMPOSITION_PAD_S4       Cu          0     0     9.     8.      0.01
   COMPOSITION_PAD_S5       Air         0     0     9.     8.      0.5
   # Replica of above pad layers to 50 layers
   COMMAND_NUMBER_OF_PAD_LAYERS 18
 # HCAL layers
-# Volume Name              Material     C-X   C-Y     X       Y        Z
+# Volume Name              Material     C-X   C-Y     X       Y        Z 
   COMPOSITION_HCAL_S0       Pb           0     0     2.5     2.5      3.0
   COMPOSITION_HCAL_S1       Scint        0     0     2.5     2.5      0.2
   COMMAND_NUMBER_OF_HCAL_LAYERS 34
   COMMAND_NUMBER_OF_SEGMENTS 54
-# Strip sectors
+# Strip sectors 
 # Volume Name             Material    C-X   C-Y     X       Y         Z
   COMPOSITION_PIX_S0       PureW       0     0     3.0     2.74      0.35
   COMPOSITION_PIX_S1       G10         0     0     3.0     2.74      0.05
@@ -22,8 +22,8 @@
   COMPOSITION_PIX_S4       G10         0     0     3.0     2.74      0.05
   COMPOSITION_PIX_S5       Cu          0     0     3.0     2.74      0.01
   COMPOSITION_PIX_S6       Air         0     0     3.0     2.74      0.05
-COMMAND_INSERT_PIX_AT_L4
-COMMAND_INSERT_PIX_AT_L9
+COMMAND_INSERT_PIX_AT_L4 
+COMMAND_INSERT_PIX_AT_L9 
 # COMMAND_INSERT_STR_AT_L4
 # COMMAND_INSERT_STR_AT_L6
 # COMMAND_INSERT_STR_AT_L8
@@ -36,8 +36,8 @@ COMMAND_INSERT_PIX_AT_L9
   COMPOSITION_FM_S5        SiStripY    0     0     5.    5.      0.05
   COMPOSITION_FM_S6        G10         0     0     5.    5.      0.05
 # PIXEL readout
-  GLOBAL_NX_PIX_TOWER            15
-  GLOBAL_NY_PIX_TOWER            3
+  GLOBAL_PIX_NX                  15
+  GLOBAL_PIX_NY                  3
   GLOBAL_PIX_OffsetX             1.2
   GLOBAL_PIX_OffsetY             0.09
   GLOBAL_PIX_SKIN                0.004
@@ -58,10 +58,10 @@ COMMAND_INSERT_PIX_AT_L9
   GLOBAL_TOWER_TOL        0.    Air
   GLOBAL_TOWER_TOLX       0.02  Air
   GLOBAL_TOWER_TOLY       0.5   PureW
-  GLOBAL_FOCAL_Z          764.05
+  GLOBAL_FOCAL_Z          763.87
   GLOBAL_Tower_NX      2
   GLOBAL_Tower_NY      11
-  GLOBAL_MIDDLE_TOWER_OFFSET 5
+  GLOBAL_MIDDLE_TOWER_OFFSET 5 
   GLOBAL_NSTRIPS	        128
   GLOBAL_STRIPSIZE_LONG   9.0
   GLOBAL_STRIPSIZE_WIDTH  0.07

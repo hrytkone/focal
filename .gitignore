@@ -16,5 +16,5 @@ Clusterizer/*.log
 nanoDict*
 *_cxx*
 Clusterizer/results
-analysis_output
+analysis_output*
 .vscode

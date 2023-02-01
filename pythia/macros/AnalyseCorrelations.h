@@ -11,6 +11,8 @@ const double pi0br = 1./0.98823;
 
 const double massMin = 110.;
 const double massMax = 160.;
+//const double massMin = 50.;
+//const double massMax = 200.;
 
 // Input
 int nEvent;
@@ -110,6 +112,7 @@ void processDataFoCal();
 
 void LoadInput();
 void DoAnalysis();
+void DoSimplifiedAnalysis();
 void MixedEventCorrection();
 double GetMixedEventNormalization(TH2D *h);
 void FitMassPeaks();

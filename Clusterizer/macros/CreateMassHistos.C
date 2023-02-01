@@ -49,7 +49,7 @@ void CreateMassHistos(TString inputfile)
             double trEta = tr->Eta();
             double trPt = tr->Pt();
             double trPid = tr->GetID();
-            if (trPid==111 && (trEta > etamin && trEta < etamax)) {
+            if (trPid==111 && (trEta > etamin + etacut && trEta < etamax - etacut)) {
                 int ptbin = GetBin(pt, npt+1, trPt);
                 hCounter->Fill(ptbin+0.5);
             }
@@ -134,7 +134,7 @@ void FillMassHistos(TClonesArray *clusters, TClonesArray *tracks)
             AliJBaseTrack *lv2 = (AliJBaseTrack*)clusters->At(j);
             AliJBaseTrack lvSum = GetPhotonSumVector(lv1, lv2);
         //    if (TMath::Abs(lv1->E() - lv2->E())/(lv1->E() + lv2->E())>asymcut[nasym-1]) continue;
-            if (lvSum.Eta()<etamin || lvSum.Eta()>etamax) continue;
+            if (lvSum.Eta()<etamin+etacut || lvSum.Eta()>etamax-etacut) continue;
             int ptbin = GetBin(pt, npt+1, lvSum.Pt());
             if (ptbin==-1) continue;
             for (int k=0; k<nasym; k++) {

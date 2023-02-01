@@ -32,6 +32,10 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet, bool bUseLeadin
     hEnergyAsymTrue = new TH1D("hEnergyAsymTrue", "hEnergyAsymTrue", 100, 0., 1.); hEnergyAsymTrue->Sumw2();
     hEnergyAsymRec = new TH1D("hEnergyAsymRec", "hEnergyAsymRec", 100, 0., 1.); hEnergyAsymRec->Sumw2();
 
+    hPtMatched = new TH2D("hPtMatched", "Cluster pT versus the matched particle pT", NINCPTBIN, logBinsX, NINCPTBIN, logBinsX);
+    hEtaMatched = new TH2D("hEtaMatched", "Cluster eta versus the matched particle eta", NINCETABIN, -incEtaRange/2., incEtaRange/2., NINCETABIN, -incEtaRange/2., incEtaRange/2.);
+    hPhiMatched = new TH2D("hPhiMatched", "Cluster phi versus the matched particle phi", 314, -TMath::Pi(), TMath::Pi(), 314, -TMath::Pi(), TMath::Pi());
+
     // Correlation and mass histograms
     dirMasses = output->mkdir("Masses");
     dirMassComponents = output->mkdir("MassComponents");
@@ -274,5 +278,17 @@ void AliJHMRHist::FillPtEta(particleType itype, TClonesArray * arrParticles)
                 hRecPionEta->Fill(eta);
             }
         }
+    }
+}
+
+void AliJHMRHist::FillMathingInformation(TClonesArray * arrClusters, TClonesArray * arrPtMatchedClusters)
+{
+    int ncluster = arrClusters->GetEntriesFast();
+    for (int ic = 0; ic < ncluster; ic++) {
+        AliJBaseTrack *lv = (AliJBaseTrack*)arrClusters->At(ic);
+        AliJBaseTrack *lvMatched = (AliJBaseTrack*)arrPtMatchedClusters->At(ic);
+        hPtMatched->Fill(lv->Pt(), lvMatched->Pt());
+        hPhiMatched->Fill(lv->Phi(), lvMatched->Phi());
+        hEtaMatched->Fill(lv->Eta(), lvMatched->Eta());
     }
 }

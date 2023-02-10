@@ -12,6 +12,8 @@
 #define NINCPTBIN 150
 #define NINCETABIN 150
 #define NPHOTONENERGYBIN 150
+#define NETAEFFBIN 38
+#define NPTEFFBIN 38
 
 enum particleType { kJHadron, kJPi0, kJDecayPhoton, kJRecPi0, kJCluster, kJPtMatchedCluster };
 enum detector { kJFoCal, kJSTAR, kJTracker, kJFull };
@@ -70,5 +72,9 @@ extern const double incEtaRange;
 
 //extern const int nPhotonEnergyBin = 150;
 extern double limPhotonEnergyMin, limPhotonEnergyMax;
+
+extern double etaEff[NETAEFFBIN+1];
+extern double ptEff[NPTEFFBIN+1];
+extern const double effEtaPt[NETAEFFBIN][NPTEFFBIN];
 
 #endif

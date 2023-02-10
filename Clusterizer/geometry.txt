@@ -57,7 +57,7 @@ COMMAND_INSERT_PIX_AT_L9
   GLOBAL_SUPERMODULE_TOLY 0. Air
   GLOBAL_TOWER_TOL        0.    Air
   GLOBAL_TOWER_TOLX       0.02  Air
-  GLOBAL_TOWER_TOLY       0.5   PureW
+  GLOBAL_TOWER_TOLY       0.8   Cu
   GLOBAL_FOCAL_Z          763.87
   GLOBAL_Tower_NX      2
   GLOBAL_Tower_NY      11
@@ -66,6 +66,8 @@ COMMAND_INSERT_PIX_AT_L9
   GLOBAL_STRIPSIZE_LONG   9.0
   GLOBAL_STRIPSIZE_WIDTH  0.07
   GLOBAL_HCAL_TOWER_SIZE  2.5
+  GLOBAL_HCAL_TOWER_NY  40
+  GLOBAL_HCAL_TOWER_NX  38
 # New VIRTUAL settings
   VIRTUAL_N_SEGMENTS      7
   #                            N   Start End   PadSize  RelThickness  IsPixel    PixelTreshold [eV]
@@ -76,5 +78,5 @@ COMMAND_INSERT_PIX_AT_L9
   VIRTUAL_SEGMENT_LAYOUT_N3       9    9           0.05          1.0       1                  4000
   VIRTUAL_SEGMENT_LAYOUT_N4      10   14           1.0           1.0       0                  375000
   VIRTUAL_SEGMENT_LAYOUT_N5      15   19           1.0           1.0       0                  375000
-  VIRTUAL_SEGMENT_LAYOUT_N6      20   53           2.5           3.2       2                  5000
+  VIRTUAL_SEGMENT_LAYOUT_N6      20   53           2.5           1.0       2                  5000
 #EOF

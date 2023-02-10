@@ -1,0 +1,12 @@
+#!/bin/bash
+
+SECONDS=0
+
+simdir=${1}     # directory where simulation output is
+clusterdir=${2} # directory where clusterizer output is
+outdir=${3}     # directory where combined output is saved
+start=${4}      # first job to be included
+end=${5}        # last job to be included
+
+cmd="aliroot -b -q 'RunCombination.C(\"${simdir}\",\"${clusterdir}\",\"${outdir}\",'${start}','${end}')'"
+eval $cmd

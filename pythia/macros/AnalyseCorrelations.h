@@ -9,10 +9,12 @@ const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
 const double pi0br = 1./0.98823;
 //const double pi0eff = 1.;
 
-const double massMin = 110.;
-const double massMax = 160.;
-//const double massMin = 50.;
-//const double massMax = 200.;
+//const double massMin = 110.;
+//const double massMax = 160.;
+//const double massMin = 120.;
+//const double massMax = 155.;
+const double massMin = 50.;
+const double massMax = 200.;
 
 // Input
 int nEvent;

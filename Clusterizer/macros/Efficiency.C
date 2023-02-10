@@ -101,8 +101,6 @@ void InitOutput()
     hPhiEtaGamma = new TH2D("hPhiEtaGamma", "hPhiEtaGamma", nPhiBin, phimin, phimax, nEtaBin, eta);
     hPhiThetaGamma = new TH2D("hPhiThetaGamma", "hPhiThetaGamma", nPhiBin, phimin, phimax, nThetaBin, thetamin, thetamax);
     hXYGamma = new TH2D("hXYGamma", "hXYGamma", nXYBin, xymin, xymax, nXYBin, xymin, xymax);
-
-    hEtaEff = new TH2D("hEtaEff", "hEtaEff", 100, 3.2, 5.5, 100, 3.2, 5.5);
 }
 
 void FillTruePions()
@@ -130,34 +128,63 @@ void FillTruePions()
 void FillRecPions(TClonesArray *clusters)
 {
     int nclust = clusters->GetEntriesFast();
+    if (nclust < 2) return;
     double z = 706.62;
 
+    double closestPt = -1.;
+    double closestEta = -1.;
+    double closestTheta = -1.;
+    double closestPhi = -1.;
+    double closestE = -1.;
+    double closestMass = -1.;
+    double massdiff = 10000.;
     for (int i = 1; i < nclust; i++) {
         AliJBaseTrack *lv1 = (AliJBaseTrack*)clusters->At(i);
         for (int j = 0; j < i; j++) {
             AliJBaseTrack *lv2 = (AliJBaseTrack*)clusters->At(j);
             AliJBaseTrack lvSum = GetPhotonSumVector(lv1, lv2);
         //    if (TMath::Abs(lv1->E() - lv2->E())/(lv1->E() + lv2->E())>asymcut[nasym-1]) continue;
-            if (lvSum.Eta()<etamin || lvSum.Eta()>etamax) continue;
-            int ptbin = GetBin(pt, nPtBin+1, lvSum.Pt());
-            int etabin = GetBin(eta, nEtaBin+1, lvSum.Eta());
-            if (ptbin==-1 || etabin==-1) continue;
-            if (TMath::Abs(lv1->E() - lv2->E())/(lv1->E() + lv2->E())<asymcut) {
-                //cout << "\nX1=" << lv1->X() << "\tX2=" << lv2->X() << "\tXrec=" << lvSum.X() << endl;
-                //cout << "Y1=" << lv1->Y() << "\tY2=" << lv2->Y() << "\tYrec=" << lvSum.Y() << endl;
-                double mass = 1000.*lvSum.M();
+        //    if (lvSum.Eta()<etamin || lvSum.Eta()>etamax) continue;
+            //int ptbin = GetBin(pt, nPtBin+1, lvSum.Pt());
+            //int etabin = GetBin(eta, nEtaBin+1, lvSum.Eta());
+            //if (ptbin==-1 || etabin==-1) continue;
+            //if (TMath::Abs(lv1->E() - lv2->E())/(lv1->E() + lv2->E())<asymcut) {
+            //    double mass = 1000.*lvSum.M();
+            //    hPtMass->Fill(lvSum.Pt(), mass);
+            //    hEtaMass[ptbin]->Fill(lvSum.Eta(), mass);
+            //    if (mass > 120. && mass < 150.) {
+            //        hPhiEta->Fill(lvSum.Phi(), lvSum.Eta());
+            //        hPhiTheta->Fill(lvSum.Phi(), lvSum.Theta());
+            //        hXY->Fill(z*TMath::Tan(lvSum.Theta())*TMath::Cos(lvSum.Phi()), z*TMath::Tan(lvSum.Theta())*TMath::Sin(lvSum.Phi()));
+            //        hEtaERec->Fill(lvSum.Eta(), lvSum.E());
+            //        hEtaPtRec->Fill(lvSum.Eta(), lvSum.Pt());
+            //    }
+            //}
 
-                hPtMass->Fill(lvSum.Pt(), mass);
-                hEtaMass[ptbin]->Fill(lvSum.Eta(), mass);
-                if (mass > 110. && mass < 160.) {
-                    hPhiEta->Fill(lvSum.Phi(), lvSum.Eta());
-                    hPhiTheta->Fill(lvSum.Phi(), lvSum.Theta());
-                    hXY->Fill(z*TMath::Tan(lvSum.Theta())*TMath::Cos(lvSum.Phi()), z*TMath::Tan(lvSum.Theta())*TMath::Sin(lvSum.Phi()));
-                    hEtaPtRec->Fill(lvSum.Eta(), lvSum.Pt());
-                    hEtaERec->Fill(lvSum.Eta(), lvSum.E());
-                }
+            double mass = 1000.*lvSum.M();
+            if (TMath::Abs(mass-135.0) < massdiff) {
+                massdiff = TMath::Abs(mass-135.0);
+                closestMass = mass;
+                closestPt = lvSum.Pt();
+                closestEta = lvSum.Eta();
+                closestPhi = lvSum.Phi();
+                closestE = lvSum.E();
+                closestTheta = lvSum.Theta();
             }
         }
+    }
+    //AliJBaseTrack *tr = (AliJBaseTrack*)fTracks->At(0);
+    //closestPt = tr->Pt();
+    
+    if (closestMass > 100. && closestMass < 150.) {
+        int ptbin = GetBin(pt, nPtBin+1, closestPt);
+        hPtMass->Fill(closestPt, closestMass);
+        hEtaMass[ptbin]->Fill(closestEta, closestMass); 
+        hPhiEta->Fill(closestPhi, closestEta);
+        hPhiTheta->Fill(closestPhi, closestTheta);
+        hXY->Fill(z*TMath::Tan(closestTheta)*TMath::Cos(closestPhi), z*TMath::Tan(closestTheta)*TMath::Sin(closestPhi));
+        hEtaERec->Fill(closestEta, closestE);
+        hEtaPtRec->Fill(closestEta, closestPt);
     }
 }
 

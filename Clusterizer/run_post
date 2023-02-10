@@ -1,0 +1,22 @@
+#!/bin/bash
+
+export SIMDIR=${1}
+export CLUSTERDIR=${2}
+export OUTDIR=${3}
+export JOBSTART=${4}
+export JOBEND=${5}
+
+# echo "Run clusterizer for $INDIR, jobs $JOBSTART-$JOBEND"
+echo "Process data in $SIMDIR and $CLUSTERDIR"
+time=$(date)
+echo "Start time : $time"
+
+# Settings for singularity:
+export APPTAINER_BIND="/projappl/project_2003583,/scratch/project_2003583,$TMPDIR"
+export APPTAINER_SHELL="/bin/bash --norc"
+export APPTAINER_CACHEDIR=$TMPDIR
+
+apptainer exec --home $HOME --workdir $TMPDIR -B /scratch/project_2003583/focal-full-sim:/home/hadi -B /appl/:/appl/  /scratch/project_2003583/focal-full-sim/container_cs8.sif /scratch/project_2003583/focal-full-sim/HeidiPostProcessing/inside_container_post.sh
+
+time=$(date)
+echo "Done : $time"

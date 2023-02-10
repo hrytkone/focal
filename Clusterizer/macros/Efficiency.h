@@ -1,15 +1,13 @@
-const TString outputname = "efficiency_pythiamb_asym-08";
-const double asymcut = 0.8;
+const TString outputname = "efficiency_pi0-gun_MW-100-150_matched";
+const double asymcut = 1.;
 
-const int nPtBin = 6;
-double pt[nPtBin+1], limMin = 2, limMax = 20;
+const int nPtBin = 38;
+double pt[nPtBin+1], limMin = 2, limMax = 18;
 double logBW = (log(limMax) - log(limMin))/nPtBin;
 
-const int nEtaBin = 56;
-//const int nEtaBin = 30;
-double eta[nEtaBin+1];
-double etaBW = 0.05, etamin = 3.0, etamax = 5.8;
-//double etaBW = 0.05, etamin = 3.2, etamax = 5.5;
+const int nEtaBin = 38;
+double eta[nEtaBin+1], etamin = 3.4, etamax = 5.3;
+double etaBW = (etamax - etamin)/nEtaBin;
 
 //const int nPhiBin = 52;
 const int nPhiBin = 104;
@@ -33,6 +31,7 @@ AliFOCALGeometry *fGeom;
 TClonesArray *fTracks;
 TClonesArray *fClusters;
 TClonesArray *fTrackClusters = new TClonesArray("AliJBaseTrack", 1500);
+TClonesArray *fClustersMatched = new TClonesArray("AliJBaseTrack", 1500);
 TLorentzVector lvParticle;
 
 // Histograms

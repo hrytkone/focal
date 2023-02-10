@@ -164,10 +164,13 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, TClonesArray *arrPhoton, 
 
             if (bUseWeight && !fIsFullSim) wAssoc = 1./pi0eff;
             if (bUseWeight && fIsFullSim) {
-                if (fUseLeading)
+                if (fUseLeading) {
                     wAssoc = 1./effCorrLeading[iLeadingBin];
-                else
-                    wAssoc = 1./effCorrAssoc[iAssocBin];
+                } else {
+                    int iEtaEffBin = GetBin(etaEff, NETAEFFBIN, etaAssoc);
+                    int iPtEffBin = GetBin(ptEff, NPTEFFBIN, ptAssoc);
+                    wAssoc = 1./effEtaPt[iEtaEffBin][iPtEffBin];
+                }
             }
 
             double dphi = GetDeltaPhi(phiTrigg, phiAssoc);
@@ -185,7 +188,7 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, TClonesArray *arrPhoton, 
                         AliJBaseTrack *a2 = (AliJBaseTrack*)arrPhoton->At(assocPairs[1]);
 
                         if (a1->GetMotherID()==a2->GetMotherID()) {
-                            cout << "Should not happen!" << endl;
+                            //cout << "Should not happen!" << endl;
                         } else if (a1->GetLabel()==1 && a2->GetLabel()==1 && a1->GetMotherID()!=a2->GetMotherID()) {
                             histos->hCorrSideSideDecay[iTriggBin][iAssocBin]->Fill(dphi, deta, wAssoc);
                         } else if (a1->GetLabel()!=a2->GetLabel()) {
@@ -244,10 +247,13 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0Trigg, std::vector<int> lis
 
             if (bUseWeight && !fIsFullSim) wAssoc = 1./pi0eff;
             if (bUseWeight && fIsFullSim) {
-                if (fUseLeading)
+                if (fUseLeading) {
                     wAssoc = 1./effCorrLeading[iLeadingBin];
-                else
-                    wAssoc = 1./effCorrAssoc[iAssocBin];
+                } else {
+                    int iEtaEffBin = GetBin(etaEff, NETAEFFBIN, etaAssoc);
+                    int iPtEffBin = GetBin(ptEff, NPTEFFBIN, ptAssoc);
+                    wAssoc = 1./effEtaPt[iEtaEffBin][iPtEffBin];
+                }
             }
 
             double dphi = GetDeltaPhi(phiTrigg, phiAssoc);
@@ -313,7 +319,7 @@ void AliJHMRCorr::ConstructTrueCorrComponents(TClonesArray *arrPi0, TClonesArray
                 AliJBaseTrack *a2 = (AliJBaseTrack*)arrPhoton->At(assocPairs[1]);
 
                 if (a1->GetMotherID()==a2->GetMotherID()) {
-                    cout << "Should not happen!" << endl;
+                    //cout << "Should not happen!" << endl;
                 } else if (a1->GetLabel()==1 && a2->GetLabel()==1 && a1->GetMotherID()!=a2->GetMotherID()) {
                     histos->hCorrBgBgDecay[iTriggBin][iAssocBin]->Fill(dphi, deta, wAssoc);
                 } else if (a1->GetLabel()!=a2->GetLabel()) {

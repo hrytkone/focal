@@ -44,16 +44,24 @@ void processDataSTAR()
 void processDataFoCal()
 {
 	TString fInName[ndata_focal] = {
+        //"/home/heimarry/Simulations/focal/analysis_output_2/2023-02-09_pp-focal_smaller-mw_no-asym.root"
+        //"/home/heimarry/Simulations/focal/analysis_output_2/2023-02-09_pp-focal_smaller-mw_asym-08.root"
+        //"/home/heimarry/Simulations/focal/analysis_output_2/2023-02-09_pp-focal_smaller-mw_asym-05.root"
+        //"/home/heimarry/Simulations/focal/analysis_output_2/2023-02-09_pp-focal_smaller-mw_asym-08_w.root"
+        //"/home/heimarry/Simulations/focal/analysis_output_2/2023-02-10_pp-focal_smaller-mw_asym-05_w.root"
+        //************************************************************************************************
         //"/home/heimarry/Simulations/focal/analysis_output_2/2023-01-26_pp-focal_no-photon-eff.root"
-        //"/home/heimarry/Simulations/focal/analysis_output_2/2023-01-31_gAnalysis_asym-08_etacut-02.root"
+        //"/home/heimarry/Simulations/focal/analysis_output_2/2023-01-27_pp-focal_asym-08.root"
+        "/home/heimarry/Simulations/focal/analysis_output_2/2023-01-31_gAnalysis_asym-08_etacut-02.root"
         //"/home/heimarry/Simulations/focal/analysis_output_2/2023-01-30_gAnalysis_asym-08_etacut-02_weighted.root"
-        "/home/heimarry/Simulations/focal/analysis_output_2/2023-01-27_pp-focal_asym-08_weight-078.root"
+        //"/home/heimarry/Simulations/focal/analysis_output_2/2023-01-27_pp-focal_asym-08_weight-078.root"
+        //"/home/heimarry/Simulations/focal/analysis_output_2/2023-02-01_pp-focal_asym-05_weight-05_2.root"
         //"/home/heimarry/Simulations/focal-pythia-sim/focal-pp_no-weight.root"
 	};
 
 	TString fOutName[ndata_focal] = {
-		//"analysis_FoCal_pp.root"
-		"analysis_FoCal_pp_full-sim.root"
+		"analysis_FoCal_pp.root"
+		//"analysis_FoCal_pp_full-sim.root"
 	};
 
     TString dataname[ndata_focal] = {
@@ -372,6 +380,8 @@ void GetScaleFactorsVersion1()
             if (tlow < aupp) continue;
             //alpha[it][ia]  = fBgAssocPeak[it][ia]->Integral(massMin, massMax)/(fBgAssocPeak[it][ia]->Integral(40, 80) + fBgAssocPeak[it][ia]->Integral(210, 280));
             //beeta[it][ia]  = fBgTrigg[it]->Integral(massMin, massMax)/(fBgTrigg[it]->Integral(40, 80) + fBgTrigg[it]->Integral(210, 280));
+            //alpha[it][ia]  = fBgAssocPeak[it][ia]->Integral(massMin, massMax)/(fBgAssocPeak[it][ia]->Integral(50, 115) + fBgAssocPeak[it][ia]->Integral(160, 200));
+            //beeta[it][ia]  = fBgTrigg[it]->Integral(massMin, massMax)/(fBgTrigg[it]->Integral(50, 115) + fBgTrigg[it]->Integral(160, 200));
             alpha[it][ia]  = fBgAssocPeak[it][ia]->Integral(massMin, massMax)/fBgAssocPeak[it][ia]->Integral(220, 300);
             beeta[it][ia]  = fBgTrigg[it]->Integral(massMin, massMax)/fBgTrigg[it]->Integral(220, 300);
             yamma[it][ia] = alpha[it][ia]*beeta[it][ia];

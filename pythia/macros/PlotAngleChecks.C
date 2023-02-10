@@ -2,7 +2,7 @@
 //TString infile = "/home/heimarry/Simulations/focal/analysis_output/2023-01-10_pp-focal_oangle-divided_asym-1.root";
 //TString infile = "/home/heimarry/Simulations/focal/analysis_output/2023-01-09_pp-focal_oangle-divided_asym-08.root";
 //TString infile = "/home/heimarry/Simulations/focal/analysis_output/2023-01-10_pp-focal_oangle-divided_asym-05.root";
-TString infile = "/home/heimarry/Simulations/focal/analysis_output/2023-01-11_pp-focal_thetacut-0001.root";
+TString infile = "/home/heimarry/Simulations/focal/analysis_output_2/2023-02-09_pp-focal_smaller-mw_no-asym.root";
 
 
 const int nAssocBins = 3;
@@ -87,17 +87,16 @@ void ConfigHistos()
 void PlotAsym()
 {
 	for (int iassoc = 0; iassoc < nAssocBins; iassoc++) {
-        cAsym[iassoc] = new TCanvas(Form("cAsym_%d", iassoc), "", 600, 600);
+        cAsym[iassoc] = new TCanvas(Form("cAsym_%d", iassoc), "", 800, 600);
         cAsym[iassoc]->Divide(2,2);
         cAsym[iassoc]->cd(1);
-        hMassAsymTrue[iassoc]->Draw("COL");
+        hMassAsymTrue[iassoc]->Draw("COLZ");
         cAsym[iassoc]->cd(2);
-        hMassAsymDecay[iassoc]->Draw("COL");
+        hMassAsymDecay[iassoc]->Draw("COLZ");
         cAsym[iassoc]->cd(3);
-        hMassAsymMix[iassoc]->Draw("COL");
+        hMassAsymMix[iassoc]->Draw("COLZ");
         cAsym[iassoc]->cd(4);
-        hMassAsymNotDecay[iassoc]->Draw("COL");
-
+        hMassAsymNotDecay[iassoc]->Draw("COLZ");
     }
 }
 

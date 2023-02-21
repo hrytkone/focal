@@ -3,6 +3,7 @@
 void Efficiency(TString inputfile)
 {
     fGeom = AliFOCALGeometry::GetInstance("../geometry.txt");
+    cout << "FoCal front at " << (double)fGeom->GetFOCALZ0() - (double)fGeom->GetFOCALSizeZ()/2 << endl;
 
     if (!LoadInput(inputfile)) {
         cout << "File not found! " << inputfile << endl;
@@ -49,6 +50,7 @@ void Efficiency(TString inputfile)
         fTrackClusters->Clear("C");
 
     }
+    cout << "NTRUE = " << ntrue << endl;
     fOut->cd();
     fOut->Write("", TObject::kOverwrite);
 }
@@ -83,20 +85,27 @@ void InitOutput()
     cout << "]\n" << endl;
 
     hEtaPtTrue = new TH2D("hEtaPtTrue", "hEtaPtTrue", nEtaBin, eta, nPtBin, pt);
-    hEtaETrue = new TH2D("hEtaETrue", "hEtaETrue", nEtaBin, eta, 200, 0., 200.);
     hEtaPtRec = new TH2D("hEtaPtRec", "hEtaPtRec", nEtaBin, eta, nPtBin, pt);
+    hEtaPtRec_match = new TH2D("hEtaPtRec_match", "hEtaPtRec_match", nEtaBin, eta, nPtBin, pt);
+    hEtaPtRec_match_nomw = new TH2D("hEtaPtRec_match_nomw", "hEtaPtRec_match_nomw", nEtaBin, eta, nPtBin, pt);
+    hEtaETrue = new TH2D("hEtaETrue", "hEtaETrue", nEtaBin, eta, 200, 0., 200.);
     hEtaERec = new TH2D("hEtaERec", "hEtaERec", nEtaBin, eta, 200, 0., 200.);
+    hEtaERec_match = new TH2D("hEtaERec_match", "hEtaERec_match", nEtaBin, eta, 200, 0., 200.);
     hEPhotonTrue = new TH1D("hEPhotonTrue", "hEPhotonTrue", 200, 0., 200.);
     hEPhotonCluster = new TH1D("hEPhotonCluster", "hEPhotonCluster", 200, 0., 200.);
 
-    hPtMass  = new TH2D("hPtMass", "hPtMass", 36, 2., 20., 350, 0., 700.);
-    for (int ipt=0; ipt<nPtBin; ipt++)
-        hEtaMass[ipt] = new TH2D(Form("hEtaMass_%d", ipt), "hEtaMass", nEtaBin, eta, 350, 0., 700.);
+    hPtMass = new TH2D("hPtMass", "hPtMass", nPtBin, limMin, limMax, 350, 0., 700.);
+    hPtMass_match = new TH2D("hPtMass_match", "hPtMass_match", nPtBin, limMin, limMax, 350, 0., 700.);
+    hEtaMass = new TH2D("hEtaMass", "hEtaMass", nEtaBin, eta, 350, 0., 700.);
+    hEtaMass_match = new TH2D("hEtaMass_match", "hEtaMass_match", nEtaBin, eta, 350, 0., 700.);
 
     hPhiEtaTrue = new TH2D("hPhiEtaTrue", "hPhiEtaTrue", nPhiBin, phimin, phimax, nEtaBin, eta);
     hPhiEta = new TH2D("hPhiEta", "hPhiEta", nPhiBin, phimin, phimax, nEtaBin, eta);
+    hPhiEta_match = new TH2D("hPhiEta_match", "hPhiEta_match", nPhiBin, phimin, phimax, nEtaBin, eta);
     hPhiTheta = new TH2D("hPhiTheta", "hPhiTheta", nPhiBin, phimin, phimax, nThetaBin, thetamin, thetamax);
+    hPhiTheta_match  = new TH2D("hPhiTheta_match", "hPhiTheta_match", nPhiBin, phimin, phimax, nThetaBin, thetamin, thetamax);
     hXY = new TH2D("hXY", "hXY", nXYBin, xymin, xymax, nXYBin, xymin, xymax);
+    hXY_match = new TH2D("hXY_match", "hXY_match", nXYBin, xymin, xymax, nXYBin, xymin, xymax);
 
     hPhiEtaGamma = new TH2D("hPhiEtaGamma", "hPhiEtaGamma", nPhiBin, phimin, phimax, nEtaBin, eta);
     hPhiThetaGamma = new TH2D("hPhiThetaGamma", "hPhiThetaGamma", nPhiBin, phimin, phimax, nThetaBin, thetamin, thetamax);
@@ -115,10 +124,12 @@ void FillTruePions()
         double trPid = tr->GetID();
         double trMomType = tr->GetMotherType();
         if (trEta < etamin || trEta > etamax) continue;
+        if (trPt < limMin || trPt > limMax) continue;
         if (trPid==111) {
             hEtaPtTrue->Fill(trEta, trPt);
             hEtaETrue->Fill(trEta, trE);
             hPhiEtaTrue->Fill(trPhi, trEta);
+            ntrue++;
         }
         if (trPid==22 && trMomType==111 && tr->IsPrimary())
             hEPhotonTrue->Fill(trE);
@@ -129,7 +140,7 @@ void FillRecPions(TClonesArray *clusters)
 {
     int nclust = clusters->GetEntriesFast();
     if (nclust < 2) return;
-    double z = 706.62;
+    double z = 700.;
 
     double closestPt = -1.;
     double closestEta = -1.;
@@ -137,6 +148,7 @@ void FillRecPions(TClonesArray *clusters)
     double closestPhi = -1.;
     double closestE = -1.;
     double closestMass = -1.;
+    double closestAsym = -1.;
     double massdiff = 10000.;
     for (int i = 1; i < nclust; i++) {
         AliJBaseTrack *lv1 = (AliJBaseTrack*)clusters->At(i);
@@ -145,21 +157,21 @@ void FillRecPions(TClonesArray *clusters)
             AliJBaseTrack lvSum = GetPhotonSumVector(lv1, lv2);
         //    if (TMath::Abs(lv1->E() - lv2->E())/(lv1->E() + lv2->E())>asymcut[nasym-1]) continue;
         //    if (lvSum.Eta()<etamin || lvSum.Eta()>etamax) continue;
-            //int ptbin = GetBin(pt, nPtBin+1, lvSum.Pt());
-            //int etabin = GetBin(eta, nEtaBin+1, lvSum.Eta());
-            //if (ptbin==-1 || etabin==-1) continue;
-            //if (TMath::Abs(lv1->E() - lv2->E())/(lv1->E() + lv2->E())<asymcut) {
-            //    double mass = 1000.*lvSum.M();
-            //    hPtMass->Fill(lvSum.Pt(), mass);
-            //    hEtaMass[ptbin]->Fill(lvSum.Eta(), mass);
-            //    if (mass > 120. && mass < 150.) {
-            //        hPhiEta->Fill(lvSum.Phi(), lvSum.Eta());
-            //        hPhiTheta->Fill(lvSum.Phi(), lvSum.Theta());
-            //        hXY->Fill(z*TMath::Tan(lvSum.Theta())*TMath::Cos(lvSum.Phi()), z*TMath::Tan(lvSum.Theta())*TMath::Sin(lvSum.Phi()));
-            //        hEtaERec->Fill(lvSum.Eta(), lvSum.E());
-            //        hEtaPtRec->Fill(lvSum.Eta(), lvSum.Pt());
-            //    }
-            //}
+            int ptbin = GetBin(pt, nPtBin+1, lvSum.Pt());
+            int etabin = GetBin(eta, nEtaBin+1, lvSum.Eta());
+            if (ptbin==-1 || etabin==-1) continue;
+            if (TMath::Abs(lv1->E() - lv2->E())/(lv1->E() + lv2->E())<asymcut) {
+                double mass = 1000.*lvSum.M();
+                hPtMass->Fill(lvSum.Pt(), mass);
+                hEtaMass->Fill(lvSum.Eta(), mass);
+                if (mass > 100. && mass < 150.) {
+                    hPhiEta->Fill(lvSum.Phi(), lvSum.Eta());
+                    hPhiTheta->Fill(lvSum.Phi(), lvSum.Theta());
+                    hXY->Fill(z*TMath::Tan(lvSum.Theta())*TMath::Cos(lvSum.Phi()), z*TMath::Tan(lvSum.Theta())*TMath::Sin(lvSum.Phi()));
+                    hEtaERec->Fill(lvSum.Eta(), lvSum.E());
+                    hEtaPtRec->Fill(lvSum.Eta(), lvSum.Pt());
+                }
+            }
 
             double mass = 1000.*lvSum.M();
             if (TMath::Abs(mass-135.0) < massdiff) {
@@ -170,22 +182,26 @@ void FillRecPions(TClonesArray *clusters)
                 closestPhi = lvSum.Phi();
                 closestE = lvSum.E();
                 closestTheta = lvSum.Theta();
+                closestAsym = TMath::Abs(lv1->E() - lv2->E())/(lv1->E() + lv2->E());
             }
         }
     }
-    //AliJBaseTrack *tr = (AliJBaseTrack*)fTracks->At(0);
-    //closestPt = tr->Pt();
+    AliJBaseTrack *tr = (AliJBaseTrack*)fTracks->At(0);
+    closestPt = tr->Pt();
     
-    if (closestMass > 100. && closestMass < 150.) {
-        int ptbin = GetBin(pt, nPtBin+1, closestPt);
-        hPtMass->Fill(closestPt, closestMass);
-        hEtaMass[ptbin]->Fill(closestEta, closestMass); 
-        hPhiEta->Fill(closestPhi, closestEta);
-        hPhiTheta->Fill(closestPhi, closestTheta);
-        hXY->Fill(z*TMath::Tan(closestTheta)*TMath::Cos(closestPhi), z*TMath::Tan(closestTheta)*TMath::Sin(closestPhi));
-        hEtaERec->Fill(closestEta, closestE);
-        hEtaPtRec->Fill(closestEta, closestPt);
-    }
+    //if (closestMass > 100. && closestMass < 150. && closestAsym < asymcut) {
+        if (closestEta>etamin && closestEta<etamax)
+            hPtMass_match->Fill(closestPt, closestMass);
+        if (closestPt>limMin && closestPt<limMax)
+            hEtaMass_match->Fill(closestEta, closestMass); 
+        hPhiEta_match->Fill(closestPhi, closestEta);
+        hPhiTheta_match->Fill(closestPhi, closestTheta);
+        hXY_match->Fill(z*TMath::Tan(closestTheta)*TMath::Cos(closestPhi), z*TMath::Tan(closestTheta)*TMath::Sin(closestPhi));
+        hEtaERec_match->Fill(closestEta, closestE);
+        hEtaPtRec_match->Fill(closestEta, closestPt);
+    //}
+    hEtaPtRec_match_nomw->Fill(closestEta, closestPt);
+
 }
 
 int GetBin(double arr[], int nArr, double val)

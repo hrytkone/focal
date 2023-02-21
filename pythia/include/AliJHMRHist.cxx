@@ -281,12 +281,12 @@ void AliJHMRHist::FillPtEta(particleType itype, TClonesArray * arrParticles)
     }
 }
 
-void AliJHMRHist::FillMathingInformation(TClonesArray * arrClusters, TClonesArray * arrPtMatchedClusters)
+void AliJHMRHist::FillMathingInformation(TClonesArray * arrRecPi0, TClonesArray * arrPtMatchedPi0)
 {
-    int ncluster = arrClusters->GetEntriesFast();
-    for (int ic = 0; ic < ncluster; ic++) {
-        AliJBaseTrack *lv = (AliJBaseTrack*)arrClusters->At(ic);
-        AliJBaseTrack *lvMatched = (AliJBaseTrack*)arrPtMatchedClusters->At(ic);
+    int nrec = arrRecPi0->GetEntriesFast();
+    for (int ir = 0; ir < nrec; ir++) {
+        AliJBaseTrack *lv = (AliJBaseTrack*)arrRecPi0->At(ir);
+        AliJBaseTrack *lvMatched = (AliJBaseTrack*)arrPtMatchedPi0->At(ir);
         hPtMatched->Fill(lv->Pt(), lvMatched->Pt());
         hPhiMatched->Fill(lv->Phi(), lvMatched->Phi());
         hEtaMatched->Fill(lv->Eta(), lvMatched->Eta());

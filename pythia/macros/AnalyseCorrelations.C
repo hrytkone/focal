@@ -52,7 +52,7 @@ void processDataFoCal()
         //************************************************************************************************
         //"/home/heimarry/Simulations/focal/analysis_output_2/2023-01-26_pp-focal_no-photon-eff.root"
         //"/home/heimarry/Simulations/focal/analysis_output_2/2023-01-27_pp-focal_asym-08.root"
-        "/home/heimarry/Simulations/focal/analysis_output_2/2023-01-31_gAnalysis_asym-08_etacut-02.root"
+        "/home/heimarry/Simulations/focal/analysis_output_2/2023-02-14_gAnalysis_away-side_2.root"
         //"/home/heimarry/Simulations/focal/analysis_output_2/2023-01-30_gAnalysis_asym-08_etacut-02_weighted.root"
         //"/home/heimarry/Simulations/focal/analysis_output_2/2023-01-27_pp-focal_asym-08_weight-078.root"
         //"/home/heimarry/Simulations/focal/analysis_output_2/2023-02-01_pp-focal_asym-05_weight-05_2.root"
@@ -382,8 +382,8 @@ void GetScaleFactorsVersion1()
             //beeta[it][ia]  = fBgTrigg[it]->Integral(massMin, massMax)/(fBgTrigg[it]->Integral(40, 80) + fBgTrigg[it]->Integral(210, 280));
             //alpha[it][ia]  = fBgAssocPeak[it][ia]->Integral(massMin, massMax)/(fBgAssocPeak[it][ia]->Integral(50, 115) + fBgAssocPeak[it][ia]->Integral(160, 200));
             //beeta[it][ia]  = fBgTrigg[it]->Integral(massMin, massMax)/(fBgTrigg[it]->Integral(50, 115) + fBgTrigg[it]->Integral(160, 200));
-            alpha[it][ia]  = fBgAssocPeak[it][ia]->Integral(massMin, massMax)/fBgAssocPeak[it][ia]->Integral(220, 300);
-            beeta[it][ia]  = fBgTrigg[it]->Integral(massMin, massMax)/fBgTrigg[it]->Integral(220, 300);
+            alpha[it][ia]  = fBgAssocPeak[it][ia]->Integral(massMin, massMax)/fBgAssocPeak[it][ia]->Integral(210, 350);
+            beeta[it][ia]  = fBgTrigg[it]->Integral(massMin, massMax)/fBgTrigg[it]->Integral(210, 350);
             yamma[it][ia] = alpha[it][ia]*beeta[it][ia];
             std::cout << "\t\tbin [ "  << assocPt[ia] << " " << assocPt[ia+1] << " ] : "
                       << "\talpha=" << alpha[it][ia]

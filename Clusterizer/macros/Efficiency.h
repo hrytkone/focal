@@ -1,12 +1,13 @@
-const TString outputname = "efficiency_pi0-gun_MW-100-150_matched";
+const TString outputname = "efficiency_pi0-gun_true-pt";
 const double asymcut = 1.;
 
 const int nPtBin = 38;
-double pt[nPtBin+1], limMin = 2, limMax = 18;
+double pt[nPtBin+1], limMin = 2, limMax = 20;
 double logBW = (log(limMax) - log(limMin))/nPtBin;
 
 const int nEtaBin = 38;
 double eta[nEtaBin+1], etamin = 3.4, etamax = 5.3;
+//double eta[nEtaBin+1], etamin = 3.0, etamax = 6.0;
 double etaBW = (etamax - etamin)/nEtaBin;
 
 //const int nPhiBin = 52;
@@ -19,6 +20,8 @@ double thetamin = 0., thetamax = 0.12;
 
 const int nXYBin = 400;
 double xymin = -50., xymax = 50.;
+
+int ntrue = 0;
 
 TFile *fIn, *fOut;
 TTree *fTree;
@@ -40,12 +43,22 @@ TH2D *hEtaPtRec;
 TH2D *hEtaETrue;
 TH2D *hEtaERec;
 TH2D *hPtMass;
-TH2D *hEtaMass[nPtBin];
+TH2D *hEtaMass;
 TH2D *hPhiEtaTrue;
 TH2D *hPhiEta;
 TH2D *hPhiTheta;
 TH2D *hXY;
 TH2D *hEtaEff;
+
+TH2D *hEtaPtRec_match;
+TH2D *hEtaERec_match;
+TH2D *hPtMass_match;
+TH2D *hEtaMass_match;
+TH2D *hPhiEta_match;
+TH2D *hPhiTheta_match;
+TH2D *hXY_match;
+
+TH2D *hEtaPtRec_match_nomw;
 
 TH2D *hPhiEtaGamma;
 TH2D *hPhiThetaGamma;

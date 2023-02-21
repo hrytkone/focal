@@ -29,7 +29,7 @@ class AliJHMRHist {
         // create histograms
         void CreateHistos(TFile *output, detector labelDet, bool bUseLeading);
         void FillPtEta(particleType itype, TClonesArray * arrParticles);
-        void FillMathingInformation(TClonesArray * arrClusters, TClonesArray * arrPtMatchedClusters);
+        void FillMathingInformation(TClonesArray * arrRecPi0, TClonesArray * arrPtMatchedPi0);
 
         TH1D *hCounter;
         TH1D *hRealTriggCounter;

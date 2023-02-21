@@ -8,7 +8,7 @@ void DrawFiliPad();
 const int nTriggBins = 2;
 const int nAssocBins = 2;
 
-const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
+const double triggPt[nTriggBins+1] = {4.0, 8.0, 16.0};
 const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
 const double mSize = 1.;
 

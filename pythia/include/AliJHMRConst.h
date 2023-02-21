@@ -15,7 +15,7 @@
 #define NETAEFFBIN 38
 #define NPTEFFBIN 38
 
-enum particleType { kJHadron, kJPi0, kJDecayPhoton, kJRecPi0, kJCluster, kJPtMatchedCluster };
+enum particleType { kJHadron, kJPi0, kJDecayPhoton, kJRecPi0, kJCluster, kJPtMatchedPi0 };
 enum detector { kJFoCal, kJSTAR, kJTracker, kJFull };
 
 // For fixed mass window

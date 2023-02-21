@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
     AliJHMRCorr *fCorr = new AliJHMRCorr(fHistos, det, bUseLeading, bUseSim);
 
     TClonesArray *arrPhotonFor      = new TClonesArray("AliJBaseTrack", 1500);
-    TClonesArray *arrClusterMatched = new TClonesArray("AliJBaseTrack", 1500);
+    TClonesArray *arrPi0Matched = new TClonesArray("AliJBaseTrack", 1500);
     TClonesArray *arrPi0Real        = new TClonesArray("AliJBaseTrack", 1500);
     TClonesArray *arrPi0Peak        = new TClonesArray("AliJBaseTrack", 1500);
     TClonesArray *arrPi0Side        = new TClonesArray("AliJBaseTrack", 1500);
@@ -116,11 +116,8 @@ int main(int argc, char *argv[]) {
             fCatalystG->InitializeEvent();
             fCatalystG->GetParticles();
             fCatalystG->GetClusters();
-            fCatalystG->GetPtMatchedClusters();
             arrPi0Real   = fCatalystG->GetParticleList(kJPi0);
             arrPhotonFor = fCatalystG->GetParticleList(kJCluster);
-            arrClusterMatched = fCatalystG->GetParticleList(kJPtMatchedCluster);
-            fHistos->FillMathingInformation(arrPhotonFor, arrClusterMatched);
         } else { // Get stuff from pythia
             if ( !pythia.next() ) continue;
             fCatalyst->InitializeEvent();
@@ -131,6 +128,13 @@ int main(int argc, char *argv[]) {
         }
         int nTrueFromPeak = fCorr->ReconstructPions(arrPhotonFor, arrPi0Peak, det, 1);
         fCorr->ReconstructPions(arrPhotonFor, arrPi0Side, det, 0);
+
+        // Do matching for clusters
+        if (bUseSim) {
+            fCatalystG->GetPtMatchedClusters(arrPi0Peak);
+            arrPi0Matched = fCatalystG->GetParticleList(kJPtMatchedPi0);
+            fHistos->FillMathingInformation(arrPi0Peak, arrPi0Matched);
+        }
 
         fHistos->FillPtEta(kJDecayPhoton, arrPhotonFor);
         fHistos->FillPtEta(kJPi0, arrPi0Real);

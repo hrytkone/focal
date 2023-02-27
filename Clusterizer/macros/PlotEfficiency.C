@@ -1,21 +1,21 @@
-//const TString filename = "efficiency_pi0-gun_MW-100-150_all.root";
-const TString filename = "efficiency_pi0-gun_true-pt.root";
-//const TString filename = "efficiency_pi0-gun_MW-100-150.root";
-//const TString filename = "efficiency_pi0-gun_matched.root";
+#include "include/Filipad.h"
+#include "include/rootcommon.h"
+
+//const TString filename = "efficiency_pythiamb.root";
+const TString filename = "efficiency_pi0-gun_asym-08.root";
 
 //const TString legHeader = Form("#splitline{m_{#gamma#gamma} = [100,150] MeV/c^{2}}{3.4 < #eta < 5.3}");
 const TString legHeader = Form("#splitline{m_{#gamma#gamma} = [100,150] MeV/c^{2}}{2 < p_{T} < 20 GeV/c}");
 //const TString legHeader = "Mass matched clusters with true p_{T}";
 
-const int nev = 188800;
-
-const int nPtBin = 38;
-double pt[nPtBin+1], limMin = 2, limMax = 20;
+//const int nPtBin = 38;
+const int nPtBin = 19;
+double pt[nPtBin+1], limMin = 2, limMax = 18;
 double logBW = (log(limMax) - log(limMin))/nPtBin;
 
-const int nEtaBin = 38;
+//const int nEtaBin = 38;
+const int nEtaBin = 19;
 double eta[nEtaBin+1], etamin = 3.4, etamax = 5.3;
-//double eta[nEtaBin+1], etamin = 3.0, etamax = 6.0;
 double etaBW = (etamax - etamin)/nEtaBin;
 
 TFile *fin;
@@ -24,16 +24,21 @@ TH2D *hEtaPtTrue;
 TH2D *hPhiEtaTrue;
 TH2D *hEtaPtRec;
 TH2D *hEtaPtRec_match;
-TH2D *hEtaPtRec_match_nomw;
+TH2D *hEtaPtRec_match_truept;
 
 TH1D *hEtaPtRec_px;
 TH1D *hEtaPtRec_py;
 TH1D *hEtaPtRec_match_px;
 TH1D *hEtaPtRec_match_py;
-TH1D *hEtaPtRec_match_nomw_px;
-TH1D *hEtaPtRec_match_nomw_py;
+TH1D *hEtaPtRec_match_truept_px;
+TH1D *hEtaPtRec_match_truept_py;
 TH1D *hEtaPtTrue_px;
 TH1D *hEtaPtTrue_py;
+
+TH1D *hEtaPtRec_match_px_ratio;
+TH1D *hEtaPtRec_match_py_ratio;
+TH1D *hEtaPtRec_match_truept_px_ratio;
+TH1D *hEtaPtRec_match_truept_py_ratio;
 
 TH2D *hPhiEta;
 TH2D *hPhiTheta;
@@ -74,10 +79,10 @@ void PlotEfficiency()
     SetStyle(0);
 
     LoadData();
-    //PrintEfficiencyMatrix();
+    PrintEfficiencyMatrix();
 
-    TCanvas *c1 = new TCanvas("c1", "c1", 600, 600);
-    c1->SetLogy();
+    TCanvas *c3 = new TCanvas("c3", "c3", 600, 600);
+    c3->SetLogy();
     hEfficiency->SetContour(50);
     hEfficiency->GetZaxis()->SetRangeUser(0., 1.);
     hEfficiency->SetTitle("Efficiency ;#eta;p_{T} (GeV/c)");
@@ -88,28 +93,55 @@ void PlotEfficiency()
     legc2->SetHeader(Form("%s", legHeader.Data()));
     legc2->AddEntry(hEtaPtTrue_px, "MC truth", "le");
     legc2->AddEntry(hEtaPtRec_match_px, "#pi^{0} rec", "le");
-    legc2->AddEntry(hEtaPtRec_match_nomw_px, "#pi^{0} rec (matched)", "le");
+    //legc2->AddEntry(hEtaPtRec_match_truept_px, "#pi^{0} rec (true p_{T})", "le");
 
-    TCanvas *c2 = new TCanvas("c2", "c2", 600, 600);
-    //hEtaPtTrue_px->GetYaxis()->SetRangeUser(0., 15.);
+
+    Filipad *fpad = new Filipad(0, 1.1, 0.35, 100, 100, 0.8, 1);
+    fpad->Draw();
+
+    // Upper pad
+    TPad *p = fpad->GetPad(1);
+    p->SetTickx(); p->SetLogx(0); p->SetLogy(0); p->cd();
+    hset(*hEtaPtTrue_px, "#eta", "1/N_{ev} dN/d#eta", 1.1,1.2, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
+    hEtaPtTrue_px->GetYaxis()->SetRangeUser(-0.001, 0.03);
     hEtaPtTrue_px->Draw("HIST E");
     hEtaPtRec_match_px->Draw("HIST E SAME");
-    hEtaPtRec_match_nomw_px->Draw("HIST E SAME");
+    //hEtaPtRec_match_truept_px->Draw("HIST E SAME");
     legc2->Draw("SAME");
+
+    // Lower pad
+    p = fpad->GetPad(2);
+    p->SetTickx(); p->SetGridy(1); p->SetLogx(0), p->SetLogy(0); p->cd();
+    hset( *hEtaPtRec_match_px_ratio, "#eta", "Ratio to MC truth",1.1,0.7, 0.09,0.09, 0.01,0.01, 0.08,0.08, 510,505);
+    hEtaPtRec_match_px_ratio->Draw("HIST E");
+    //hEtaPtRec_match_truept_px_ratio->Draw("HIST E SAME");
 
     TLegend *legc3 = new TLegend(0.18, 0.15, 0.4, 0.4);
     legc3->SetBorderSize(0); legc3->SetTextSize(0.035);
     legc3->SetHeader(Form("%s", legHeader.Data()));
-    legc3->AddEntry(hEtaPtTrue_px, "MC truth", "le");
-    legc3->AddEntry(hEtaPtRec_match_px, "#pi^{0} rec", "le");
-    legc3->AddEntry(hEtaPtRec_match_nomw_px, "#pi^{0} rec (matched)", "le");
+    legc3->AddEntry(hEtaPtTrue_py, "MC truth", "le");
+    legc3->AddEntry(hEtaPtRec_match_py, "#pi^{0} rec", "le");
+    legc3->AddEntry(hEtaPtRec_match_truept_py, "#pi^{0} rec (true p_{T})", "le");
 
-    TCanvas *c3 = new TCanvas("c3", "c3", 600, 600);
-    //hEtaPtTrue_py->GetYaxis()->SetRangeUser(3., 5.);
+    Filipad *fpad2 = new Filipad(1, 1.1, 0.35, 100, 100, 0.8, 1);
+    fpad2->Draw();
+
+    // Upper pad
+    TPad *p1 = fpad2->GetPad(1);
+    p1->SetTickx(); p1->SetLogx(0); p1->SetLogy(0); p1->cd();
+    hset(*hEtaPtTrue_py, "p_{T} (GeV/c)", "1/N_{ev} dN/dp_{T}", 1.1,1.2, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
+    hEtaPtTrue_py->GetYaxis()->SetRangeUser(-0.001, 0.03);
     hEtaPtTrue_py->Draw("HIST E");
     hEtaPtRec_match_py->Draw("HIST E SAME");
-    hEtaPtRec_match_nomw_py->Draw("HIST E SAME");
+    hEtaPtRec_match_truept_py->Draw("HIST E SAME");
     legc3->Draw("SAME");
+
+    // Lower pad
+    p1 = fpad2->GetPad(2);
+    p1->SetTickx(); p1->SetGridy(1); p1->SetLogx(0), p1->SetLogy(0); p1->cd();
+    hset( *hEtaPtRec_match_py_ratio, "p_{T} (GeV/c)", "Ratio to MC truth",1.1,0.7, 0.09,0.09, 0.01,0.01, 0.08,0.08, 510,505);
+    hEtaPtRec_match_py_ratio->Draw("HIST E");
+    hEtaPtRec_match_truept_py_ratio->Draw("HIST E SAME");
 
     TCanvas *c5 = new TCanvas("c5", "c5", 600, 600);
     
@@ -157,7 +189,7 @@ void PlotEfficiency()
     lPionMassMax2->SetLineStyle(2);
 
     hEtaMass->GetYaxis()->SetRangeUser(0., 400.);
-    hEtaMass->GetZaxis()->SetRangeUser(0., 250.);
+    //hEtaMass->GetZaxis()->SetRangeUser(0., 250.);
     hEtaMass->GetXaxis()->SetTitleSize(0.042);
     hEtaMass->GetYaxis()->SetTitleSize(0.042);
     hEtaMass->GetXaxis()->SetLabelSize(0.042);
@@ -171,125 +203,6 @@ void PlotEfficiency()
     lPionMassMin2->Draw("SAME");
     lPionMassMax2->Draw("SAME");
     redrawBorder();
-
-    // Eta-phi histogram plotting
-    TCanvas *c7 = new TCanvas("c7", "c7", 1200, 600);
-    c7->Divide(2, 1);
-
-    c7->cd(1);
-    gPad->SetTheta(90.);
-    gPad->SetPhi(0.);
-    //gPad->DrawFrame(-5.8, -5.8, 5.8, 5.8);
-    //hPhiEtaTrue->RebinY();
-    hPhiEtaTrue->GetXaxis()->SetTitleSize(0.042);
-    hPhiEtaTrue->GetYaxis()->SetTitleSize(0.042);
-    hPhiEtaTrue->GetXaxis()->SetLabelSize(0.042);
-    hPhiEtaTrue->GetYaxis()->SetLabelSize(0.042);
-    hPhiEtaTrue->SetTitle(";#phi;#eta");
-    //hPhiEtaTrue->Draw("lego2 pol");
-    //hPhiEtaTrue->Draw("colz psr");
-    //hPhiEtaTrue->Draw("same colz pol");
-    hPhiEtaTrue->Draw("same colz");
-
-
-    c7->cd(2);
-    gPad->SetTheta(90.);
-    gPad->SetPhi(0.);
-    //gPad->DrawFrame(-5.8, -5.8, 5.8, 5.8);
-    //hPhiEta->RebinY();
-    hPhiEta->Divide(hPhiEtaTrue);
-    hPhiEta->GetXaxis()->SetTitleSize(0.042);
-    hPhiEta->GetYaxis()->SetTitleSize(0.042);
-    hPhiEta->GetXaxis()->SetLabelSize(0.042);
-    hPhiEta->GetYaxis()->SetLabelSize(0.042);
-    hPhiEta->SetTitle(";#phi;#eta");
-    //hPhiEta->Draw("lego2 pol");
-    //hPhiEta->Draw("same colz pol");
-    hPhiEta->Draw("same colz");
-
-    TCanvas *c8 = new TCanvas("c8", "c8", 1200, 600);
-    c8->Divide(2, 1);
-
-    c8->cd(1);
-    hPhiEta->ProjectionY()->Draw("HIST");
-
-    c8->cd(2);
-    hPhiEta->ProjectionX()->Draw("HIST");
-
-    // Theta-phi histogram plotting
-    TCanvas *c9 = new TCanvas("c9", "c9", 1200, 600);
-    c9->Divide(2,1);
-
-    c9->cd(1);
-    gPad->SetTheta(90.);
-    gPad->SetPhi(0.);
-    //gPad->DrawFrame(-0.049, -0.049, 0.049, 0.049);
-    gPad->DrawFrame(-0.07, -0.07, 0.07, 0.07);
-    hPhiTheta->SetTitle(";#phi;#theta");
-    hPhiTheta->GetYaxis()->SetRangeUser(0.,0.12);
-    hPhiTheta->GetXaxis()->SetTitleSize(0.);
-    hPhiTheta->GetYaxis()->SetTitleSize(0.);
-    hPhiTheta->GetXaxis()->SetLabelOffset(999);
-    //hPhiTheta->GetXaxis()->SetLabelSize(0.);
-    hPhiTheta->GetYaxis()->SetLabelOffset(999);
-    //hPhiTheta->GetYaxis()->SetLabelSize(0.);
-    //hPhiTheta->Draw("surf1 pol");
-    hPhiTheta->Draw("same col pol");
-    //hPhiTheta->Draw("");
-    TEllipse *ring1 = new TEllipse(0, 0, 0.04);
-    ring1->SetLineColor(kWhite);
-    ring1->SetLineWidth(2);
-    ring1->SetLineStyle(2);
-    ring1->SetFillStyle(0);
-    ring1->Draw("same");
-
-    TEllipse *ring2 = new TEllipse(0, 0, 0.02);
-    ring2->SetLineColor(kWhite);
-    ring2->SetLineWidth(2);
-    ring2->SetLineStyle(2);
-    ring2->SetFillStyle(0);
-    ring2->Draw("same");
-
-    TEllipse *ring3 = new TEllipse(0, 0, 0.0667);
-    ring3->SetLineColor(kWhite);
-    ring3->SetLineWidth(2);
-    ring3->SetLineStyle(2);
-    ring3->SetFillStyle(0);
-    ring3->Draw("same");
-
-    TLatex text;
-    text.SetTextColor(kWhite);
-    text.SetTextFont(62);
-    text.SetTextSize(0.052);
-    text.DrawLatexNDC(0.475, 0.74, "#eta = 3.9");
-    text.DrawLatexNDC(0.475, 0.625, "#eta = 4.6");
-    gPad->Update();
-
-    c9->cd(2);
-    gPad->SetTheta(90.);
-    gPad->SetPhi(0.);
-    //gPad->DrawFrame(-0.049, -0.049, 0.049, 0.049);
-    gPad->DrawFrame(-0.07, -0.07, 0.07, 0.07);
-    hPhiThetaGamma->SetTitle(";#phi;#theta");
-    hPhiThetaGamma->GetYaxis()->SetRangeUser(0.,0.12);
-    hPhiThetaGamma->GetXaxis()->SetTitleSize(0.);
-    hPhiThetaGamma->GetYaxis()->SetTitleSize(0.);
-    hPhiThetaGamma->GetXaxis()->SetLabelOffset(999);
-    //hPhiThetaGamma->GetXaxis()->SetLabelSize(0.);
-    hPhiThetaGamma->GetYaxis()->SetLabelOffset(999);
-    //hPhiThetaGamma->GetYaxis()->SetLabelSize(0.);
-    //hPhiThetaGamma->Draw("surf1 pol");
-    hPhiThetaGamma->Draw("same col pol");
-    //hPhiThetaGamma->Draw("");
-
-    ring1->Draw("same");
-    ring2->Draw("same");
-    ring3->Draw("same");
-    text.DrawLatexNDC(0.475, 0.74, "#eta = 3.9");
-    text.DrawLatexNDC(0.475, 0.625, "#eta = 4.6");
-    gPad->Update();
-
-    c9->SaveAs("phi-theta-pol.pdf");
 
     // XY histogram plotting
     //TCanvas *c10 = new TCanvas("c10", "c10", 1200, 600);
@@ -342,12 +255,7 @@ void LoadData()
     hEtaPtTrue = (TH2D*)fin->Get("hEtaPtTrue");
     hEtaPtRec = (TH2D*)fin->Get("hEtaPtRec");
     hEtaPtRec_match = (TH2D*)fin->Get("hEtaPtRec_match");
-    hEtaPtRec_match_nomw = (TH2D*)fin->Get("hEtaPtRec_match_nomw");
-    hEtaPtTrue->Scale(1., "width");
-    hEtaPtTrue->Scale(1./hEtaPtTrue->Integral("width"));
-    hEtaPtRec->Scale(1./hEtaPtTrue->Integral("width"));
-    hEtaPtRec_match->Scale(1./hEtaPtTrue->Integral("width"));
-    hEtaPtRec_match_nomw->Scale(1./hEtaPtTrue->Integral("width"));
+    hEtaPtRec_match_truept = (TH2D*)fin->Get("hEtaPtRec_match_truept");
     hEfficiency = (TH2D*)hEtaPtRec->Clone("hEfficiency");
     hEfficiency_match = (TH2D*)hEtaPtRec_match->Clone("hEfficiency_match");
     hEfficiency->Divide(hEtaPtTrue);
@@ -357,14 +265,32 @@ void LoadData()
     hEtaPtRec_py = hEtaPtRec->ProjectionY("hEtaPtRec_py", 1, nPtBin);
     hEtaPtRec_match_px = hEtaPtRec_match->ProjectionX("hEtaPtRec_match_px", 1, nEtaBin);
     hEtaPtRec_match_py = hEtaPtRec_match->ProjectionY("hEtaPtRec_match_py", 1, nPtBin);
-    hEtaPtRec_match_nomw_px = hEtaPtRec_match_nomw->ProjectionX("hEtaPtRec_match_nomw_px", 1, nEtaBin);
-    hEtaPtRec_match_nomw_py = hEtaPtRec_match_nomw->ProjectionY("hEtaPtRec_match_nomw_py", 1, nPtBin);
+    hEtaPtRec_match_truept_px = hEtaPtRec_match_truept->ProjectionX("hEtaPtRec_match_truept_px", 1, nEtaBin);
+    hEtaPtRec_match_truept_py = hEtaPtRec_match_truept->ProjectionY("hEtaPtRec_match_truept_py", 1, nPtBin);
     hEtaPtTrue_px = hEtaPtTrue->ProjectionX("hEtaPtTrue_px", 1, nEtaBin);
     hEtaPtTrue_py = hEtaPtTrue->ProjectionY("hEtaPtTrue_py", 1, nPtBin);
+
+    hEtaPtTrue_px->Scale(1., "width");
+    hEtaPtTrue_py->Scale(1., "width");
+    int c_px = hEtaPtTrue_px->Integral();
+    int c_py = hEtaPtTrue_py->Integral();
+    hEtaPtTrue_px->Scale(1./c_px);
+    hEtaPtTrue_py->Scale(1./c_py);
+
+    hEtaPtRec_px->Scale(1./c_px, "width");
+    hEtaPtRec_py->Scale(1./c_py, "width");
+    hEtaPtRec_match_px->Scale(1./c_px, "width");
+    hEtaPtRec_match_py->Scale(1./c_py, "width");
+    hEtaPtRec_match_truept_px->Scale(1./c_px, "width");
+    hEtaPtRec_match_truept_py->Scale(1./c_py, "width");
+
+    cout << "Integral px : " << hEtaPtTrue_px->Integral() << endl;
+    cout << "Integral py : " << hEtaPtTrue_py->Integral() << endl;
+
     hEtaPtRec_match_px->SetLineColor(kRed);
     hEtaPtRec_match_py->SetLineColor(kRed);
-    hEtaPtRec_match_nomw_px->SetLineColor(kBlue);
-    hEtaPtRec_match_nomw_py->SetLineColor(kBlue);
+    hEtaPtRec_match_truept_px->SetLineColor(kBlue);
+    hEtaPtRec_match_truept_py->SetLineColor(kBlue);
     hEtaPtTrue_px->SetLineColor(kBlack);
     hEtaPtTrue_py->SetLineColor(kBlack);
 
@@ -395,8 +321,19 @@ void LoadData()
     hEtaPtTrue_px->SetTitle("; #eta; 1/N_{ev} dN/d#eta");
     hEtaPtTrue_py->SetTitle("; p_{T} (GeV/c); 1/N_{ev} dN/dp_{T}");
 
+    hEtaPtRec_match_px_ratio = (TH1D*)hEtaPtRec_match_px->Clone("hEtaPtRec_match_px_ratio");
+    hEtaPtRec_match_py_ratio = (TH1D*)hEtaPtRec_match_py->Clone("hEtaPtRec_match_py_ratio");
+    hEtaPtRec_match_truept_px_ratio = (TH1D*)hEtaPtRec_match_truept_px->Clone("hEtaPtRec_match_truept_px_ratio");
+    hEtaPtRec_match_truept_py_ratio = (TH1D*)hEtaPtRec_match_truept_py->Clone("hEtaPtRec_match_truept_py_ratio");
+    hEtaPtRec_match_px_ratio->Divide(hEtaPtTrue_px);
+    hEtaPtRec_match_py_ratio->Divide(hEtaPtTrue_py);
+    hEtaPtRec_match_truept_px_ratio->Divide(hEtaPtTrue_px);
+    hEtaPtRec_match_truept_py_ratio->Divide(hEtaPtTrue_py);
+
     hPtMass = (TH2D*)fin->Get("hPtMass_match");
     hEtaMass = (TH2D*)fin->Get("hEtaMass_match");
+    //hPtMass = (TH2D*)fin->Get("hPtMass");
+    //hEtaMass = (TH2D*)fin->Get("hEtaMass");    
 
     hPhiTheta = (TH2D*)fin->Get("hPhiTheta");
     hPhiEta = (TH2D*)fin->Get("hPhiEta");
@@ -406,12 +343,6 @@ void LoadData()
     hXYGamma = (TH2D*)fin->Get("hXYGamma");
     hEtaEff = (TH2D*)fin->Get("hEtaEff");
     hPhiEtaTrue = (TH2D*)fin->Get("hPhiEtaTrue");
-
-    for (int i=0; i<nEtaBin; i++) {
-        for (int j=0; j<nPtBin; j++) {
-            hMassCluster[i][j] = (TH1D*)fin->Get(Form("hMassCluster_%d_%d", i, j));
-        }
-    }
 
     hEPhotonTrue = (TH1D*)fin->Get("hEPhotonTrue");
     hEPhotonRec = (TH1D*)fin->Get("hEPhotonCluster");
@@ -502,6 +433,7 @@ void PrintEfficiencyMatrix()
         cout << "[";
         for (int ipt = 1; ipt <= nPtBin; ipt++) {
             TString val = Form("%0.03f", hEfficiency->GetBinContent(ieta, ipt));
+            //TString val = Form("%0.03f", hEfficiency->GetBinError(ieta, ipt));
             cout << val;
             if (ipt==nPtBin)
                 cout << "]," << endl;

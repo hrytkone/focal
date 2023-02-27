@@ -111,7 +111,7 @@ int main(int argc, char *argv[]) {
             std::cout << "\nEvent " << iEvent << std::endl;
 
         if (bUseSim) { // Get stuff from detector simulation file
-            if (iEvent%1000==0) cout << "event " << iEvent << "/" << nEvents << endl;
+            if (iEvent%10000==0) cout << "event " << iEvent << "/" << nEvents << endl;
             fCatalystG->GetEvent(iEvent);
             fCatalystG->InitializeEvent();
             fCatalystG->GetParticles();
@@ -150,6 +150,7 @@ int main(int argc, char *argv[]) {
         int binsWithTriggReal[NTRIGGBINS+1] = {0}, binsWithTriggPeak[NTRIGGBINS+1] = {0}, binsWithTriggSide[NTRIGGBINS+1] = {0};
         fCorr->GetTriggAssocLists(arrPi0Real, listTriggReal, listAssocReal, binsWithTriggReal, 0);
         fCorr->GetTriggAssocLists(arrPi0Peak, listTriggPeak, listAssocPeak, binsWithTriggPeak, 0);
+        //fCorr->GetTriggAssocLists(arrPi0Matched, listTriggPeak, listAssocPeak, binsWithTriggPeak, 0);
         fCorr->GetTriggAssocLists(arrPi0Side, listTriggSide, listAssocSide, binsWithTriggSide, 0);
 
         if (bUseLeading) {

@@ -12,8 +12,8 @@
 #define NINCPTBIN 150
 #define NINCETABIN 150
 #define NPHOTONENERGYBIN 150
-#define NETAEFFBIN 38
-#define NPTEFFBIN 38
+#define NETAEFFBIN 19
+#define NPTEFFBIN 19
 
 enum particleType { kJHadron, kJPi0, kJDecayPhoton, kJRecPi0, kJCluster, kJPtMatchedPi0 };
 enum detector { kJFoCal, kJSTAR, kJTracker, kJFull };

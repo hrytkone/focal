@@ -1,11 +1,14 @@
-const TString outputname = "efficiency_pi0-gun_true-pt";
-const double asymcut = 1.;
+const TString outputname = "efficiency_pi0-gun_asym-08";
+//const TString outputname = "efficiency_pythiamb";
+const double asymcut = 0.8;
 
-const int nPtBin = 38;
-double pt[nPtBin+1], limMin = 2, limMax = 20;
+//const int nPtBin = 38;
+const int nPtBin = 19;
+double pt[nPtBin+1], limMin = 2, limMax = 18;
 double logBW = (log(limMax) - log(limMin))/nPtBin;
 
-const int nEtaBin = 38;
+//const int nEtaBin = 38;
+const int nEtaBin = 19;
 double eta[nEtaBin+1], etamin = 3.4, etamax = 5.3;
 //double eta[nEtaBin+1], etamin = 3.0, etamax = 6.0;
 double etaBW = (etamax - etamin)/nEtaBin;
@@ -58,7 +61,7 @@ TH2D *hPhiEta_match;
 TH2D *hPhiTheta_match;
 TH2D *hXY_match;
 
-TH2D *hEtaPtRec_match_nomw;
+TH2D *hEtaPtRec_match_truept;
 
 TH2D *hPhiEtaGamma;
 TH2D *hPhiThetaGamma;

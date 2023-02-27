@@ -1,4 +1,4 @@
-const TString outputname = "masses_v5_eta35-55_pt-bins_etacut-02";
+const TString outputname = "masses_v9";
 const int nasym = 6;
 const int npt = 4;
 

@@ -12,19 +12,19 @@ const double detEta[NDET][2] = {
 //double assocPt[NASSOCBINS+1] = {0.5, 1.0, 1.5, 2.0, 2.5};
 
 // FoCal bins
-double triggPt[NTRIGGBINS+1] = {4.0, 8.0, 18.0};
+double triggPt[NTRIGGBINS+1] = {4.0, 8.0, 16.0};
 double assocPt[NASSOCBINS+1] = {2.0, 3.0, 4.0, 8.0};
 
 // When using leading trigger
 double leadingPt[NLEADINGBINS+1] = {2., 2.5, 3., 3.5, 4., 5., 6., 8., 10., 15., 20.}; // Needed for corrections
 
 // For pure PYTHIA simulations
-//const double massWindowMin = 110.;
-//const double massWindowMax = 160.;
+const double massWindowMin = 120.;
+const double massWindowMax = 155.;
 
 // For full detector sim
-const double massWindowMin = 50;
-const double massWindowMax = 200.;
+//const double massWindowMin = 50;
+//const double massWindowMax = 200.;
 
 const double sidebandMin = 220.;
 const double sidebandMax = 350.;
@@ -39,7 +39,7 @@ const double massPeakPosAssoc[NASSOCBINS] = {130, 135.607};//, 140.779, 143.724,
 const double effCorrLeading[NLEADINGBINS] = {0.250451, 0.275956, 0.326522, 0.368184, 0.424019, 0.527646, 0.546536, 0.585381, 0.618371, 0.620072};
 
 const double etacut = 0.2;
-const double asymcut = 0.9;
+const double asymcut = 0.8;
 const double thetacut = 0.;
 
 const double kJPi = TMath::Pi();

@@ -40,7 +40,7 @@ bool AliJHMRCorr::IsSideband(double mass)
     if (fIsFullSim)
         return (mass > sidebandMin && mass < sidebandMax) ? true : false;
     else
-        return ((mass > 40. && mass < 80.) || (mass > 210. && mass < 280.)) ? true : false;
+        return ((mass > 50. && mass < 115.) || (mass > 160. && mass < 200.)) ? true : false;
 }
 
 // Return 1 if trigger from peak has larger pT than trigger from sideband, 0 if sideband

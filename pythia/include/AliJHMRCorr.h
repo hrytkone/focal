@@ -39,6 +39,9 @@ public:
             fLeta = -1.;
             fLphi = -1.;
             fLpt  = -1.;
+
+            fX1 = -1.;
+            fX2 = -1.;
         }
 
     virtual ~AliJHMRCorr(){ }
@@ -76,6 +79,11 @@ public:
     void ClearPhotonPairVector() { photonId.clear(); }
     void ClearSidebandPairVector() { sidebandId.clear(); }
 
+    // For saving x1 and x2 distributions
+    void SetX1X2(double x1, double x2) { fX1 = x1; fX2 = x2; }
+    double GetX1() { return fX1; }
+    double GetX2() { return fX2; }
+
 protected:
 
     bool fUseLeading; // use leading particle correlation
@@ -84,6 +92,9 @@ protected:
     double fLeta;     // These are to find out the leading trigger when filling mass histos for assoc
     double fLphi;     // These are to find out the leading trigger when filling mass histos for assoc
     double fLpt;      // These are to find out the leading trigger when filling mass histos for assoc
+
+    double fX1;
+    double fX2;
 
     TRandom3 *fRand;
     AliJHMRHist *histos;

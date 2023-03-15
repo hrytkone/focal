@@ -1,16 +1,16 @@
-const TString outputname = "masses_v9";
+//const TString outputname = "masses_pi0-gun_v9";
+const TString outputname = "masses_pythia-2_v9";
 const int nasym = 6;
 const int npt = 4;
 
 const int poolsize = 0;
 
-const double etamin = 3.5;
+const double etamin = 3.2;
 const double etamax = 5.5;
-
 const double etacut = 0.2;
 
 double asymcut[nasym] = {0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
-double pt[npt+1] = {2., 3., 4., 8., 20.};
+double pt[npt+1] = {2., 3., 4., 8., 16.};
 
 TFile *fIn, *fOut;
 TTree *fTree;

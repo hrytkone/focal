@@ -7,7 +7,7 @@
  * To be executed in AliRoot environment.
 */
 
-TFile *fout;
+TFile *clusterFile, *fout;
 TTree *tree;
 
 AliJHMREvent *event;
@@ -27,7 +27,7 @@ void CombineSimulationOutput(TString simfolder, TString clusterfolder, TString o
 		char filename[200];
 		sprintf(filename, "%s/%03d/focalClusters.root", clusterfolder.Data(), ifolder);
 
-		TFile *clusterFile = new TFile(filename);
+		clusterFile = TFile::Open(filename);
 		cout << "Clusters from: " << clusterFile->GetName() << endl;
 		cout << "FOLDER: " << ifolder << endl;
 

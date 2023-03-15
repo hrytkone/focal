@@ -178,6 +178,12 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, TClonesArray *arrPhoton, 
 
             if (bTrueCorr) {
                 hCorr[iTriggBin][iAssocBin]->Fill(dphi, deta);
+
+                // Fill x1 and x2 histograms
+                histos->hX1[iTriggBin][iAssocBin]->Fill(fX1);
+                histos->hX2[iTriggBin][iAssocBin]->Fill(fX2);
+                histos->hX1X2[iTriggBin][iAssocBin]->Fill(fX1, fX2);
+
             } else {
                 if (CheckAssocPhotonPair(iTrigg, iAssoc, bMassWindowTrigg)) {
                     hCorr[iTriggBin][iAssocBin]->Fill(dphi, deta, wAssoc);

@@ -3,8 +3,10 @@ const int npt = 4;
 //const int npt = 10;
 
 //const TString filename = "masses_v5_eta35-55_pt-bins_etacut-02.root";
-const TString filename = "masses_v9.root";
-const TString lowmassfilename = "etacut_41-55_gamma_more-pt-bins.root";
+//const TString filename = "masses_v9.root";
+//const TString filename = "masses_pi0-gun_v9.root";
+const TString filename = "masses_pythia-2_v9.root";
+const TString lowmassfilename = "masses_gamma-gun_v9.root";
 const TString legEta = "3.5(+0.2) < #eta < 5.5(-0.2)";
 //------------------------------------------------------------------------------
 
@@ -12,7 +14,7 @@ const TString legHeader[npt] = {
     "2 GeV < p_{T} < 3 GeV",
     "3 GeV < p_{T} < 4 GeV",
     "4 GeV < p_{T} < 8 GeV",
-    "8 GeV < p_{T} < 20 GeV"
+    "8 GeV < p_{T} < 16 GeV"
 };
 
 //------------------------------------------------------------------------------
@@ -26,12 +28,15 @@ const TString legEntry1[nset] = {
     "No cut"
 };
 
-const double xi[nset] = {0.3, 0.3, 0.3, 0.3, 0.3, 0.3};
+const double xi[nset] = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5};
 const double xf[nset] = {0.85, 0.85, 0.85, 0.85, 0.85, 0.85};
-const double yi[nset] = {0.6, 0.6, 0.6, 0.6, 0.6, 0.6};
+const double yi[nset] = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5};
 const double yf[nset] = {0.87, 0.87, 0.87, 0.87, 0.87, 0.87};
 
-const double fitStartingPoint[npt] = {35., 50., 40., 50.};
+const double fitStartingPoint[npt] = {35., 30., 30., 40.};
+
+const double mmin = 50.;
+const double mmax = 200.;
 
 //------------------------------------------------------------------------------
 
@@ -54,8 +59,8 @@ TF1 *fBg[nset][npt];
 
 int npion = 0;
 double fitPar[10];
-double massmin[npt][nset];
-double massmax[npt][nset];
+double massmin[nset][npt];
+double massmax[nset][npt];
 double signalToBg[npt][nset] = {0};
 double signalToBgErr[npt][nset] = {0};
 double peakErr[npt][nset] = {0};
@@ -70,8 +75,8 @@ double peakPos[npt][nset] = {0};
 double peakPosErr[npt][nset] = {0};
 double asymmetry[nset] = {0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
 double asymmteryErr[nset] = {0};
-double ptMid[npt] = {2.5, 3.5, 6., 14.};
-double ptMidErr[npt] = {0.5, 0.5, 2., 6.};
+double ptMid[npt] = {2.5, 3.5, 6., 12.};
+double ptMidErr[npt] = {0.5, 0.5, 2., 4.};
 //double ptMid[npt] = {2.25, 2.75, 3.25, 3.75, 4.5, 5.5, 7, 9, 12.5, 17.5};
 //double ptMidErr[npt] = {0.25, 0.25, 0.25, 0.25, 0.5, 0.5, 1., 1., 2.5, 2.5};
 
@@ -88,10 +93,12 @@ double FitPeak(double *x, double *p);
 Double_t LorentzianPeak(Double_t *x, Double_t *p);
 double FitBackground(double *x, double *p);
 double FitFunction(double *x, double *p);
+void SetStyle(Bool_t graypalette);
+void redrawBorder();
 
 void PlotMassPeaks()
 {
-    gStyle->SetOptStat(0);
+    SetStyle(1);
     //gStyle->SetPalette(kTemperatureMap);
     Int_t palette[6];
     palette[0] = kCyan;
@@ -109,25 +116,47 @@ void PlotMassPeaks()
 
     cout << "NPIONS : " << npion << endl;
     for (int j=0; j<nset; j++) {
-        c1[j] = new TCanvas(Form("c%d", j), "", 600, 600);
+        c1[j] = new TCanvas(Form("c%d", j), "", 1200, 900);
         c1[j]->Divide(2,2);
         for (int i=0; i<npt; i++) {
             c1[j]->cd(i+1);
-            gPad->SetLeftMargin(0.1);
-            gPad->SetBottomMargin(0.1);
-            gPad->SetRightMargin(0.05);
-            gPad->SetTopMargin(0.05);
-            hMassCluster[j][i]->SetTitle(";M_{#gamma#gamma};counts");
+            if (i==0 || i==2) {
+                gPad->SetRightMargin(0.);
+            } else {
+                gPad->SetLeftMargin(0.055);
+                gPad->SetRightMargin(0.055);
+            }
+
+            if (i==0 || i==1) {
+                gPad->SetBottomMargin(0.);
+                gPad->SetTopMargin(0.06);
+            } else {
+                gPad->SetTopMargin(0.);
+            }
+
+            if (i==2)
+                hMassCluster[j][i]->SetTitle(";;");
+            else
+                hMassCluster[j][i]->SetTitle(";M_{#gamma#gamma};counts");
             double max = hMassCluster[j][i]->GetBinContent(hMassCluster[j][i]->GetMaximumBin());
-            hMassCluster[j][i]->GetXaxis()->SetRangeUser(0., 450.);
-            hMassCluster[j][i]->GetYaxis()->SetRangeUser(0., max+0.2*max);
-            //hMassClusterBg[j][i]->Draw("HIST E");
+            hMassCluster[j][i]->GetXaxis()->SetRangeUser(0.1, 445.);
+            hMassCluster[j][i]->GetYaxis()->SetRangeUser(0.1, max+0.14*max);
+            //hMassCluster[j][i]->GetYaxis()->SetRangeUser(0., 3000.);
+            hMassCluster[j][i]->GetXaxis()->SetTitleSize(0.062);
+            hMassCluster[j][i]->GetYaxis()->SetTitleSize(0.062);
+            hMassCluster[j][i]->GetXaxis()->SetTitleOffset(0.9);
+            hMassCluster[j][i]->GetXaxis()->SetLabelSize(0.052);
+            hMassCluster[j][i]->GetYaxis()->SetLabelSize(0.052);
             hMassCluster[j][i]->Draw("HIST E");
+            hMassClusterBg[j][i]->Draw("HIST E SAME");
             //hMassClusterMixed[j][i]->Draw("PE SAME");
             fBg[j][i]->Draw("SAME");
-            fPeak[j][i]->Draw("SAME");
-            fBg[j][i]->SetLineWidth(1);
-            fPeak[j][i]->SetLineWidth(1);
+            //fPeak[j][i]->Draw("SAME");
+            hMassCluster[j][i]->SetLineWidth(2);
+            hMassClusterBg[j][i]->SetLineWidth(2);
+            hMassClusterBg[j][i]->SetLineColor(kBlue);
+            fBg[j][i]->SetLineWidth(2);
+            fPeak[j][i]->SetLineWidth(2);
             fFit[j][i]->SetLineWidth(2);
             fFit[j][i]->Draw("SAME");
 
@@ -139,6 +168,7 @@ void PlotMassPeaks()
             //minMassBorder->Draw("SAME");
             //maxMassBorder->Draw("SAME");
             leg[j][i]->Draw("SAME");
+            redrawBorder();
         }
         c1[j]->SaveAs(Form("mass_%d.eps", j));
     }
@@ -195,17 +225,19 @@ void LoadData()
             hMassCluster[iasym][ipt] = (TH1D*)fin->Get(Form("hMassCluster_%d_%d", iasym, ipt));
             massAreaSidebandLow[iasym][ipt] = hMassCluster[iasym][ipt]->Integral(hMassCluster[iasym][ipt]->FindBin(0), hMassCluster[iasym][ipt]->FindBin(50));
             massAreaSidebandHigh[iasym][ipt] = hMassCluster[iasym][ipt]->Integral(hMassCluster[iasym][ipt]->FindBin(200), hMassCluster[iasym][ipt]->FindBin(400));
-            hMassCluster[iasym][ipt]->Rebin();
-            //hMassCluster[iasym][ipt]->Scale(1., "width");
+            hMassCluster[iasym][ipt]->Rebin(4);
+            hMassCluster[iasym][ipt]->Scale(1.);
             hMassCluster[iasym][ipt]->SetMarkerStyle(kDot);
             hMassCluster[iasym][ipt]->SetFillColor(kGray);
             hMassCluster[iasym][ipt]->SetMarkerSize(.5);
             hMassCluster[iasym][ipt]->SetMarkerColor(kBlack);
             hMassCluster[iasym][ipt]->SetLineColor(kBlack);
             hMassCluster[iasym][ipt]->GetYaxis()->SetMaxDigits(3);
+            if (ipt==npt-1) 
+                hMassCluster[iasym][ipt]->GetYaxis()->SetMaxDigits(2);
 
             hMassClusterMixed[iasym][ipt] = (TH1D*)fin->Get(Form("hMassClusterMixed_%d_%d", iasym, ipt));
-            hMassClusterMixed[iasym][ipt]->Rebin();
+            hMassClusterMixed[iasym][ipt]->Rebin(5);
             mixedArea[iasym][ipt] = hMassClusterMixed[iasym][ipt]->Integral(hMassClusterMixed[iasym][ipt]->FindBin(200), hMassClusterMixed[iasym][ipt]->FindBin(400));
             hMassClusterMixed[iasym][ipt]->Scale(massAreaSidebandHigh[iasym][ipt]/mixedArea[iasym][ipt], "width");
             hMassClusterMixed[iasym][ipt]->SetMarkerStyle(kDot);
@@ -216,22 +248,23 @@ void LoadData()
         }
     }
 
-    /**finLowMassBg = TFile::Open(lowmassfilename.Data());
+    finLowMassBg = TFile::Open(lowmassfilename.Data());
     for (int iasym=0; iasym<nset; iasym++) {
         for (int ipt=0; ipt<npt; ipt++) {
             hMassClusterBg[iasym][ipt] = (TH1D*)finLowMassBg->Get(Form("hMassCluster_%d_%d", iasym, ipt));
-            lowMassArea[iasym][ipt] = hMassClusterBg[iasym][ipt]->Integral(hMassClusterBg[iasym][ipt]->FindBin(0), hMassClusterBg[iasym][ipt]->FindBin(50));
+            hMassClusterBg[iasym][ipt]->Rebin(4);
+            lowMassArea[iasym][ipt] = hMassClusterBg[iasym][ipt]->Integral(hMassClusterBg[iasym][ipt]->FindBin(1), hMassClusterBg[iasym][ipt]->FindBin(50));
             hMassClusterBg[iasym][ipt]->Scale(massAreaSidebandLow[iasym][ipt]/lowMassArea[iasym][ipt]);
-            hMassClusterBg[iasym][ipt]->Rebin();
             hMassClusterBg[iasym][ipt]->SetMarkerStyle(kDot);
             hMassClusterBg[iasym][ipt]->SetMarkerSize(.5);
             hMassClusterBg[iasym][ipt]->SetMarkerColor(kGray);
-            hMassClusterBg[iasym][ipt]->SetLineColor(kGray);
+            hMassClusterBg[iasym][ipt]->SetLineColor(kBlack);
+            //hMassClusterBg[iasym][ipt]->SetFillColor(kGray+1);
             hMassClusterBg[iasym][ipt]->GetYaxis()->SetMaxDigits(3);
 
             //hMassCluster[iasym][ipt]->Add(hMassClusterBg[iasym][ipt], -1.);
         }
-    }**/
+    }
 }
 
 void CreateLegends()
@@ -244,7 +277,9 @@ void CreateLegends()
             leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], legEntry1[iasym], "");
             leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], Form("S/B = %0.03f", signalToBg[ipt][iasym]), "");
             leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], Form("m_{#pi0} = %0.01f#pm%0.01f", peakPos[iasym][ipt], peakPosErr[iasym][ipt]), "");
-            leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], Form("#epsilon = %0.03f#pm%0.03f", eff[ipt][iasym], effErr[ipt][iasym]), "");
+            leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], "PYTHIA6 + GEANT3", "l");
+            leg[iasym][ipt]->AddEntry(hMassClusterBg[iasym][ipt], "#gamma gun + GEANT3", "l");
+            //leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], Form("#epsilon = %0.03f#pm%0.03f", eff[ipt][iasym], effErr[ipt][iasym]), "");
             //leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], Form("m_{#pi0} = %0.0f", hMassCluster[iasym][ipt]->GetBinCenter(hMassCluster[iasym][ipt]->GetMaximumBin())), "");
             //leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], Form("N_{entry} = %0.0f", hMassCluster[iasym][ipt]->GetEntries()), "");
             //leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], Form("N_{entry}/N_{#pi0, true} = %0.3f", hMassCluster[iasym][ipt]->GetEntries()/(double)npion), "");
@@ -254,7 +289,7 @@ void CreateLegends()
 
     // Legend for singal-to-background figure
     leg2 = new TLegend(0.13, 0.7, 0.87, 0.87);
-    leg2->SetFillStyle(0); leg2->SetBorderSize(1); leg2->SetTextSize(0.025);
+    leg2->SetFillStyle(0); leg2->SetBorderSize(1); leg2->SetTextSize(0.032);
     leg2->SetNColumns(2);
     leg2->SetHeader(legEta.Data(), "C");
     for (int ipt=0; ipt<npt; ipt++)
@@ -297,23 +332,23 @@ void FitMassPeaks()
             fPeak[i][j]->SetParameters(&fitPar[5]);
 
             //if (fitPar[8] < fitPar[9]) {
-                massmin[i][j] = fitPar[7]-3.*fitPar[8];
-                massmax[i][j] = fitPar[7]+3.*fitPar[8];
+            //    massmin[i][j] = fitPar[7]-3.*fitPar[8];
+            //    massmax[i][j] = fitPar[7]+3.*fitPar[8];
             //} else {
             //    massmin[i][j] = fitPar[7]-6.*fitPar[9];
             //    massmax[i][j] = fitPar[7]+6.*fitPar[9];
             //}
 
-            massmin[i][j] = 50.;
-            massmax[i][j] = 200.;
+            massmin[i][j] = mmin;
+            massmax[i][j] = mmax;
 
-            peakPos[i][j] = fitPar[7];
-            peakPosErr[i][j] = fFit[i][j]->GetParError(7);
+            peakPos[j][i] = fitPar[7];
+            peakPosErr[j][i] = fFit[i][j]->GetParError(7);
 
-            //if (r!=NULL)
-            //    bgErr[i][j] = fBg[i][j]->IntegralError(massmin[i][j], massmax[i][j], r->GetParams(), r->GetCovarianceMatrix().GetMatrixArray());
-            //else
-                bgErr[i][j] = 0.;
+            if (!r)
+                bgErr[j][i] = fBg[i][j]->IntegralError(massmin[i][j], massmax[i][j], r->GetParams(), r->GetCovarianceMatrix().GetMatrixArray());
+            else
+                bgErr[j][i] = 0.;
 
             //cout << "\nHistogram : \t" << hMassCluster[i][j]->Integral(hMassCluster[i][j]->FindBin(110), hMassCluster[i][j]->FindBin(160)) << endl;
             //cout << "Fit : \t" << fFit[i][j]->Integral(110, 160)/hMassCluster[i][j]->GetBinWidth(0) << endl;
@@ -339,9 +374,10 @@ void CreateGraphs()
             double intAll = hMassCluster[j][i]->IntegralAndError(hMassCluster[j][i]->FindBin(massmin[j][i]), hMassCluster[j][i]->FindBin(massmax[j][i]), peakErr[j][i]);
             double intBg = fBg[j][i]->Integral(massmin[j][i], massmax[j][i])/hMassCluster[j][i]->GetBinWidth(0);
             signalToBg[i][j] = intAll/intBg - 1.;
-            signalToBgErr[i][j] = signalToBg[i][j]*TMath::Sqrt(peakErr[j][i]*peakErr[j][i]/(intAll*intAll) + bgErr[j][i]*bgErr[j][i]/(intBg*intBg));
+            cout << bgErr[i][j] << endl;
+            signalToBgErr[i][j] = signalToBg[i][j]*TMath::Sqrt(peakErr[i][j]*peakErr[i][j]/(intAll*intAll) + bgErr[i][j]*bgErr[i][j]/(intBg*intBg));
         }
-        gSignalToBg[i] = new TGraphErrors(nset, asymmetry, signalToBg[i], asymmteryErr, signalToBgErr[i]);
+        gSignalToBg[i] = new TGraphErrors(nset, asymmetry, signalToBg[i], 0, signalToBgErr[i]);
         gSignalToBg[i]->SetTitle(";#alpha;S/B");
         gSignalToBg[i]->SetMarkerColor(mColor[i]);
         gSignalToBg[i]->SetLineColor(mColor[i]);
@@ -359,8 +395,8 @@ void CreateGraphs()
                 eff[i][j] = (hMassCluster[j][i]->Integral(hMassCluster[j][i]->FindBin(massmin[j][i]), hMassCluster[j][i]->FindBin(massmax[j][i])) - fBg[j][i]->Integral(massmin[j][i], massmax[j][i])/hMassCluster[j][i]->GetBinWidth(0))/(hCounter->GetBinContent(i+1));
                 effPtFunc[j][i] = (hMassCluster[j][i]->Integral(hMassCluster[j][i]->FindBin(massmin[j][i]), hMassCluster[j][i]->FindBin(massmax[j][i])) - fBg[j][i]->Integral(massmin[j][i], massmax[j][i])/hMassCluster[j][i]->GetBinWidth(0))/(hCounter->GetBinContent(i+1));
             }
-            cout << "mass min : " << hMassCluster[j][i]->FindBin(massmin[j][i]) << "\tmass max : " << hMassCluster[j][i]->FindBin(massmax[j][i]) << endl;
-            cout << "asymmetry " << asymmetry[j] << "\tEff : " << eff[i][j] << endl;
+            cout << "asymmetry " << asymmetry[j] << "\tEff : " << eff[i][j] << "\tS/B : " << signalToBg[i][j] << "\terr : " << signalToBgErr[i][j] << endl;
+
             //eff[i][j] = hMassCluster[j][i]->Integral(hMassCluster[j][i]->FindBin(110), hMassCluster[j][i]->FindBin(160))/hCounter->GetBinContent(i+1);
             //double dPeak = fFit[j][i]->IntegralError(110, 160)/fFit[j][i]->Integral(110, 160);
             //double dTrue = hCounter->GetBinError(i+1)/hCounter->GetBinContent(i+1);
@@ -423,4 +459,62 @@ double FitFunction(double *x, double *p)
 {
     return FitBackground(x, p) + FitPeak(x, &p[5]);
     //return FitBackground(x, p) + LorentzianPeak(x, &p[5]);
+}
+
+void SetStyle(Bool_t graypalette)
+{
+    cout << "Setting style!" << endl;
+
+    gStyle->Reset("Plain");
+    gStyle->SetOptTitle(0);
+    gStyle->SetOptStat(0);
+    gStyle->SetLineScalePS(1);
+    //gStyle->SetPalette(kCool);
+    if(graypalette) gStyle->SetPalette(8,0);
+    //else gStyle->SetPalette(1);
+    gStyle->SetCanvasColor(10);
+    //gStyle->SetCanvasBorderMode(0);
+    gStyle->SetFrameLineWidth(2);
+    gStyle->SetFrameFillColor(kWhite);
+    gStyle->SetPadColor(10);
+    //gStyle->SetPadTickX(0);
+    //gStyle->SetPadTickY(0);
+    gStyle->SetPadBottomMargin(0.12);
+    gStyle->SetPadLeftMargin(0.12);
+    gStyle->SetPadTopMargin(0.05);
+    gStyle->SetPadRightMargin(0.05);
+    gStyle->SetHistLineWidth(2);
+    gStyle->SetHistLineColor(kRed);
+    gStyle->SetFuncWidth(2);
+    gStyle->SetFuncColor(kRed);
+    gStyle->SetLineWidth(1);
+    gStyle->SetLabelSize(0.042,"xyz");
+    gStyle->SetLabelOffset(0.01,"y");
+    gStyle->SetLabelOffset(0.01,"x");
+    gStyle->SetLabelColor(kBlack,"xyz");
+    //gStyle->SetTitleSize(0.042,"xyz");
+    gStyle->SetTitleOffset(1.2,"y");
+    gStyle->SetTitleOffset(1.2,"x");
+    gStyle->SetTitleFillColor(kWhite);
+    //gStyle->SetTextSizePixels(26);
+    gStyle->SetTextFont(42);
+    //gStyle->SetTickLength(0.04,"X");  gStyle->SetTickLength(0.04,"Y");
+
+    gStyle->SetLegendBorderSize(0);
+    gStyle->SetLegendFillColor(kWhite);
+    //  gStyle->SetFillColor(kWhite);
+    gStyle->SetLegendFont(42);
+}
+
+void redrawBorder()
+{
+    gPad->Update();
+    gPad->RedrawAxis();
+    TLine l;
+    l.SetLineWidth(2);
+    l.DrawLine(gPad->GetUxmin(), gPad->GetUymax(), gPad->GetUxmax(), gPad->GetUymax());
+    l.DrawLine(gPad->GetUxmax(), gPad->GetUymin(), gPad->GetUxmax(), gPad->GetUymax());
+    l.DrawLine(gPad->GetUxmin(), gPad->GetUymin(), gPad->GetUxmax(), gPad->GetUymin());
+    l.DrawLine(gPad->GetUxmin(), gPad->GetUymin(), gPad->GetUxmin(), gPad->GetUymax());
+    gPad->Update();
 }

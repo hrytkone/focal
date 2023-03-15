@@ -1,6 +1,6 @@
 ! 1) Settings used in the main program
-Main:numberOfEvents = 100
-Next:numberCount = 1000
+Main:numberOfEvents = 100000
+Next:numberCount = 10000
 
 ! 2) Beam parameter settings
 Beams:idA = 2212

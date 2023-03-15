@@ -82,14 +82,23 @@ void InitOutput()
         cout << eta[i] << " ";
     }
     cout << "]\n" << endl;
+    cout << "Emin = " << limMinE << "\tEmax= " << limMaxE << "\tnEbin= " << nEBin << endl;
+    for (int i = 0; i <= nEBin; i++) {
+        energy[i] = limMinE*exp(i*logBWE);
+        cout << energy[i] << " ";
+    }
+    cout << endl;
 
     hEtaPtTrue = new TH2D("hEtaPtTrue", "hEtaPtTrue", nEtaBin, eta, nPtBin, pt); hEtaPtTrue->Sumw2();
     hEtaPtRec = new TH2D("hEtaPtRec", "hEtaPtRec", nEtaBin, eta, nPtBin, pt); hEtaPtRec->Sumw2();
     hEtaPtRec_match = new TH2D("hEtaPtRec_match", "hEtaPtRec_match", nEtaBin, eta, nPtBin, pt); hEtaPtRec_match->Sumw2();
     hEtaPtRec_match_truept = new TH2D("hEtaPtRec_match_truept", "hEtaPtRec_match_truept", nEtaBin, eta, nPtBin, pt); hEtaPtRec_match_truept->Sumw2();
-    hEtaETrue = new TH2D("hEtaETrue", "hEtaETrue", nEtaBin, eta, 200, 0., 200.);
-    hEtaERec = new TH2D("hEtaERec", "hEtaERec", nEtaBin, eta, 200, 0., 200.);
-    hEtaERec_match = new TH2D("hEtaERec_match", "hEtaERec_match", nEtaBin, eta, 200, 0., 200.);
+
+    hEtaETrue = new TH2D("hEtaETrue", "hEtaETrue", nEtaBin, eta, nEBin, energy); hEtaETrue->Sumw2();
+    hEtaERec = new TH2D("hEtaERec", "hEtaERec", nEtaBin, eta, nEBin, energy); hEtaERec->Sumw2();
+    hEtaERec_match = new TH2D("hEtaERec_match", "hEtaERec_match", nEtaBin, eta, nEBin, energy); hEtaERec_match->Sumw2();
+    hEtaERec_match_trueE = new TH2D("hEtaERec_match_trueE", "hEtaERec_match_trueE", nEtaBin, eta, nEBin, energy); hEtaERec_match_trueE->Sumw2();
+
     hEPhotonTrue = new TH1D("hEPhotonTrue", "hEPhotonTrue", 200, 0., 200.);
     hEPhotonCluster = new TH1D("hEPhotonCluster", "hEPhotonCluster", 200, 0., 200.);
 
@@ -97,6 +106,8 @@ void InitOutput()
     hPtMass_match = new TH2D("hPtMass_match", "hPtMass_match", nPtBin, limMin, limMax, 350, 0., 700.);
     hEtaMass = new TH2D("hEtaMass", "hEtaMass", nEtaBin, eta, 350, 0., 700.);
     hEtaMass_match = new TH2D("hEtaMass_match", "hEtaMass_match", nEtaBin, eta, 350, 0., 700.);
+    hEMass = new TH2D("hEMass", "hEMass", nEBin, energy, 350, 0., 700.);
+    hEMass_match = new TH2D("hEMass_match", "hEMass_match", nEBin, energy, 350, 0., 700.);
 
     hPhiEtaTrue = new TH2D("hPhiEtaTrue", "hPhiEtaTrue", nPhiBin, phimin, phimax, nEtaBin, eta);
     hPhiEta = new TH2D("hPhiEta", "hPhiEta", nPhiBin, phimin, phimax, nEtaBin, eta);
@@ -109,6 +120,10 @@ void InitOutput()
     hPhiEtaGamma = new TH2D("hPhiEtaGamma", "hPhiEtaGamma", nPhiBin, phimin, phimax, nEtaBin, eta);
     hPhiThetaGamma = new TH2D("hPhiThetaGamma", "hPhiThetaGamma", nPhiBin, phimin, phimax, nThetaBin, thetamin, thetamax);
     hXYGamma = new TH2D("hXYGamma", "hXYGamma", nXYBin, xymin, xymax, nXYBin, xymin, xymax);
+
+    hRecPtVsTruePt = new TH2D("hRecPtVsTruePt", "hRecPtVsTruePt", nPtBin, pt, nPtBin, pt);
+    hRecEtaVsTrueEta = new TH2D("hRecEtaVsTrueEta", "hRecEtaVsTrueEta", nEtaBin, eta, nEtaBin, eta);
+    hRecEVsTrueE = new TH2D("hRecEVsTrueE", "hRecEVsTrueE", nEBin, energy, nEBin, energy);
 }
 
 void FillTruePions()
@@ -123,10 +138,9 @@ void FillTruePions()
         double trPid = tr->GetID();
         double trMomType = tr->GetMotherType();
         if (trEta < etamin || trEta > etamax) continue;
-        if (trPt < limMin || trPt > limMax) continue;
         if (trPid==111) {
-            hEtaPtTrue->Fill(trEta, trPt);
-            hEtaETrue->Fill(trEta, trE);
+            if (trPt > limMin && trPt < limMax) hEtaPtTrue->Fill(trEta, trPt);
+            if (trE > limMinE && trE < limMaxE) hEtaETrue->Fill(trEta, trE);
             hPhiEtaTrue->Fill(trPhi, trEta);
             ntrue++;
         }
@@ -160,7 +174,8 @@ void FillRecPions(TClonesArray *clusters)
             if (TMath::Abs(lv1->E() - lv2->E())/(lv1->E() + lv2->E())<asymcut) {
                 hPtMass->Fill(lvSum.Pt(), mass);
                 hEtaMass->Fill(lvSum.Eta(), mass);
-                if (mass > 100. && mass < 150.) {
+                hEMass->Fill(lvSum.E(), mass);
+                if (mass > massMin && mass < massMax) {
                     hPhiEta->Fill(lvSum.Phi(), lvSum.Eta());
                     hPhiTheta->Fill(lvSum.Phi(), lvSum.Theta());
                     hXY->Fill(z*TMath::Tan(lvSum.Theta())*TMath::Cos(lvSum.Phi()), z*TMath::Tan(lvSum.Theta())*TMath::Sin(lvSum.Phi()));
@@ -183,20 +198,28 @@ void FillRecPions(TClonesArray *clusters)
     }
     AliJBaseTrack *tr = (AliJBaseTrack*)fTracks->At(0);
     double truePt = tr->Pt();
+    double trueEta = tr->Eta();
+    double trueE = tr->E();
+
+    hRecPtVsTruePt->Fill(closestPt, truePt);
+    hRecEtaVsTrueEta->Fill(closestEta, trueEta);
+    hRecEVsTrueE->Fill(closestE, trueE);
     
-    if (closestMass > 100. && closestMass < 150. && closestAsym < asymcut) {
+    if (closestMass > massMin && closestMass < massMax && closestAsym < asymcut) {
         if (closestEta>etamin && closestEta<etamax)
             hPtMass_match->Fill(closestPt, closestMass);
         if (closestPt>limMin && closestPt<limMax)
-            hEtaMass_match->Fill(closestEta, closestMass); 
+            hEtaMass_match->Fill(closestEta, closestMass);
+        if (closestE>limMinE && closestE<limMaxE)
+            hEMass_match->Fill(closestE, closestMass);    
         hPhiEta_match->Fill(closestPhi, closestEta);
         hPhiTheta_match->Fill(closestPhi, closestTheta);
         hXY_match->Fill(z*TMath::Tan(closestTheta)*TMath::Cos(closestPhi), z*TMath::Tan(closestTheta)*TMath::Sin(closestPhi));
         hEtaERec_match->Fill(closestEta, closestE);
+        hEtaERec_match_trueE->Fill(closestEta, trueE);
         hEtaPtRec_match->Fill(closestEta, closestPt);
         hEtaPtRec_match_truept->Fill(closestEta, truePt);
     }
-
 }
 
 int GetBin(double arr[], int nArr, double val)

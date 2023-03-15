@@ -12,14 +12,14 @@ void CreateMassHistos(TString inputfile)
     InitOutput();
 
     int nev = fTree->GetEntries();
-    nev = 50000;
+    //nev = 43570;
     cout << "Processing " << nev << " events" << endl;
     for (int iev=0; iev<nev; iev++) {
 
-        if (iev%10000==0) cout << "event " << iev << "/" << nev << endl;
+        if (iev%1000==0) cout << "event " << iev << "/" << nev << endl;
         //cout << "\n================================" << endl;
 
-        fTree->GetEntry(iev);
+        !fTree->GetEntry(iev);
 
         int nclust = fClusters->GetEntries();
         for (int iclust=0; iclust<nclust; iclust++) {
@@ -71,20 +71,20 @@ void CreateMassHistos(TString inputfile)
         //FillMassHistosRotated(fTrackClusters);
 
         // Mixed event : take triggers from this event, associated from previous
-        if (poolsize>0) {
-            if (iev >= poolsize) {
-                for (int ipool = 0; ipool < poolsize; ipool++) {
-                    FillMassHistosMixed(fTrackClusters, fClustersMixed[ipool]);
-                }
-                // Remove the first from the pool and add new array to the pool
-                for (int ipool = 0; ipool < poolsize-1; ipool++) {
-                    *fClustersMixed[ipool] = *fClustersMixed[ipool+1];
-                }
-                *fClustersMixed[poolsize-1] = *fTrackClusters;
-            } else { // Create pools
-                *fClustersMixed[iev] = *fTrackClusters;
-            }
-        }
+        //if (poolsize>0) {
+        //    if (iev >= poolsize) {
+        //        for (int ipool = 0; ipool < poolsize; ipool++) {
+        //            FillMassHistosMixed(fTrackClusters, fClustersMixed[ipool]);
+        //        }
+        //        // Remove the first from the pool and add new array to the pool
+        //        for (int ipool = 0; ipool < poolsize-1; ipool++) {
+        //            *fClustersMixed[ipool] = *fClustersMixed[ipool+1];
+        //        }
+        //        *fClustersMixed[poolsize-1] = *fTrackClusters;
+        //    } else { // Create pools
+        //        *fClustersMixed[iev] = *fTrackClusters;
+        //    }
+        //}
 
         fTrackClusters->Clear("C");
     }
@@ -127,15 +127,17 @@ void InitOutput()
 
 void FillMassHistos(TClonesArray *clusters, TClonesArray *tracks)
 {
+    //AliJBaseTrack *tr = (AliJBaseTrack*)fTracks->At(0);
+    //double pttrue = tr->Pt();
     int nclust = clusters->GetEntriesFast();
     for (int i = 1; i < nclust; i++) {
         AliJBaseTrack *lv1 = (AliJBaseTrack*)clusters->At(i);
         for (int j = 0; j < i; j++) {
             AliJBaseTrack *lv2 = (AliJBaseTrack*)clusters->At(j);
             AliJBaseTrack lvSum = GetPhotonSumVector(lv1, lv2);
-        //    if (TMath::Abs(lv1->E() - lv2->E())/(lv1->E() + lv2->E())>asymcut[nasym-1]) continue;
             if (lvSum.Eta()<etamin+etacut || lvSum.Eta()>etamax-etacut) continue;
             int ptbin = GetBin(pt, npt+1, lvSum.Pt());
+            //int ptbin = GetBin(pt, npt+1, pttrue);
             if (ptbin==-1) continue;
             for (int k=0; k<nasym; k++) {
                 if (TMath::Abs(lv1->E() - lv2->E())/(lv1->E() + lv2->E())<asymcut[k]) {

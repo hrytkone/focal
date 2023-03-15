@@ -3,9 +3,11 @@ const TString outputname = "numberOfClusters";
 const int npt = 6;
 const int necut = 6;
 const int nptbin = 120;
+const double etamin = 3.4;
+const double etamax = 5.8;
 
 double pt[npt+1] = {2., 3., 4., 8., 10., 15., 20.};
-double ecut[necut] = {0., 0.1, 0.35, 0.5, 1., 3.};
+double ecut[necut] = {0., 0.1, 0.35, 1., 3., 5.};
 
 double logBinsX[nptbin+1], limMin = 0.1, limMax = 20;
 const double logBW = (log(limMax) - log(limMin))/nptbin;
@@ -21,6 +23,7 @@ TClonesArray *fClusters;
 
 // Histograms
 TH1D *hNumberOfClusters[npt][necut];
+TH1D *hNumberOfClustersAll[necut];
 TH2D *hClusterPerGammaEnergy;
 TH2D *hLeadingClusterDeltaPhiDeltaEta;
 TH1D *hClusterMoreThanOne;
@@ -63,6 +66,7 @@ void CheckNumberOfClustersForGammas(TString inputfile)
             float clustE = clust->GetE();
             float clustEta = clust->GetEta();
             float clustPhi = clust->GetPhi();
+
             //cout << "\tE: " << clustE << endl;
             if (clustE > leadingClustE) {
                 leadingClustE = clustE;
@@ -70,7 +74,9 @@ void CheckNumberOfClustersForGammas(TString inputfile)
                 leadingClustPhi = clustPhi;
             }
             for (int iecut=0; iecut<necut; iecut++) {
-                if (clustE > ecut[iecut]) nclustAfterCut[iecut]++;
+                if (clustE > ecut[iecut]) {
+                    nclustAfterCut[iecut]++;
+                }
             }
         }
 
@@ -78,6 +84,9 @@ void CheckNumberOfClustersForGammas(TString inputfile)
         double trE = tr->E();
         double trEta = tr->Eta();
         double trPhi = tr->Phi();
+        
+        if (trEta < etamin || trEta > etamax) continue;
+        
         int ibin = GetBin(pt, npt, trPt);
         if (ibin > -1) {
             for (int iecut=0; iecut<necut; iecut++) {
@@ -86,12 +95,16 @@ void CheckNumberOfClustersForGammas(TString inputfile)
             hClusterPt->Fill(trPt);
             if (nclust>1) hClusterMoreThanOne->Fill(trPt);
         }
-
+        for (int iecut=0; iecut<necut; iecut++) {
+            hNumberOfClustersAll[iecut]->Fill(nclustAfterCut[iecut]);
+        }
         // Save ratio of leading cluster energy to gamma energy
         double ratio = leadingClustE/trE;
         //if (leadingClustE<3.0) continue;
         hClusterPerGammaEnergy->Fill(trPt, ratio);
         hLeadingClusterDeltaPhiDeltaEta->Fill(leadingClustPhi-trPhi, leadingClustEta-trEta);
+        
+        for (int iecut=0; iecut<necut; iecut++) nclustAfterCut[iecut] = 0;
     }
     fOut->cd();
     fOut->Write("", TObject::kOverwrite);
@@ -118,6 +131,9 @@ void InitOutput()
         for (int j=0; j<necut; j++) {
             hNumberOfClusters[i][j] = new TH1D(Form("hNumberOfClusters_%d_%d", i,j), "hNumberOfClusters", 30, -0.5, 29.5); hNumberOfClusters[i][j]->Sumw2();
         }
+    }
+    for (int j=0; j<necut; j++) {
+        hNumberOfClustersAll[j] = new TH1D(Form("hNumberOfClustersAll_%d",j), "hNumberOfClustersAll", 30, -0.5, 29.5); hNumberOfClustersAll[j]->Sumw2();    
     }
     for (int i = 0; i <= nptbin; i++) logBinsX[i] = limMin*exp(i*logBW);
     hClusterPerGammaEnergy = new TH2D("hClusterPerGammaEnergy", "", nptbin, logBinsX, nptbin, 0., 1.2); hClusterPerGammaEnergy->Sumw2();

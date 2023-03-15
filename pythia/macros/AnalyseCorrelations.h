@@ -2,19 +2,25 @@ const int ndata_star = 2;
 const int ndata_focal = 1;
 const int nTriggBins = 2;
 const int nAssocBins = 2;
+//const int nTriggBins = 3;
+//const int nAssocBins = 4;
 
-const double triggPt[nTriggBins+1] = {4.0, 8.0, 16.0};
+const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
 const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
+//const double triggPt[nTriggBins+1] = {1.0, 2.0, 2.5, 3.0};
+//const double assocPt[nAssocBins+1] = {0.5, 1.0, 1.5, 2.0, 2.5};
 
 const double pi0br = 1./0.98823;
 //const double pi0eff = 1.;
 
-//const double massMin = 110.;
-//const double massMax = 160.;
-//const double massMin = 120.;
-//const double massMax = 155.;
-const double massMin = 50.;
-const double massMax = 200.;
+const bool bPythia = true;
+const double massMin = 120.;
+const double massMax = 155.;
+//const double massMin = 50.;
+//const double massMax = 200.;
+
+const double sbMin = 250.;
+const double sbMax = 450.;
 
 // Input
 int nEvent;
@@ -127,3 +133,5 @@ double FitBackground(double *x, double *p);
 double FitFunction(double *x, double *p);
 
 void DrawMassHistos(TString dataname);
+void SetStyle(Bool_t graypalette);
+void redrawBorder();

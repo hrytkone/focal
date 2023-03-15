@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
     AliJHMRCorr *fCorr = new AliJHMRCorr(fHistos, det, bUseLeading, bUseSim);
 
     TClonesArray *arrPhotonFor      = new TClonesArray("AliJBaseTrack", 1500);
-    TClonesArray *arrPi0Matched = new TClonesArray("AliJBaseTrack", 1500);
+    TClonesArray *arrPi0Matched     = new TClonesArray("AliJBaseTrack", 1500);
     TClonesArray *arrPi0Real        = new TClonesArray("AliJBaseTrack", 1500);
     TClonesArray *arrPi0Peak        = new TClonesArray("AliJBaseTrack", 1500);
     TClonesArray *arrPi0Side        = new TClonesArray("AliJBaseTrack", 1500);
@@ -125,6 +125,7 @@ int main(int argc, char *argv[]) {
             arrPhotonFor = fCatalyst->GetParticleList(kJDecayPhoton);
             arrPi0Real   = fCatalyst->GetParticleList(kJPi0);
             fCorr->SmearEnergies(arrPhotonFor);
+            fCorr->SetX1X2(pythia.info.x1(), pythia.info.x2());
         }
         int nTrueFromPeak = fCorr->ReconstructPions(arrPhotonFor, arrPi0Peak, det, 1);
         fCorr->ReconstructPions(arrPhotonFor, arrPi0Side, det, 0);

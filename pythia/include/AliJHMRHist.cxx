@@ -18,6 +18,7 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet, bool bUseLeadin
     hRealTriggCounter = new TH1D("hRealTriggCounter", "hRealtriggCounter", 10, 0, 10);
 
     for (int i = 0; i <= NINCPTBIN; i++) logBinsX[i] = limMin*exp(i*logBW);
+    for (int i = 0; i <= NXFRACBIN; i++) logBinsXfrac[i] = limXfracMin*exp(i*logXfracBW);
 
     hPionPt = new TH1D("hPionPt", "hPionPt", NINCPTBIN, logBinsX); hPionPt->Sumw2();
     hRecPionPt = new TH1D("hRecPionPt", "hRecPionPt", NINCPTBIN, logBinsX); hRecPionPt->Sumw2();
@@ -52,6 +53,7 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet, bool bUseLeadin
     dirBackgroundSources = output->mkdir("BackgroundSources");
     dirBackgroundEnergies = output->mkdir("BackgroundEnergies");
     dirAsym = output->mkdir("Asymmetry");
+    dirXfractions = output->mkdir("xFractions");
 
     dirMassComponents->cd();
     hMassTrue = new TH1D("hMassTrue", "Invariant mass, photons from same mother", 360, 0.0, 720.0);
@@ -220,6 +222,20 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet, bool bUseLeadin
                                              Form("hEnergySidebandAssoc[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
                                              200, 0., 1000.);
             hEnergySidebandAssoc[i][j]->Sumw2();
+
+            dirXfractions->cd();
+            hX1[i][j] = new TH1D(Form("hX1[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                        Form("hX1[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                         NXFRACBIN, logBinsXfrac);
+            hX1[i][j]->Sumw2();            
+            hX2[i][j] = new TH1D(Form("hX2[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                        Form("hX2[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                        NXFRACBIN, logBinsXfrac);
+            hX2[i][j]->Sumw2();
+            hX1X2[i][j] = new TH2D(Form("hX1X2[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                           Form("hX1X2[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                           NXFRACBIN, logBinsXfrac, NXFRACBIN, logBinsXfrac);
+            hX1X2[i][j]->Sumw2();
         }
     }
 

@@ -5,16 +5,19 @@ void LoadData();
 void ConfigHistos();
 void DrawFiliPad();
 
-const int nTriggBins = 4;
-const int nAssocBins = 5;
+const int nTriggBins = 2;
+const int nAssocBins = 2;
 //const double triggPt[nTriggBins+1] = {1.0, 2.0, 2.5, 3.0};
 //const double assocPt[nAssocBins+1] = {0.5, 1.0, 1.5, 2.0, 2.5};
-//const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
+//const double triggPt[nTriggBins+1] = {4.0, 8.0, 8.0};
 //const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
-const double triggPt[nTriggBins+1] = {4.0, 8.0, 10.0, 15.0, 20.0};
-const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0, 8.0, 10.0, 15.0};
+const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
+const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
 
-const double mSize = .5;
+const double ntrigg[nTriggBins] = {39032, 3128}; // GEANT
+//const double ntrigg[nTriggBins] = {249437, 10460}; // PYTHIA
+
+const double mSize = 1.;
 
 const int nset = 1;
 //TString infiles[nset] = {
@@ -23,12 +26,14 @@ const int nset = 1;
 //};
 
 TString infiles[nset] = {
-    "analysis_FoCal_pp_fullsim.root"
-    //"analysis_FoCal_pp_test-pythia.root"
+    //"analysis_FoCal_pp_geant.root"
+    "analysis_FoCal_pp_pythia.root"
+    //"analysis_FoCal_pPb_pythia.root"
 };
 
 TString legHeader[nset] = {
     "p-p #sqrt{s} = 14 TeV"//,
+    //"pPb #sqrt{s} = 5.02 TeV"//,
     //"p-Au"
 };
 
@@ -61,7 +66,6 @@ void LoadData()
 {
 	for (int iset = 0; iset < nset; iset++)
 		fin[iset] = TFile::Open(infiles[iset]);
-
 	for (int iset = 0; iset < nset; iset++) {
 		for (int itrigg = 0; itrigg < nTriggBins; itrigg++) {
             double tlow = triggPt[itrigg];
@@ -78,14 +82,14 @@ void LoadData()
                 hCorrSideMass[iset][itrigg][iassoc]  = (TH1D*)fin[iset]->Get(Form("hCorrSideMass[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp));  //hCorrSideMass[iset][itrigg][iassoc]->Rebin(6);
                 hCorrSideSide[iset][itrigg][iassoc]  = (TH1D*)fin[iset]->Get(Form("hCorrSideSide[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp));  //hCorrSideSide[iset][itrigg][iassoc]->Rebin(6);
 
+                cout << "bin width = " << hCorrMassMass[iset][itrigg][iassoc]->GetBinWidth(0) << endl;
+
                 hCorrMeas[iset][itrigg][iassoc] = (TH1D*)hCorrMassMass[iset][itrigg][iassoc]->Clone(Form("hCorrMeas[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp));
 
-                //hCorrReal[iset][itrigg][iassoc]->Scale(1./hCorrReal[iset][itrigg][iassoc]->GetEntries());
-                //hCorrMeas[iset][itrigg][iassoc]->Scale(1./hCorrMeas[iset][itrigg][iassoc]->GetEntries());
-                //hCorrMassMass[iset][itrigg][iassoc]->Scale(1./hCorrMassMass[iset][itrigg][iassoc]->GetEntries());
-                //hCorrMassSide[iset][itrigg][iassoc]->Scale(1./hCorrMassSide[iset][itrigg][iassoc]->GetEntries());
-                //hCorrSideMass[iset][itrigg][iassoc]->Scale(1./hCorrSideMass[iset][itrigg][iassoc]->GetEntries());
-                //hCorrSideSide[iset][itrigg][iassoc]->Scale(1./hCorrSideSide[iset][itrigg][iassoc]->GetEntries());
+                hCorrMassMass[iset][itrigg][iassoc]->Scale(1./ntrigg[itrigg], "width");
+                hCorrMassSide[iset][itrigg][iassoc]->Scale(1./ntrigg[itrigg], "width");
+                hCorrSideMass[iset][itrigg][iassoc]->Scale(1./ntrigg[itrigg], "width");
+                hCorrSideSide[iset][itrigg][iassoc]->Scale(1./ntrigg[itrigg], "width");
 
                 // Ratios
                 hRatioMassMass[iset][itrigg][iassoc] = (TH1D*)hCorrMassMass[iset][itrigg][iassoc]->Clone(Form("hRatioMassMass[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp));
@@ -125,7 +129,7 @@ void ConfigHistos()
 
                 hCorrMassMass[iset][itrigg][iassoc]->SetLineColor(kBlack);
                 hCorrMassMass[iset][itrigg][iassoc]->SetMarkerColor(kBlack);
-                hCorrMassMass[iset][itrigg][iassoc]->SetMarkerStyle(kOpenCircle);
+                hCorrMassMass[iset][itrigg][iassoc]->SetMarkerStyle(kFullCircle);
                 hCorrMassMass[iset][itrigg][iassoc]->SetMarkerSize(mSize);
 
                 //hCorrMassMass[iset][itrigg][iassoc]->Add(hCorrMassSide[iset][itrigg][iassoc], -1.87224);
@@ -171,10 +175,15 @@ void ConfigHistos()
                 hRatioSideSide[iset][itrigg][iassoc]->SetMarkerStyle(kOpenCircle);
                 hRatioSideSide[iset][itrigg][iassoc]->SetMarkerSize(mSize);
 
-                leg[iset][itrigg][iassoc] = new TLegend(0.58, 0.45, 0.85, 0.75);
+
+                //leg[iset][itrigg][iassoc] = new TLegend(0.58, 0.55, 0.85, 0.78);
+                leg[iset][itrigg][iassoc] = new TLegend(0.45, 0.6, 0.89, 0.82);
+                //leg[iset][itrigg][iassoc] = new TLegend(0.25, 0.02, 0.75, 0.2);
+                leg[iset][itrigg][iassoc]->SetNColumns(2);
                 leg[iset][itrigg][iassoc]->SetFillStyle(0); leg[iset][itrigg][iassoc]->SetBorderSize(0); leg[iset][itrigg][iassoc]->SetTextSize(0.05);
                 leg[iset][itrigg][iassoc]->SetHeader(Form("#splitline{%s}{[%0.1f,%0.1f][%0.1f,%0.1f]}", legHeader[iset].Data(),triggPt[itrigg],triggPt[itrigg+1],assocPt[iassoc],assocPt[iassoc+1]));
-                leg[iset][itrigg][iassoc]->AddEntry(hCorrReal[0][0][0], "MC truth", "pe");
+                //leg[iset][itrigg][iassoc]->SetHeader(Form("%s, [%0.1f,%0.1f][%0.1f,%0.1f]", legHeader[iset].Data(),triggPt[itrigg],triggPt[itrigg+1],assocPt[iassoc],assocPt[iassoc+1]));
+                //leg[iset][itrigg][iassoc]->AddEntry(hCorrReal[0][0][0], "MC truth", "pe");
                 leg[iset][itrigg][iassoc]->AddEntry(hCorrMassMass[0][0][0], "mass-mass", "pe");
                 leg[iset][itrigg][iassoc]->AddEntry(hCorrMassSide[0][0][0], "mass-side", "pe");
                 leg[iset][itrigg][iassoc]->AddEntry(hCorrSideMass[0][0][0], "side-mass", "pe");
@@ -186,8 +195,9 @@ void ConfigHistos()
 
 void DrawFiliPad()
 {
-    //TText *t = new TText(.58,0.79,"PYTHIA8 simulation");
-    TText *t = new TText(.58,0.79,"Simulation");
+    TText *t = new TText(.58,0.05,"PYTHIA8 simulation");
+    //TText *t = new TText(0.58,0.78,"PYTHIA8 simulation");
+    //TText *t = new TText(.58,0.78,"PYTHIA6+GEANT3");
     t->SetNDC();
     int padID = 0;
     for (int iset = 0; iset < nset; iset++) {
@@ -211,15 +221,17 @@ void DrawFiliPad()
                 double rangeMin = hCorrMassMass[iset][itrigg][iassoc]->GetBinContent(minBin) - 0.4*hCorrMassMass[iset][itrigg][iassoc]->GetBinContent(minBin);
                 double rangeMax = hCorrMassMass[iset][itrigg][iassoc]->GetBinContent(maxBin) + 2.*hCorrMassMass[iset][itrigg][iassoc]->GetBinContent(maxBin);
                 if (rangeMin<=0) rangeMin = 0.0008;
+                rangeMin = 5*10e-6;
+                rangeMax = 20;
                 cout << rangeMin << " " << rangeMax << endl;
                 TPad *p = fpad[iset][itrigg][iassoc]->GetPad(1);
-                p->SetTickx(); p->SetLogx(0); p->SetLogy(0); p->cd();
+                p->SetTickx(); p->SetLogx(0); p->SetLogy(1); p->cd();
 //                hset(*hCorrReal[iset][itrigg][iassoc], "#Delta#phi", "1/N_{trigg}dN/d#phi", 1.1,1.0, 0.09,0.09, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
                 hset(*hCorrMassMass[iset][itrigg][iassoc], "#Delta#phi", "1/N_{trigg}dN/d#Delta#phi", 1.1,1.2, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
                 //hCorrMassMass[iset][itrigg][iassoc]->GetYaxis()->SetRangeUser(-0.1, 0.1);
-                //hCorrMassMass[iset][itrigg][iassoc]->GetYaxis()->SetRangeUser(rangeMin, rangeMax);
+                hCorrMassMass[iset][itrigg][iassoc]->GetYaxis()->SetRangeUser(rangeMin, rangeMax);
                 hCorrMassMass[iset][itrigg][iassoc]->Draw("P");
-                hCorrReal[iset][itrigg][iassoc]->Draw("SAME P");
+                //hCorrReal[iset][itrigg][iassoc]->Draw("SAME P");
                 //hCorrMeas[iset][itrigg][iassoc]->Draw("SAME P");
                 hCorrMassSide[iset][itrigg][iassoc]->Draw("SAME P");
                 hCorrSideMass[iset][itrigg][iassoc]->Draw("SAME P");
@@ -230,7 +242,7 @@ void DrawFiliPad()
                 // Lower pad
                 p = fpad[iset][itrigg][iassoc]->GetPad(2);
                 p->SetTickx(); p->SetGridy(1); p->SetLogx(0), p->SetLogy(0); p->cd();
-                hset( *hRatioMassMass[iset][itrigg][iassoc], "#Delta#phi", "Ratio",1.1,0.7, 0.09,0.09, 0.01,0.01, 0.08,0.08, 510,505);
+                hset( *hRatioMassSide[iset][itrigg][iassoc], "#Delta#phi", "Ratio",1.1,0.7, 0.09,0.09, 0.01,0.01, 0.08,0.08, 510,505);
                 //hRatioMassMass[iset][itrigg][iassoc]->GetYaxis()->SetRangeUser(-0.2, 1.8);
                 //hRatioMassMass[iset][itrigg][iassoc]->Draw("P");
                 hRatioMassSide[iset][itrigg][iassoc]->Draw("P");

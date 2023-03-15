@@ -107,6 +107,11 @@ class AliJHMRHist {
         TH1D *hEnergyMassBgAssoc[NTRIGGBINS][NASSOCBINS];
         TH1D *hEnergySidebandAssoc[NTRIGGBINS][NASSOCBINS];
 
+        // Save x1 and x2 distributions
+        TH1D *hX1[NTRIGGBINS][NASSOCBINS];
+        TH1D *hX2[NTRIGGBINS][NASSOCBINS];
+        TH2D *hX1X2[NTRIGGBINS][NASSOCBINS];
+
         TDirectory *dirMasses;
         TDirectory *dirMassComponents;
         TDirectory *dirCorrMid;
@@ -123,6 +128,7 @@ class AliJHMRHist {
         TDirectory *dirBackgroundSources;
         TDirectory *dirBackgroundEnergies;
         TDirectory *dirAsym;
+        TDirectory *dirXfractions;
 };
 
 #endif

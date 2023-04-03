@@ -1,16 +1,19 @@
 //const TString outputname = "numberOfClusters_lclust-ecut-3";
-const TString outputname = "numberOfClusters";
+const TString outputname = "numberOfClusters_eta-34-53";
 const int npt = 6;
 const int necut = 6;
 const int nptbin = 120;
 const double etamin = 3.4;
-const double etamax = 5.8;
+const double etamax = 5.3;
 
-double pt[npt+1] = {2., 3., 4., 8., 10., 15., 20.};
+//double pt[npt+1] = {2., 3., 4., 8., 10., 15., 20.};
+double pt[npt+1] = {0., 1., 2., 3., 4., 8., 10.};
 double ecut[necut] = {0., 0.1, 0.35, 1., 3., 5.};
 
-double logBinsX[nptbin+1], limMin = 0.1, limMax = 20;
+double logBinsX[nptbin+1], limMin = 0.1, limMax = 10;
 const double logBW = (log(limMax) - log(limMin))/nptbin;
+
+const double z = 700.;
 
 TFile *fIn, *fOut;
 TTree *fTree;
@@ -28,6 +31,8 @@ TH2D *hClusterPerGammaEnergy;
 TH2D *hLeadingClusterDeltaPhiDeltaEta;
 TH1D *hClusterMoreThanOne;
 TH1D *hClusterPt;
+TH2D *hMissingGammas;
+TH2D *hMissingGammasXY;
 
 Int_t LoadInput(TString inputfile);
 void InitOutput();
@@ -84,9 +89,16 @@ void CheckNumberOfClustersForGammas(TString inputfile)
         double trE = tr->E();
         double trEta = tr->Eta();
         double trPhi = tr->Phi();
-        
+
         if (trEta < etamin || trEta > etamax) continue;
-        
+
+        if (nclustAfterCut[0]==0) {
+            hMissingGammas->Fill(trPhi, trEta);
+
+            double theta = 2.*TMath::ATan(TMath::Exp(-trEta));
+            hMissingGammasXY->Fill(z*TMath::Tan(theta)*TMath::Cos(trPhi), z*TMath::Tan(theta)*TMath::Sin(trPhi));
+        }
+
         int ibin = GetBin(pt, npt, trPt);
         if (ibin > -1) {
             for (int iecut=0; iecut<necut; iecut++) {
@@ -103,7 +115,7 @@ void CheckNumberOfClustersForGammas(TString inputfile)
         //if (leadingClustE<3.0) continue;
         hClusterPerGammaEnergy->Fill(trPt, ratio);
         hLeadingClusterDeltaPhiDeltaEta->Fill(leadingClustPhi-trPhi, leadingClustEta-trEta);
-        
+
         for (int iecut=0; iecut<necut; iecut++) nclustAfterCut[iecut] = 0;
     }
     fOut->cd();
@@ -133,13 +145,15 @@ void InitOutput()
         }
     }
     for (int j=0; j<necut; j++) {
-        hNumberOfClustersAll[j] = new TH1D(Form("hNumberOfClustersAll_%d",j), "hNumberOfClustersAll", 30, -0.5, 29.5); hNumberOfClustersAll[j]->Sumw2();    
+        hNumberOfClustersAll[j] = new TH1D(Form("hNumberOfClustersAll_%d",j), "hNumberOfClustersAll", 30, -0.5, 29.5); hNumberOfClustersAll[j]->Sumw2();
     }
     for (int i = 0; i <= nptbin; i++) logBinsX[i] = limMin*exp(i*logBW);
     hClusterPerGammaEnergy = new TH2D("hClusterPerGammaEnergy", "", nptbin, logBinsX, nptbin, 0., 1.2); hClusterPerGammaEnergy->Sumw2();
     hLeadingClusterDeltaPhiDeltaEta = new TH2D("hLeadingClusterDeltaPhiDeltaEta", "", 250, -TMath::Pi(), TMath::Pi(), 250, -2.5, 2.5); hLeadingClusterDeltaPhiDeltaEta->Sumw2();
     hClusterPt = new TH1D("hClusterPt", "hClusterPt", npt, pt); hClusterPt->Sumw2();
     hClusterMoreThanOne = new TH1D("hClusterMoreThanOne", "hClusterMoreThanOne", npt, pt); hClusterMoreThanOne->Sumw2();
+    hMissingGammas = new TH2D("hMissingGammas", "hMissingGammas", 100, -TMath::Pi(), TMath::Pi(), 100, etamin, etamax); hMissingGammas->Sumw2();
+    hMissingGammasXY = new TH2D("hMissingGammasXY", "hMissingGammasXY", 100, -50., 50., 100, -50., 50.); hMissingGammasXY->Sumw2();
 }
 
 int GetBin(double arr[], int nArr, double val)

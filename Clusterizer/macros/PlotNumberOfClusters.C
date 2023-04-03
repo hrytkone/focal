@@ -4,11 +4,9 @@ int mColor[necut] = {433, 38, 38, 596, 590, 603};
 
 const int nset = 1;
 const TString input[nset] = {
-    "numberOfClusters.root",
+    //"numberOfClusters_eta-34-53.root",
     //"numberOfClusters_eta-35-4.root",
-    //"numberOfClusters_eta-4-45.root",
-    //"numberOfClusters_eta-45-5.root",
-    //"numberOfClusters_eta-5-55.root"
+    "numberOfClusters_eta-34-53.root",
 };
 
 TFile *fin;
@@ -28,7 +26,7 @@ void PlotNumberOfClusters()
     SetStyle(0);
     LoadData();
     CreateLegend();
-    CalculatePercentages();    
+    CalculatePercentages();
     ConfigHistos();
     PlotData();
 }
@@ -89,7 +87,7 @@ void CreateLegend()
 {
     leg = new TLegend(0.5, 0.5, 0.85, 0.85);
     leg->SetLineStyle(0); leg->SetTextSize(0.048);
-    leg->SetHeader("#splitline{5.4 < #eta_{true} < 5.8}{2 GeV/c < p_{T,true} < 20 GeV/c}");
+    leg->SetHeader("#splitline{3.4 < #eta_{true} < 5.3}{0 GeV/c < p_{T,true} < 10 GeV/c}");
     leg->AddEntry(hNumberOfClusters[0][0], " ", "");
     leg->AddEntry(hNumberOfClusters[0][0], "No energy cut", "f");
     leg->AddEntry(hNumberOfClusters[0][3], "Energy > 1 GeV", "f");
@@ -110,10 +108,10 @@ void PlotData()
 
     hNumberOfClusters[0][4]->SetBarWidth(0.18);
     hNumberOfClusters[0][4]->SetBarOffset(0.5);
-    
+
     hNumberOfClusters[0][5]->SetBarWidth(0.18);
     hNumberOfClusters[0][5]->SetBarOffset(0.7);
-    
+
     hNumberOfClusters[0][0]->Draw("BAR");
     hNumberOfClusters[0][3]->Draw("BAR SAME");
     hNumberOfClusters[0][4]->Draw("BAR SAME");

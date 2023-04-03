@@ -21,13 +21,14 @@ const int nset = 1;
 
 TString infiles[nset] = {
     //"analysis_FoCal_pp.root"
-    "analysis_FoCal_pp_pythia.root"
-    //"analysis_FoCal_pp_geant.root"
+    //"analysis_FoCal_pp_pythia.root"
+    //"analysis_FoCal_pPb_pythia.root"
+    "analysis_FoCal_pp_geant.root"
 };
 
 TString legHeader[nset] = {
-    //"p-p #sqrt{s} = 14 TeV"
-    "pPb #sqrt{s} = 5.02 TeV"
+    "p-p #sqrt{s} = 14 TeV"
+    //"pPb #sqrt{s} = 5.02 TeV"
 };
 
 TFile *fin[nset];
@@ -74,9 +75,9 @@ void LoadData()
                 cout << "BIN WIDTH : " << hCorrReal[iset][itrigg][iassoc]->GetBinWidth(0) << endl;
 
                 //// Rebin if needed
-                hCorrReal[iset][itrigg][iassoc]->Rebin(8);
-                hCorrCorrected[iset][itrigg][iassoc]->Rebin(8);
-                hCorrNonCorrected[iset][itrigg][iassoc]->Rebin(8);
+                //hCorrReal[iset][itrigg][iassoc]->Rebin(8);
+                //hCorrCorrected[iset][itrigg][iassoc]->Rebin(8);
+                //hCorrNonCorrected[iset][itrigg][iassoc]->Rebin(8);
 
                 // Calculate ratios
                 hRatioCorrected[iset][itrigg][iassoc] = (TH1D*)hCorrCorrected[iset][itrigg][iassoc]->Clone(Form("hRatioCorrected[%4.1f,%4.1f][%4.1f,%4.1f]_px",tlow,tupp,alow,aupp));
@@ -172,7 +173,7 @@ void DrawFiliPad()
                 rangeMax = ymax[itrigg][iassoc];
                 cout << rangeMin << " " << rangeMax << endl;
                 TPad *p = fpad[iset][itrigg][iassoc]->GetPad(1);
-                p->SetTickx(); p->SetLogx(0); p->SetLogy(0); p->cd();
+                p->SetTickx(); p->SetLogx(0); p->SetLogy(1); p->cd();
                 hset(*hCorrNonCorrected[iset][itrigg][iassoc], "#Delta#phi", "1/N_{trigg}dN/d#Delta#phi", 1.1,1.2, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
 //                hset(*hCorrReal[iset][itrigg][iassoc], "#Delta#phi", "arb. norm.", 1.1,1.2, 0.05,0.05, 0.01,0.01, 0.04,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
                 hCorrNonCorrected[iset][itrigg][iassoc]->GetYaxis()->SetRangeUser(rangeMin, rangeMax);

@@ -2,18 +2,18 @@
 #include "include/rootcommon.h"
 
 //const double xmin = -TMath::Pi()/6;
-//const double xmin = -0.4;
-const double xmin = -TMath::Pi()/2;
+const double xmin = -0.4;
+//const double xmin = -TMath::Pi()/2;
 //const double xmin = TMath::Pi()/2.;
 
-//const double xmax = TMath::Pi()/3;
-//const double xmax = 0.8;
-const double xmax = (3./2)*TMath::Pi();
+//const double xmax = TMath::Pi()/2;
+const double xmax = 0.8;
+//const double xmax = (3./2)*TMath::Pi();
 //const double xmax = TMath::Pi();
 
 const double alpha = 1;
 
-const int nset = 1;
+const int nset = 2;
 const int nTriggBins = 2;
 const int nAssocBins = 2;
 const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
@@ -22,18 +22,23 @@ const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
 const double ymax[nTriggBins][nAssocBins] = {{1.2, 2.4}, {1.2, 2.8}};
 
 const TString inputname[nset] = {
-    //"/home/heimarry/Simulations/focal/analysis_output_2/2023-01-26_pp-focal_no-photon-eff.root"
-    //"/home/heimarry/Simulations/focal/analysis_output_2/2023-01-27_pp-focal_asym-08.root"
-    "/home/heimarry/Simulations/focal/analysis_output_2/2023-01-27_pp-focal_asym-08_weight-078.root"
+    "/home/heimarry/Simulations/focal/analysis_output/2022-12-19_pp-focal_two-sidebands.root",
+    "/home/heimarry/Simulations/focal/analysis_output/2022-12-16_pp-focal_sideband-210-280.root"
+    //"/home/heimarry/Simulations/focal/analysis_output/2022-12-20_pp-focal_sideband-50-115-160-200.root",
+    //"/home/heimarry/Simulations/focal/analysis_output/2023-01-09_pp-focal_sideband-160-200.root"
 };
 
 const TString legHeader = "p-p #sqrt{s} = 14 TeV";
 const TString setlabel[nset+1] = {
     "f_{fake,fake}",
-    Form("[40,80] #cup [210,280]")
+    //Form("[50,115] #cup [160,200]"),
+    //Form("[160,200]")
+    Form("[40,80] #cup [210,280]"),
+    Form("[210,280]")
+    //Form("[300, 450]")
 };
 
-const EColor cMarker[nset] = {kRed};//, kBlue};//, kOrange};//, kMagenta};
+const EColor cMarker[nset] = {kRed, kBlue};//, kOrange};//, kMagenta};
 
 TFile *fIn[nset];
 TH1D *hCounter[nset];
@@ -83,18 +88,18 @@ void LoadData()
                 if (tlow < aupp) continue;
 
                 hCorrSideSide[iset][itrigg][iassoc] = (TH2D*)fIn[iset]->Get(Form("CorrSideSide/hCorrSideSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
-                hCorrSideSide[iset][itrigg][iassoc]->Rebin2D(4);
+                //hCorrSideSide[iset][itrigg][iassoc]->Rebin2D();
                 hCorrSideSide[iset][itrigg][iassoc]->GetYaxis()->SetMaxDigits(3);
                 hCorrSideSideProj[iset][itrigg][iassoc] = hCorrSideSide[iset][itrigg][iassoc]->ProjectionX();
                 //hCorrSideSideProj[iset][itrigg][iassoc]->Scale(1./hCorrSideSideProj[iset][itrigg][iassoc]->GetEntries());
-                hCorrSideSideProj[iset][itrigg][iassoc]->Scale(1./hCorrSideSideProj[iset][itrigg][iassoc]->Integral(hCorrSideSideProj[iset][itrigg][iassoc]->FindBin(TMath::Pi()/2.), hCorrSideSideProj[iset][itrigg][iassoc]->FindBin((3./2.)*TMath::Pi())));
+                hCorrSideSideProj[iset][itrigg][iassoc]->Scale(1./hCorrSideSideProj[iset][itrigg][iassoc]->Integral(hCorrSideSideProj[iset][itrigg][iassoc]->FindBin(TMath::Pi()/2.), hCorrSideSideProj[iset][itrigg][iassoc]->FindBin((3./2.)*TMath::Pi())), "width");
 
                 hCorrBB[iset][itrigg][iassoc] = (TH2D*)fIn[iset]->Get(Form("TrueComponents/hCorrBgBg[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
-                hCorrBB[iset][itrigg][iassoc]->Rebin2D(4);
+                //hCorrBB[iset][itrigg][iassoc]->Rebin2D();
                 hCorrBB[iset][itrigg][iassoc]->GetYaxis()->SetMaxDigits(3);
                 hCorrBBProj[iset][itrigg][iassoc] = hCorrBB[iset][itrigg][iassoc]->ProjectionX();
                 //hCorrBBProj[iset][itrigg][iassoc]->Scale(1./hCorrBBProj[iset][itrigg][iassoc]->GetEntries());
-                hCorrBBProj[iset][itrigg][iassoc]->Scale(1./hCorrBBProj[iset][itrigg][iassoc]->Integral(hCorrBBProj[iset][itrigg][iassoc]->FindBin(TMath::Pi()/2.), hCorrBBProj[iset][itrigg][iassoc]->FindBin((3./2.)*TMath::Pi())));
+                hCorrBBProj[iset][itrigg][iassoc]->Scale(1./hCorrBBProj[iset][itrigg][iassoc]->Integral(hCorrBBProj[iset][itrigg][iassoc]->FindBin(TMath::Pi()/2.), hCorrBBProj[iset][itrigg][iassoc]->FindBin((3./2.)*TMath::Pi())), "width");
             }
         }
     }
@@ -192,7 +197,7 @@ void DrawFiliPad()
 {
     TText *t, *t2;
     t = new TText(.55,0.79,"PYTHIA8 simulation");
-    //t2 = new TText(.55,0.74,Form("Asymmetry  < %0.1f", alpha));    
+    //t2 = new TText(.55,0.74,Form("Asymmetry  < %0.1f", alpha));
     t->SetNDC();
     //t2->SetNDC();
 
@@ -213,12 +218,12 @@ void DrawFiliPad()
             // Upper pad
             TPad *p = fpadcomp[itrigg][iassoc]->GetPad(1);
             p->SetTickx(); p->SetLogx(0); p->SetLogy(0); p->cd();
-            hset(*hCorrBBProj[0][itrigg][iassoc], "#Delta#phi", "1/N dN/d#Delta#phi", 1.1,1.2, 0.05,0.05, 0.01,0.01, 0.05,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
-            hCorrBBProj[0][itrigg][iassoc]->GetYaxis()->SetRangeUser(0., ymax[itrigg][iassoc]);
+            hset(*hCorrBBProj[0][itrigg][iassoc], "#Delta#phi", "1/N_{away} dN/d#Delta#phi", 1.1,1.2, 0.05,0.05, 0.01,0.01, 0.05,0.05, 510,505);//settings of the upper pad: x-axis, y-axis
+            //hCorrBBProj[0][itrigg][iassoc]->GetYaxis()->SetRangeUser(0., ymax[itrigg][iassoc]);
             hCorrBBProj[0][itrigg][iassoc]->Draw("HIST E");
             for (int iset = 0; iset < nset; iset++) hCorrSideSideProj[iset][itrigg][iassoc]->Draw("HIST E SAME");
             //for (int iset = 1; iset < nset; iset++)hCorrBBProj[iset][itrigg][iassoc]->Draw("HIST E SAME");
-            hCorrBBProj[0][itrigg][iassoc]->Draw("HIST E SAME");
+            //hCorrBBProj[0][itrigg][iassoc]->Draw("HIST E SAME");
 
             leg[itrigg][iassoc]->Draw("SAME");
             t->Draw("SAME");

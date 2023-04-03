@@ -6,7 +6,7 @@ const int npt = 4;
 //const TString filename = "masses_v9.root";
 //const TString filename = "masses_pi0-gun_v9.root";
 const TString filename = "masses_pythia-2_v9.root";
-const TString lowmassfilename = "masses_gamma-gun_v9.root";
+const TString lowmassfilename = "masses_gamma-gun_v9_2.root";
 const TString legEta = "3.5(+0.2) < #eta < 5.5(-0.2)";
 //------------------------------------------------------------------------------
 
@@ -223,9 +223,9 @@ void LoadData()
     for (int iasym=0; iasym<nset; iasym++) {
         for (int ipt=0; ipt<npt; ipt++) {
             hMassCluster[iasym][ipt] = (TH1D*)fin->Get(Form("hMassCluster_%d_%d", iasym, ipt));
-            massAreaSidebandLow[iasym][ipt] = hMassCluster[iasym][ipt]->Integral(hMassCluster[iasym][ipt]->FindBin(0), hMassCluster[iasym][ipt]->FindBin(50));
-            massAreaSidebandHigh[iasym][ipt] = hMassCluster[iasym][ipt]->Integral(hMassCluster[iasym][ipt]->FindBin(200), hMassCluster[iasym][ipt]->FindBin(400));
             hMassCluster[iasym][ipt]->Rebin(4);
+            massAreaSidebandLow[iasym][ipt] = hMassCluster[iasym][ipt]->Integral(hMassCluster[iasym][ipt]->FindBin(0), hMassCluster[iasym][ipt]->FindBin(20));
+            massAreaSidebandHigh[iasym][ipt] = hMassCluster[iasym][ipt]->Integral(hMassCluster[iasym][ipt]->FindBin(200), hMassCluster[iasym][ipt]->FindBin(400));
             hMassCluster[iasym][ipt]->Scale(1.);
             hMassCluster[iasym][ipt]->SetMarkerStyle(kDot);
             hMassCluster[iasym][ipt]->SetFillColor(kGray);
@@ -233,7 +233,7 @@ void LoadData()
             hMassCluster[iasym][ipt]->SetMarkerColor(kBlack);
             hMassCluster[iasym][ipt]->SetLineColor(kBlack);
             hMassCluster[iasym][ipt]->GetYaxis()->SetMaxDigits(3);
-            if (ipt==npt-1) 
+            if (ipt==npt-1)
                 hMassCluster[iasym][ipt]->GetYaxis()->SetMaxDigits(2);
 
             hMassClusterMixed[iasym][ipt] = (TH1D*)fin->Get(Form("hMassClusterMixed_%d_%d", iasym, ipt));
@@ -253,7 +253,7 @@ void LoadData()
         for (int ipt=0; ipt<npt; ipt++) {
             hMassClusterBg[iasym][ipt] = (TH1D*)finLowMassBg->Get(Form("hMassCluster_%d_%d", iasym, ipt));
             hMassClusterBg[iasym][ipt]->Rebin(4);
-            lowMassArea[iasym][ipt] = hMassClusterBg[iasym][ipt]->Integral(hMassClusterBg[iasym][ipt]->FindBin(1), hMassClusterBg[iasym][ipt]->FindBin(50));
+            lowMassArea[iasym][ipt] = hMassClusterBg[iasym][ipt]->Integral(hMassClusterBg[iasym][ipt]->FindBin(1), hMassClusterBg[iasym][ipt]->FindBin(20));
             hMassClusterBg[iasym][ipt]->Scale(massAreaSidebandLow[iasym][ipt]/lowMassArea[iasym][ipt]);
             hMassClusterBg[iasym][ipt]->SetMarkerStyle(kDot);
             hMassClusterBg[iasym][ipt]->SetMarkerSize(.5);

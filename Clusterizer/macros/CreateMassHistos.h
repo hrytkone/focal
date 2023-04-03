@@ -1,5 +1,5 @@
 //const TString outputname = "masses_pi0-gun_v9";
-const TString outputname = "masses_pythia-2_v9";
+const TString outputname = "masses_gamma";
 const int nasym = 6;
 const int npt = 4;
 

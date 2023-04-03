@@ -11,7 +11,7 @@ const int nAssocBins = 2;
 //const double assocPt[nAssocBins+1] = {0.5, 1.0, 1.5, 2.0, 2.5};
 //const double triggPt[nTriggBins+1] = {4.0, 8.0, 8.0};
 //const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
-const double triggPt[nTriggBins+1] = {4.0, 8.0, 20.0};
+const double triggPt[nTriggBins+1] = {4.0, 8.0, 16.0};
 const double assocPt[nAssocBins+1] = {2.0, 3.0, 4.0};
 
 const double ntrigg[nTriggBins] = {39032, 3128}; // GEANT

@@ -16,15 +16,17 @@
 
 //#define NINCPTBIN 150
 #define NINCPTBIN 100
-#define NETABIN 13
+#define NETABIN 6
 #define NDET 2
 
-int GetEtaBin(double eta, int idet);
+const double eta[NETABIN+1] = {3.2, 3.5, 4.0, 4.5, 5.0, 5.5, 5.8};
+
+int GetEtaBin(double eta);
 
 using namespace Pythia8;
 
 const double detEta[NDET][2] = {
-    {3.5, 5.8}, // FoCal
+    {3.2, 5.8}, // FoCal
     {2.6, 4.0}  // STAR
 };
 
@@ -91,7 +93,7 @@ int main(int argc, char *argv[]) {
     		if ( trEta < detEta[idet][0] || trEta > detEta[idet][1] ) continue;
 
     		if ( pythia.event[partIdx].id() == 111 ) {
-                int ibin = GetEtaBin(pythia.event[partIdx].eta(), idet);
+                int ibin = GetEtaBin(pythia.event[partIdx].eta());
                 hPionPtFor[ibin]->Fill(pythia.event[partIdx].pT());
                 hPionEtaPtFor->Fill(pythia.event[partIdx].eta(), pythia.event[partIdx].pT());
 
@@ -109,14 +111,12 @@ int main(int argc, char *argv[]) {
                     continue;
                 } else {
                     if ( pythia.event[idDaughter1].id()==22 && pythia.event[idDaughter2].id()==22 ) {
-                        if ( pythia.event[idDaughter1].eta() > detEta[idet][0] && pythia.event[idDaughter2].eta() < detEta[idet][1] ) {
+                        if ( (pythia.event[idDaughter1].eta() > detEta[idet][0] && pythia.event[idDaughter1].eta() < detEta[idet][1])
+                                && (pythia.event[idDaughter2].eta() > detEta[idet][0] && pythia.event[idDaughter2].eta() < detEta[idet][1]) ) {
                             hPionPtDetected[ibin]->Fill(pythia.event[partIdx].pT());
                             hPionEtaPtDetected->Fill(pythia.event[partIdx].eta(), pythia.event[partIdx].pT());
                         }
                     }
-                    //else {
-                    //    std::cout << "Daughters no photons but " << pythia.event[idDaughter1].id() << " and " << pythia.event[idDaughter2].id() << ", skip" << std::endl;
-                    //}
                 }
             }
         }
@@ -140,13 +140,9 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-int GetEtaBin(double eta, int idet)
+int GetEtaBin(double e)
 {
-    double step = (detEta[idet][1]-detEta[idet][0])/NETABIN;
-    double binEdge = detEta[idet][0];
-    for (int i=0; i<NETABIN; i++) {
-        if (eta>binEdge && eta<=binEdge+step) return i;
-        binEdge += step;
-    }
+    for (int i=0; i<NETABIN; i++)
+        if (e>eta[i] && e<=eta[i+1]) return i;
     return -1;
 }

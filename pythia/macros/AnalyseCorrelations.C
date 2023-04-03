@@ -47,7 +47,7 @@ void processDataFoCal()
         //"/home/heimarry/Simulations/focal/analysis_output_2/2023-02-09_pp-focal_smaller-mw_no-asym.root"
         //"/home/heimarry/Simulations/focal/analysis_output_2/2023-02-09_pp-focal_smaller-mw_asym-08.root"
         //"/home/heimarry/Simulations/focal/analysis_output_2/2023-02-09_pp-focal_smaller-mw_asym-05.root"
-        "/home/heimarry/Simulations/focal/analysis_output_2/2023-02-09_pp-focal_smaller-mw_asym-08_w.root"
+        //"/home/heimarry/Simulations/focal/analysis_output_2/2023-02-09_pp-focal_smaller-mw_asym-08_w.root"
         //"/home/heimarry/Simulations/focal/analysis_output_2/2023-02-10_pp-focal_smaller-mw_asym-05_w.root"
         //************************************************************************************************
         //"/home/heimarry/Simulations/focal/analysis_output_2/2023-03-06_gAnalysis_mw-50-200_sb-250-450.root"
@@ -55,17 +55,19 @@ void processDataFoCal()
         //"/home/heimarry/Simulations/focal/pythia/2023-03-09_gAnalysis_mw-50-200_sb-220-300_asym-09_500k.root"
         //************************************************************************************************
         //"/home/heimarry/Simulations/focal/analysis_output_2/pPb-focal_asym-08_w.root"
+        //"/home/heimarry/Simulations/focal/analysis_output_2/pp-focal_asym-08.root"
+        "/home/heimarry/Simulations/focal/analysis_output_2/gAnalysis_combined.root"
 	};
 
 	TString fOutName[ndata_focal] = {
-		//"analysis_FoCal_pp_geant.root"
-		"analysis_FoCal_pp_pythia.root"
+		"analysis_FoCal_pp_geant.root"
+		//"analysis_FoCal_pp_pythia.root"
 		//"analysis_FoCal_pPb_pythia.root"
 	};
 
     TString dataname[ndata_focal] = {
-        //"FoCal_pp_fullsim"
-        "FoCal_pp_pythia"
+        "FoCal_pp_fullsim"
+        //"FoCal_pp_pythia"
         //"FoCal_pPb_pythia"
     };
 
@@ -102,7 +104,7 @@ void LoadInput()
 	    double tupp = triggPt[it+1];
 
 	    hMassTrigg[it] = (TH1D*)fIn->Get(Form("Masses/hPi0MassTrigg[%4.1f,%4.1f]",tlow,tupp));
-        hMassTrigg[it]->Rebin(2);
+        hMassTrigg[it]->Rebin(4);
 
 	    for (int ia = 0; ia < nAssocBins; ia++) {
 	        double alow = assocPt[ia];
@@ -111,12 +113,12 @@ void LoadInput()
 	        if (tlow < aupp) continue;
 
 	        hMassAssocPeak[it][ia] = (TH1D*)fIn->Get(Form("Masses/hPi0MassAssocPeak[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
-            hMassAssocPeak[it][ia]->Rebin(2);
+            hMassAssocPeak[it][ia]->Rebin(4);
 	        hMassAssocSide[it][ia] = (TH1D*)fIn->Get(Form("Masses/hPi0MassAssocSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
-            hMassAssocSide[it][ia]->Rebin(2);
+            hMassAssocSide[it][ia]->Rebin(4);
 
             // 2D same event correlations
-	        hCorrReal[it][ia]     = (TH2D*)fIn->Get(Form("CorrFor/hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));           
+	        hCorrReal[it][ia]     = (TH2D*)fIn->Get(Form("CorrFor/hCorrFor[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
 	        hCorrMassMass[it][ia] = (TH2D*)fIn->Get(Form("CorrMassMass/hCorrMassMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
             hCorrMassSide[it][ia] = (TH2D*)fIn->Get(Form("CorrMassSide/hCorrMassSide[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
 	        hCorrSideMass[it][ia] = (TH2D*)fIn->Get(Form("CorrSideMass/hCorrSideMass[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
@@ -132,13 +134,14 @@ void LoadInput()
             hCorrCorrected[it][ia] = (TH1D*)hCorrMassMassProj[it][ia]->Clone(Form("hCorrCorrected[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
 
             // Rebin if needed
-            //hCorrRealProj[it][ia]->Rebin(15);
-            //hCorrMassMassProj[it][ia]->Rebin(15);
-            //hCorrMassSideProj[it][ia]->Rebin(15);
-            //hCorrSideMassProj[it][ia]->Rebin(15);
-            //hCorrSideSideProj[it][ia]->Rebin(15);
-            //hCorrNonCorrected[it][ia]->Rebin(15);
-            //hCorrCorrected[it][ia]->Rebin(15);
+            int nrebin = 25;
+            hCorrRealProj[it][ia]->Rebin(nrebin);
+            hCorrMassMassProj[it][ia]->Rebin(nrebin);
+            hCorrMassSideProj[it][ia]->Rebin(nrebin);
+            hCorrSideMassProj[it][ia]->Rebin(nrebin);
+            hCorrSideSideProj[it][ia]->Rebin(nrebin);
+            hCorrNonCorrected[it][ia]->Rebin(nrebin);
+            hCorrCorrected[it][ia]->Rebin(nrebin);
 
             // 2D mixed event correlations
             hCorrMassMassMixed[it][ia] = (TH2D*)fIn->Get(Form("CorrMassMass/hCorrMassMassMixed[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp));
@@ -435,7 +438,7 @@ void DrawMassHistos(TString dataname)
         fBgColored[it]->SetFillColorAlpha(kBlue, 0.5);
         fBgColored[it]->GetXaxis()->SetRangeUser(massMin, massMax);
         fBgColored[it]->SetFillStyle(1001);
-        
+
         fPeakColored[it]->SetLineWidth(5);
         fBgTrigg[it]->SetLineWidth(5);
         fPeakTrigg[it]->SetLineWidth(5);

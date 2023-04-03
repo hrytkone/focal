@@ -1,8 +1,8 @@
 
 const int nset = 3;
 const TString filename[nset] = {
-    "/home/heimarry/Simulations/focal/analysis_output_2/2023-01-26_pp-focal_no-photon-eff.root", 
-    "/home/heimarry/Simulations/focal/analysis_output_2/2023-01-27_pp-focal_asym-08.root", 
+    "/home/heimarry/Simulations/focal/analysis_output_2/2023-01-26_pp-focal_no-photon-eff.root",
+    "/home/heimarry/Simulations/focal/analysis_output_2/2023-01-27_pp-focal_asym-08.root",
     "/home/heimarry/Simulations/focal/analysis_output_2/2023-01-31_pp-focal_asym-05.root"
 };
 
@@ -33,9 +33,10 @@ void PlotMassWithDifferentAlpha()
     LoadData();
     ConfigData();
 
-    leg1 = new TLegend(0.58, 0.7, 0.75, 0.9);
-    leg1->SetFillStyle(0); leg1->SetBorderSize(0); leg1->SetTextSize(0.042);
-    leg1->SetHeader("PYTHIA8 simulation");
+    leg1 = new TLegend(0.45, 0.65, 0.75, 0.9);
+    leg1->SetFillStyle(0); leg1->SetBorderSize(0); leg1->SetTextSize(0.038);
+    leg1->SetHeader(Form("#splitline{PYTHIA8 simulation}{p_{T} = [%4.1f,%4.1f][%4.1f,%4.1f] GeV/c}",triggPt[0],triggPt[1],assocPt[0],assocPt[1]));
+    leg1->AddEntry(hMassAssoc[0][0][0], " ", "");
     for (int i=0; i<nset; i++) leg1->AddEntry(hMassAssoc[i][0][0], label[i], "lep");
 
     PlotData();
@@ -79,7 +80,7 @@ void ConfigData()
                 hMassAssoc[i][itrigg][iassoc]->SetLineColor(mColor[i]);
                 hMassAssoc[i][itrigg][iassoc]->SetLineWidth(2);
                 hMassAssoc[i][itrigg][iassoc]->Scale(1./hCounter[i]->GetBinContent(1), "width");
-                hMassAssoc[i][itrigg][iassoc]->GetXaxis()->SetRangeUser(0.1, 299.);
+                hMassAssoc[i][itrigg][iassoc]->GetXaxis()->SetRangeUser(0.1, 395.);
                 hMassAssoc[i][itrigg][iassoc]->GetXaxis()->SetTitleSize(0.045);
                 hMassAssoc[i][itrigg][iassoc]->GetXaxis()->SetLabelSize(0.045);
                 hMassAssoc[i][itrigg][iassoc]->GetYaxis()->SetTitleSize(0.045);

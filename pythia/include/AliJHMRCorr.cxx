@@ -63,7 +63,7 @@ int AliJHMRCorr::ReconstructPions(TClonesArray *arrPhoton, TClonesArray *arrPi0C
     int nTrue = 0;
     int nCandidate = 0;
     int nPhoton = arrPhoton->GetEntriesFast();
-    
+
     for (int i = 1; i < nPhoton; i++) {
         AliJBaseTrack *lv1 = (AliJBaseTrack*)arrPhoton->At(i);
         for (int j = 0; j < i; j++) {
@@ -138,6 +138,7 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, TClonesArray *arrPhoton, 
     if (nTrigg < 1) return;
 
     bool etriggFilled = false;
+    bool eventFilled[NTRIGGBINS][NASSOCBINS] = {0};
     for (int it = 0; it < nTrigg; it++) {
         int iTrigg = listTrigg[it];
         AliJBaseTrack *lvTrigg = (AliJBaseTrack*)arrPi0->At(iTrigg);
@@ -183,6 +184,12 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, TClonesArray *arrPhoton, 
                 histos->hX1[iTriggBin][iAssocBin]->Fill(fX1);
                 histos->hX2[iTriggBin][iAssocBin]->Fill(fX2);
                 histos->hX1X2[iTriggBin][iAssocBin]->Fill(fX1, fX2);
+
+                // If there is a trigger-associated pair in the pt bin, save bin 1
+                if (!eventFilled[iTriggBin][iAssocBin]) {
+                    histos->hXSecCounter[iTriggBin][iAssocBin]->Fill(1);
+                    eventFilled[iTriggBin][iAssocBin] = true;
+                }
 
             } else {
                 if (CheckAssocPhotonPair(iTrigg, iAssoc, bMassWindowTrigg)) {

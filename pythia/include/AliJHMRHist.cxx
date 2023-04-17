@@ -54,6 +54,7 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet, bool bUseLeadin
     dirBackgroundEnergies = output->mkdir("BackgroundEnergies");
     dirAsym = output->mkdir("Asymmetry");
     dirXfractions = output->mkdir("xFractions");
+    dirXSec = output->mkdir("xSec");
 
     dirMassComponents->cd();
     hMassTrue = new TH1D("hMassTrue", "Invariant mass, photons from same mother", 360, 0.0, 720.0);
@@ -227,7 +228,7 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet, bool bUseLeadin
             hX1[i][j] = new TH1D(Form("hX1[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
                                         Form("hX1[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
                                          NXFRACBIN, logBinsXfrac);
-            hX1[i][j]->Sumw2();            
+            hX1[i][j]->Sumw2();
             hX2[i][j] = new TH1D(Form("hX2[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
                                         Form("hX2[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
                                         NXFRACBIN, logBinsXfrac);
@@ -236,6 +237,12 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet, bool bUseLeadin
                                            Form("hX1X2[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
                                            NXFRACBIN, logBinsXfrac, NXFRACBIN, logBinsXfrac);
             hX1X2[i][j]->Sumw2();
+
+            dirXSec->cd();
+            hXSecCounter[i][j] = new TH1D(Form("hXsecCounter[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                        Form("hXsecCounter[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                         1, .5, 1.5);
+            hXSecCounter[i][j]->Sumw2();
         }
     }
 

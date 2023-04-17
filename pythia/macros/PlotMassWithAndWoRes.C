@@ -44,15 +44,20 @@ void LoadData()
         hMass[i] = (TH1D*)fin[i]->Get(Form("Masses/hPi0MassTrigg[%4.1f,%4.1f]",triggPt[0],triggPt[1]));
         hMass[i]->Rebin();
         hMass[i]->GetXaxis()->SetRangeUser(0., 390);
+
         hMass[i]->GetXaxis()->SetLabelSize(0.042);
         hMass[i]->GetYaxis()->SetLabelSize(0.042);
-        hMass[i]->GetXaxis()->SetTitleSize(0.048);
-        hMass[i]->GetYaxis()->SetTitleSize(0.048);
+        hMass[i]->GetXaxis()->SetTitleSize(0.052);
+        hMass[i]->GetYaxis()->SetTitleSize(0.052);
+
+        hMass[i]->GetXaxis()->SetTitleOffset(0.8);
+        hMass[i]->GetYaxis()->SetTitleOffset(0.95);
+
         hMass[i]->GetYaxis()->SetMaxDigits(3);
         hMass[i]->SetLineColor(kBlack);
         hMass[i]->SetLineWidth(2);
         hMass[i]->SetFillColor(kGray);
-        hMass[i]->SetTitle(";m_{#gamma#gamma};counts");
+        hMass[i]->SetTitle(";m_{#gamma#gamma}(MeV/c^{2});counts");
     }
 }
 
@@ -68,7 +73,7 @@ void SetStyle(Bool_t graypalette)
     //else gStyle->SetPalette(1);
     gStyle->SetCanvasColor(10);
     gStyle->SetCanvasBorderMode(0);
-    gStyle->SetFrameLineWidth(1);
+    gStyle->SetFrameLineWidth(2);
     gStyle->SetFrameFillColor(kWhite);
     gStyle->SetPadColor(10);
     gStyle->SetPadTickX(0);
@@ -76,10 +81,10 @@ void SetStyle(Bool_t graypalette)
     //gStyle->SetHistLineColor(kRed);
     gStyle->SetFuncWidth(2);
     //gStyle->SetFuncColor(kGreen);
-    //gStyle->SetLineWidth(1);
+    //gStyle->SetLineWidth(2);
     gStyle->SetLabelSize(0.055,"xyz");
-    gStyle->SetLabelOffset(0.01,"y");
-    gStyle->SetLabelOffset(0.01,"x");
+    //gStyle->SetLabelOffset(0.01,"y");
+    //gStyle->SetLabelOffset(0.01,"x");
     gStyle->SetLabelColor(kBlack,"xyz");
     //gStyle->SetTitleSize(0.035,"xyz");
     //gStyle->SetTitleOffset(1.25,"y");

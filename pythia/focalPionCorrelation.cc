@@ -216,7 +216,6 @@ int main(int argc, char *argv[]) {
                 *arrPi0SideMixed[iEvent] = *arrPi0Side;
             }
         }
-
         arrPhotonFor->Clear("C");
         arrPi0Real->Clear("C");
         arrPi0Peak->Clear("C");

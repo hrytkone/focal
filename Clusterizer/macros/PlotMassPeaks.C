@@ -7,7 +7,7 @@ const int npt = 4;
 //const TString filename = "masses_pi0-gun_v9.root";
 const TString filename = "masses_pythia-2_v9.root";
 const TString lowmassfilename = "masses_gamma-gun_v9_2.root";
-const TString legEta = "3.5(+0.2) < #eta < 5.5(-0.2)";
+const TString legEta = "3.4 < #eta < 5.3";
 //------------------------------------------------------------------------------
 
 const TString legHeader[npt] = {
@@ -28,7 +28,7 @@ const TString legEntry1[nset] = {
     "No cut"
 };
 
-const double xi[nset] = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5};
+const double xi[nset] = {0.45, 0.45, 0.45, 0.45, 0.45, 0.45};
 const double xf[nset] = {0.85, 0.85, 0.85, 0.85, 0.85, 0.85};
 const double yi[nset] = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5};
 const double yf[nset] = {0.87, 0.87, 0.87, 0.87, 0.87, 0.87};
@@ -98,14 +98,14 @@ void redrawBorder();
 
 void PlotMassPeaks()
 {
-    SetStyle(1);
+    SetStyle(0);
     //gStyle->SetPalette(kTemperatureMap);
     Int_t palette[6];
     palette[0] = kCyan;
     palette[1] = kCyan+2;
-    palette[2] = kBlue;
+    palette[2] = kMagenta;
     palette[3] = kViolet+1;
-    palette[4] = kMagenta;
+    palette[4] = kBlue;
     palette[5] = kMagenta+4;
     gStyle->SetPalette(6, palette);
 
@@ -137,7 +137,7 @@ void PlotMassPeaks()
             if (i==2)
                 hMassCluster[j][i]->SetTitle(";;");
             else
-                hMassCluster[j][i]->SetTitle(";M_{#gamma#gamma};counts");
+                hMassCluster[j][i]->SetTitle(";M_{#gamma#gamma}(MeV/c^{2});counts");
             double max = hMassCluster[j][i]->GetBinContent(hMassCluster[j][i]->GetMaximumBin());
             hMassCluster[j][i]->GetXaxis()->SetRangeUser(0.1, 445.);
             hMassCluster[j][i]->GetYaxis()->SetRangeUser(0.1, max+0.14*max);
@@ -276,7 +276,7 @@ void CreateLegends()
             leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], legHeader[ipt].Data(), "");
             leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], legEntry1[iasym], "");
             leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], Form("S/B = %0.03f", signalToBg[ipt][iasym]), "");
-            leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], Form("m_{#pi0} = %0.01f#pm%0.01f", peakPos[iasym][ipt], peakPosErr[iasym][ipt]), "");
+            leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], Form("m_{#pi0} = %0.01f#pm%0.01f MeV/c^{2}", peakPos[ipt][iasym], peakPosErr[ipt][iasym]), "");
             leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], "PYTHIA6 + GEANT3", "l");
             leg[iasym][ipt]->AddEntry(hMassClusterBg[iasym][ipt], "#gamma gun + GEANT3", "l");
             //leg[iasym][ipt]->AddEntry(hMassCluster[iasym][ipt], Form("#epsilon = %0.03f#pm%0.03f", eff[ipt][iasym], effErr[ipt][iasym]), "");
@@ -382,6 +382,12 @@ void CreateGraphs()
         gSignalToBg[i]->SetMarkerColor(mColor[i]);
         gSignalToBg[i]->SetLineColor(mColor[i]);
         gSignalToBg[i]->GetYaxis()->SetRangeUser(0.05, 100.);
+        gSignalToBg[i]->GetYaxis()->SetTitleSize(0.052);
+        gSignalToBg[i]->GetXaxis()->SetTitleSize(0.052);
+        gSignalToBg[i]->GetYaxis()->SetLabelSize(0.042);
+        gSignalToBg[i]->GetXaxis()->SetLabelSize(0.042);
+        gSignalToBg[i]->GetYaxis()->SetTitleOffset(0.9);
+        gSignalToBg[i]->GetXaxis()->SetTitleOffset(0.8);
         gSignalToBg[i]->SetMarkerStyle(20);
         //gSignalToBg[i]->SetMarkerSize(0.5);
 
@@ -408,6 +414,12 @@ void CreateGraphs()
         gEfficiency[i]->SetMarkerColor(mColor[i]);
         gEfficiency[i]->SetLineColor(mColor[i]);
         gEfficiency[i]->GetYaxis()->SetRangeUser(0., 1.5);
+        gEfficiency[i]->GetYaxis()->SetTitleSize(0.052);
+        gEfficiency[i]->GetXaxis()->SetTitleSize(0.052);
+        gEfficiency[i]->GetYaxis()->SetLabelSize(0.042);
+        gEfficiency[i]->GetXaxis()->SetLabelSize(0.042);
+        gEfficiency[i]->GetYaxis()->SetTitleOffset(1.1);
+        gEfficiency[i]->GetXaxis()->SetTitleOffset(0.8);
         gEfficiency[i]->SetMarkerStyle(20);
         //gEfficiency[i]->SetMarkerSize(0.5);
     }

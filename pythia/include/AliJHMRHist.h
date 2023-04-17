@@ -33,7 +33,8 @@ class AliJHMRHist {
 
         TH1D *hCounter;
         TH1D *hRealTriggCounter;
-        TH1D *hXSecCounter[NTRIGGBINS][NASSOCBINS];
+        TH1D *hPairCounter[NTRIGGBINS][NASSOCBINS];
+        TH1D *hTotCrossSec;
 
         TH1D *hPionPt;
         TH1D *hRecPionPt;
@@ -130,7 +131,7 @@ class AliJHMRHist {
         TDirectory *dirBackgroundEnergies;
         TDirectory *dirAsym;
         TDirectory *dirXfractions;
-        TDirectory *dirXSec;
+        TDirectory *dirPairN;
 };
 
 #endif

@@ -122,6 +122,7 @@ int main(int argc, char *argv[]) {
             if ( !pythia.next() ) continue;
             fCatalyst->InitializeEvent();
             fCatalyst->GetParticles(det);
+            fHistos->hTotCrossSec->Fill(pythia.info.sigmaGen());
             arrPhotonFor = fCatalyst->GetParticleList(kJDecayPhoton);
             arrPi0Real   = fCatalyst->GetParticleList(kJPi0);
             fCorr->SmearEnergies(arrPhotonFor);

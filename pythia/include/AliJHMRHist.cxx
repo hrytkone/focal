@@ -16,6 +16,8 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet, bool bUseLeadin
     // Basic histograms
     hCounter = new TH1D("hCounter", "hCounter", 10, 0, 10);
     hRealTriggCounter = new TH1D("hRealTriggCounter", "hRealtriggCounter", 10, 0, 10);
+    hTotCrossSec = new TH1D("hTotCrossSec", "hTotCrossSec", 100, 0., 1000.);
+    hTotCrossSec->Sumw2();
 
     for (int i = 0; i <= NINCPTBIN; i++) logBinsX[i] = limMin*exp(i*logBW);
     for (int i = 0; i <= NXFRACBIN; i++) logBinsXfrac[i] = limXfracMin*exp(i*logXfracBW);
@@ -54,7 +56,7 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet, bool bUseLeadin
     dirBackgroundEnergies = output->mkdir("BackgroundEnergies");
     dirAsym = output->mkdir("Asymmetry");
     dirXfractions = output->mkdir("xFractions");
-    dirXSec = output->mkdir("xSec");
+    dirPairN = output->mkdir("CounterPair");
 
     dirMassComponents->cd();
     hMassTrue = new TH1D("hMassTrue", "Invariant mass, photons from same mother", 360, 0.0, 720.0);
@@ -238,11 +240,11 @@ void AliJHMRHist::CreateHistos(TFile *output, detector labelDet, bool bUseLeadin
                                            NXFRACBIN, logBinsXfrac, NXFRACBIN, logBinsXfrac);
             hX1X2[i][j]->Sumw2();
 
-            dirXSec->cd();
-            hXSecCounter[i][j] = new TH1D(Form("hXsecCounter[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
-                                        Form("hXsecCounter[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+            dirPairN->cd();
+            hPairCounter[i][j] = new TH1D(Form("hPairCounter[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
+                                        Form("hPairCounter[%4.1f,%4.1f][%4.1f,%4.1f]",tlow,tupp,alow,aupp),
                                          1, .5, 1.5);
-            hXSecCounter[i][j]->Sumw2();
+            hPairCounter[i][j]->Sumw2();
         }
     }
 

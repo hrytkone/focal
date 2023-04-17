@@ -187,7 +187,7 @@ void AliJHMRCorr::DoCorrelations(TClonesArray *arrPi0, TClonesArray *arrPhoton, 
 
                 // If there is a trigger-associated pair in the pt bin, save bin 1
                 if (!eventFilled[iTriggBin][iAssocBin]) {
-                    histos->hXSecCounter[iTriggBin][iAssocBin]->Fill(1);
+                    histos->hPairCounter[iTriggBin][iAssocBin]->Fill(1);
                     eventFilled[iTriggBin][iAssocBin] = true;
                 }
 
